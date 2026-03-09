@@ -1,0 +1,242 @@
+/* UnitInfo.module.css */
+.infoContainer {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 100;
+}
+
+.infoBox {
+  background: rgba(15, 23, 42, 0.95);
+  border: 2px solid #10b981;
+  border-radius: 8px;
+  padding: 16px;
+  color: #e6eef8;
+  font-family: 'Courier New', monospace;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  min-width: 300px;
+  max-width: 350px;
+}
+
+.unitName {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #10b981;
+  border-bottom: 1px solid #10b981;
+  padding-bottom: 8px;
+}
+
+.archetypeBadge {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(96, 165, 250, 0.5);
+  background: rgba(30, 58, 138, 0.28);
+  color: #bfdbfe;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.label {
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.value {
+  color: #10b981;
+  font-weight: bold;
+}
+
+.noSelection {
+  color: #64748b;
+  font-size: 13px;
+  text-align: center;
+  padding: 16px;
+}
+
+.healthSection {
+  margin: 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.healthBar {
+  height: 12px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid #64748b;
+  border-radius: 2px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.healthFill {
+  height: 100%;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+}
+
+.healthText {
+  font-size: 11px;
+  color: #94a3b8;
+  text-align: right;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin: 12px 0;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  border: 1px solid #3b82f6;
+}
+
+.actionEconomySection {
+  margin-top: 10px;
+  padding: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 6px;
+  background: rgba(2, 6, 23, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.actionRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.actionValue {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.actionReady {
+  color: #34d399;
+}
+
+.actionSpent {
+  color: #f87171;
+}
+
+.effectsSection {
+  margin-top: 10px;
+  padding: 8px;
+  border: 1px solid rgba(167, 139, 250, 0.25);
+  border-radius: 6px;
+  background: rgba(30, 27, 75, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.effectsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.effectBadge {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.effectPoison {
+  color: #86efac;
+  border: 1px solid rgba(34, 197, 94, 0.45);
+  background: rgba(20, 83, 45, 0.4);
+}
+
+.effectArmor {
+  color: #c4b5fd;
+  border: 1px solid rgba(139, 92, 246, 0.45);
+  background: rgba(76, 29, 149, 0.35);
+}
+
+.noEffects {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.statLabel {
+  font-size: 10px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statValue {
+  font-size: 14px;
+  color: #60a5fa;
+  font-weight: bold;
+}
+
+.enemiesSection {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #3b82f6;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.enemiesList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.enemyItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 6px;
+  background: rgba(239, 68, 68, 0.1);
+  border-left: 2px solid #ef4444;
+  border-radius: 2px;
+  font-size: 12px;
+}
+
+.enemyId {
+  color: #ef4444;
+  font-weight: bold;
+}
+
+.enemyHealth {
+  color: #fca5a5;
+  font-size: 11px;
+}
+

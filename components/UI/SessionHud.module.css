@@ -1,0 +1,114 @@
+.hudContainer {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 30;
+  pointer-events: auto;
+  transition: all 0.3s ease;
+}
+
+.hudContainer:hover {
+  transform: translateY(-2px);
+}
+
+.hudBox {
+  background: rgba(15, 23, 42, 0.95);
+  border: 2px solid rgba(56, 189, 248, 0.45);
+  border-radius: 12px;
+  padding: 12px 14px;
+  min-width: 260px;
+  color: #e2e8f0;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(56, 189, 248, 0.1);
+  display: grid;
+  gap: 8px;
+  font-size: 12px;
+  backdrop-filter: blur(8px);
+}
+
+.hudBox::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.05), rgba(167, 139, 250, 0.05));
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.title {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.label {
+  color: #94a3b8;
+}
+
+.value {
+  font-weight: 700;
+}
+
+.saved {
+  color: #86efac;
+}
+
+.saving {
+  color: #fcd34d;
+}
+
+.error {
+  color: #fca5a5;
+}
+
+.champion {
+  color: #fde047;
+  font-weight: 800;
+  text-shadow: 0 0 10px rgba(253, 224, 71, 0.3);
+}
+
+.progress {
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.progressLabel {
+  display: block;
+  font-size: 10px;
+  color: #94a3b8;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.progressBar {
+  width: 100%;
+  height: 6px;
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.progressFill {
+  height: 100%;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+.progressText {
+  font-size: 10px;
+  color: #cbd5e1;
+  font-weight: 600;
+}

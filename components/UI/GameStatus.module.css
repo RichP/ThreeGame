@@ -1,0 +1,221 @@
+/* GameStatus.module.css */
+.statusContainer {
+  position: fixed;
+  top: 120px;
+  right: 20px;
+  z-index: 100;
+}
+
+.statusBox {
+  background: rgba(15, 23, 42, 0.95);
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+  padding: 16px;
+  color: #e6eef8;
+  font-family: 'Courier New', monospace;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  min-width: 200px;
+}
+
+.turnPulse {
+  animation: turnPulseBlue 550ms ease-out;
+}
+
+@keyframes turnPulseBlue {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 8px 32px rgba(37, 99, 235, 0.22);
+  }
+  35% {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.22), 0 10px 36px rgba(37, 99, 235, 0.34);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 8px 32px rgba(37, 99, 235, 0.22);
+  }
+}
+
+@keyframes turnPulseRed {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 8px 32px rgba(239, 68, 68, 0.22);
+  }
+  35% {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2), 0 10px 36px rgba(239, 68, 68, 0.34);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 8px 32px rgba(239, 68, 68, 0.22);
+  }
+}
+
+.playerOneTheme {
+  border-color: #3b82f6;
+  box-shadow: 0 8px 32px rgba(37, 99, 235, 0.22);
+}
+
+.playerTwoTheme {
+  border-color: #ef4444;
+  box-shadow: 0 8px 32px rgba(239, 68, 68, 0.22);
+}
+
+.playerOneTheme.turnPulse {
+  animation-name: turnPulseBlue;
+}
+
+.playerTwoTheme.turnPulse {
+  animation-name: turnPulseRed;
+}
+
+.title {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #60a5fa;
+  border-bottom: 1px solid #3b82f6;
+  padding-bottom: 8px;
+}
+
+.playerOneTheme .title {
+  color: #60a5fa;
+  border-bottom-color: #3b82f6;
+}
+
+.playerTwoTheme .title {
+  color: #f87171;
+  border-bottom-color: #ef4444;
+}
+
+.playerInfo,
+.phaseInfo,
+.turnInfo,
+.remainingInfo {
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.label {
+  font-size: 12px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.playerName {
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.phase {
+  font-size: 13px;
+  font-weight: bold;
+  color: #fbbf24;
+  text-transform: uppercase;
+}
+
+.turn {
+  font-size: 14px;
+  font-weight: bold;
+  color: #10b981;
+}
+
+.remaining {
+  font-size: 14px;
+  font-weight: bold;
+  color: #38bdf8;
+}
+
+.noneRemaining {
+  color: #f59e0b;
+}
+
+.hintBox {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: rgba(14, 116, 144, 0.14);
+}
+
+.playerTwoTheme .hintBox {
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(127, 29, 29, 0.18);
+}
+
+.hintLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #7dd3fc;
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+
+.playerTwoTheme .hintLabel {
+  color: #fca5a5;
+}
+
+.hintText {
+  font-size: 12px;
+  line-height: 1.35;
+  color: #e0f2fe;
+}
+
+.warningBox {
+  margin-top: 12px;
+  padding: 8px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid #ef4444;
+  border-radius: 4px;
+}
+
+.warningText {
+  color: #fca5a5;
+  font-size: 12px;
+  text-align: center;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.previewBox {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(148, 163, 184, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.previewTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fef08a;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.previewRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.previewLabel {
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.previewValue {
+  color: #f8fafc;
+  font-weight: 700;
+}

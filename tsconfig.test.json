@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": ".test-dist",
+    "module": "commonjs",
+    "target": "es2020",
+    "declaration": false,
+    "sourceMap": false,
+    "incremental": false,
+    "isolatedModules": false
+  },
+  "include": [
+    "game/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
