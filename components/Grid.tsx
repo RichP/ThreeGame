@@ -11,9 +11,11 @@ interface GridProps {
     highlightMode?: 'move' | 'attack';
     blockedTiles?: ReadonlyArray<Position>;
     onTileClick?: (pos: Position) => void;
+    onTileHoverStart?: (pos: Position) => void;
+    onTileHoverEnd?: () => void;
 }
 
-export const Grid: React.FC<GridProps> = ({ size, selected, reachable, highlightMode = 'move', blockedTiles, onTileClick }) => {
+export const Grid: React.FC<GridProps> = ({ size, selected, reachable, highlightMode = 'move', blockedTiles, onTileClick, onTileHoverStart, onTileHoverEnd }) => {
     const isReachable = (x: number, y: number) => reachable?.some(pos => pos.x === x && pos.y === y);
     const isBlocked = (x: number, y: number) => blockedTiles?.some(pos => pos.x === x && pos.y === y);
 
@@ -29,6 +31,18 @@ export const Grid: React.FC<GridProps> = ({ size, selected, reachable, highlight
                     x={x}
                     y={y}
                     onClick={() => onTileClick && onTileClick({ x, y })}
+                    onHoverStart={() => {
+                      onTileHoverStart && onTileHoverStart({ x, y });
+                      // Emit custom event for MovePathVisualizer
+                      window.dispatchEvent(new CustomEvent('tile-hover-start', {
+                        detail: { position: { x, y } }
+                      }));
+                    }}
+                    onHoverEnd={() => {
+                      onTileHoverEnd && onTileHoverEnd();
+                      // Emit custom event for MovePathVisualizer
+                      window.dispatchEvent(new CustomEvent('tile-hover-end'));
+                    }}
                     isSelected={isSelected(x, y)}
                     isReachable={isReachable(x, y)}
                     highlightMode={highlightMode}

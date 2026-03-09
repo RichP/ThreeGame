@@ -9,6 +9,9 @@ import { UnitInfo } from './UI/UnitInfo'
 import { Controls } from './UI/Controls'
 import { ActionLog } from './UI/ActionLog'
 import { SessionHud } from './UI/SessionHud'
+import { AnimationSettings, useAnimationSettings } from './AnimationSettings'
+import { CameraController, CameraEffects } from './CameraController'
+import { DebugAnimations } from './DebugAnimations'
 import {
     type AttackOutcome,
     calculateAttackableTilesInState,
@@ -81,6 +84,7 @@ interface UndoMoveSnapshot {
 
 const ATTACK_VFX_DURATION_MS = 850
 const TURN_BANNER_DURATION_MS = 700
+const MOVEMENT_DURATION_MS = 600
 const MAP_PRESET_IDS = Object.keys(MAP_PRESET_LABELS) as MapPresetId[]
 const SAVE_KEY = 'threegame:save:v1'
 const TURN_BANNER_OVERLAY_STYLE = {
@@ -147,6 +151,9 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps }) => {
     })
     const [saveState, setSaveState] = useState<SaveState>('idle')
     const [lastSavedAt, setLastSavedAt] = useState<number | null>(null)
+    
+    // Animation settings
+    const { settings, setSettings } = useAnimationSettings();
     const attackTimeoutRef = useRef<number | null>(null);
     const turnBannerTimeoutRef = useRef<number | null>(null)
     const hasShownInitialTurnBannerRef = useRef(false)
@@ -202,7 +209,7 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps }) => {
     [gameState.selectedUnitId, gameState.units, gameState.currentPlayer]);
         
 
-  const handleTileClick = (tilePos: Position) => {
+    const handleTileClick = (tilePos: Position) => {
     if (winner) return;
     if (isResolvingAttack) return;
 
@@ -238,8 +245,11 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps }) => {
 
           const vfxKey = `${resolution.targetId}-${Date.now()}`;
 
+          // Set up projectile animation first
           setGameState(resolution.nextState);
           setUndoMoveSnapshot(null)
+          
+          // Start projectile animation
           setActiveHitVfx({
             key: vfxKey,
             targetUnitId: resolution.targetId,
@@ -253,18 +263,31 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps }) => {
             window.clearTimeout(attackTimeoutRef.current);
           }
 
+          // Attack sequence: Projectile → Impact → Cleanup
           attackTimeoutRef.current = window.setTimeout(() => {
-            setGameState((prev) => {
-              const postAttack = finishAttackSequence(prev)
-              return hasAvailableActionsForCurrentPlayer(postAttack)
-                ? postAttack
-                : endTurn(postAttack)
+            // First: Show projectile impact (hit effect) - this triggers FloatingDamageText
+            setActiveHitVfx({
+              key: vfxKey,
+              targetUnitId: resolution.targetId,
+              damage: resolution.damage,
+              outcome: resolution.outcome,
+              position: resolution.targetPosition,
             });
-            setActiveHitVfx(null);
-            setIsResolvingAttack(false);
-            setUndoMoveSnapshot(null)
-            attackTimeoutRef.current = null;
-          }, ATTACK_VFX_DURATION_MS);
+            
+            // Then: Finish attack sequence after a short delay
+            setTimeout(() => {
+              setGameState((prev) => {
+                const postAttack = finishAttackSequence(prev)
+                return hasAvailableActionsForCurrentPlayer(postAttack)
+                  ? postAttack
+                  : endTurn(postAttack)
+              });
+              setActiveHitVfx(null);
+              setIsResolvingAttack(false);
+              setUndoMoveSnapshot(null)
+              attackTimeoutRef.current = null;
+            }, 400); // 400ms for hit effect to play
+          }, 600); // 600ms for projectile flight
         }
         break;
         default:
@@ -437,6 +460,21 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps }) => {
 
         <OrbitControls target={[CENTER, 0, CENTER]} enablePan={false} enableDamping={true} />
 
+        {/* Camera Effects */}
+        <CameraEffects
+          gameState={gameState}
+          onCameraShake={(intensity, duration) => {
+            if (settings.enabled && settings.cameraShake) {
+              // Camera shake handled by CameraController
+            }
+          }}
+          onCameraZoom={(intensity, duration) => {
+            if (settings.enabled) {
+              // Camera zoom handled by CameraController
+            }
+          }}
+        />
+
         <Board
           gameState={gameState}
           reachableTiles={reachableTiles}
@@ -464,6 +502,15 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps }) => {
         isBusy={isResolvingAttack || !!winner}
         onEndTurn={() => {
           if (isResolvingAttack || winner) return;
+          // Clear any pending attack animations
+          if (attackTimeoutRef.current) {
+            window.clearTimeout(attackTimeoutRef.current);
+            attackTimeoutRef.current = null;
+          }
+          setActiveHitVfx(null);
+          setIsResolvingAttack(false);
+          setUndoMoveSnapshot(null);
+          
           setGameState(prev => {
             if (prev.phase === Phase.MOVE_UNIT) {
               const selectedUnit = getUnitById(prev, prev.selectedUnitId)
@@ -487,6 +534,15 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps }) => {
         }}
         onCancelSelection={() => {
           if (isResolvingAttack || winner) return;
+          // Clear any pending attack animations
+          if (attackTimeoutRef.current) {
+            window.clearTimeout(attackTimeoutRef.current);
+            attackTimeoutRef.current = null;
+          }
+          setActiveHitVfx(null);
+          setIsResolvingAttack(false);
+          setUndoMoveSnapshot(null);
+          
           setGameState(prev => {
             if (prev.phase === Phase.ATTACK) {
               const selected = getUnitById(prev, prev.selectedUnitId)
@@ -546,6 +602,15 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps }) => {
         saveState={saveState}
         lastSavedAt={lastSavedAt}
       />
+
+      {/* Animation Settings */}
+      <AnimationSettings
+        settings={settings}
+        onChange={setSettings}
+      />
+
+      {/* Debug Info */}
+      <DebugAnimations gameState={gameState} />
 
       {turnBannerText && !winner && (
         <div style={TURN_BANNER_OVERLAY_STYLE}>

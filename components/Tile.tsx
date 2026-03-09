@@ -10,11 +10,13 @@ const Tile: React.FC<{
   x: number;
   y: number;
   onClick?: (x: number, y: number) => void;
+  onHoverStart?: (x: number, y: number) => void;
+  onHoverEnd?: () => void;
   isSelected?: boolean;
   isReachable?: boolean;
   isBlocked?: boolean;
   highlightMode?: TileHighlightMode;
-}> = ({ x, y, onClick, isSelected, isReachable, isBlocked, highlightMode = 'move' }) => {
+}> = ({ x, y, onClick, onHoverStart, onHoverEnd, isSelected, isReachable, isBlocked, highlightMode = 'move' }) => {
   const [hovered, setHovered] = useState(false)
 
   useEffect(() => {
@@ -54,10 +56,12 @@ const Tile: React.FC<{
         if (isBlocked) return
         setHovered(true)
         document.body.style.cursor = 'pointer'
+        onHoverStart && onHoverStart(x, y)
       }}
       onPointerOut={() => {
         setHovered(false)
         document.body.style.cursor = 'auto'
+        onHoverEnd && onHoverEnd()
       }}
     >
       <mesh receiveShadow={true}>

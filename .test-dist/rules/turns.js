@@ -23,6 +23,9 @@ function applyTurnStartStatusTick(unit) {
 function applyTurnStartClassBuffs(unit) {
     if (unit.archetype !== 'bruiser')
         return unit;
+    // Only apply armor buff if the unit is on the current player's turn
+    // This function is called during endTurn() for the NEXT player's units,
+    // so we only want to apply the buff to units that will be acting next
     return {
         ...unit,
         statusEffects: {

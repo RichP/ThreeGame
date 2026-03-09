@@ -586,6 +586,17 @@ export function endTurn(state: GameState): GameState {
         };
     });
 
+    // Debug logging to track unit states
+    if (process.env.NODE_ENV === 'development') {
+        console.log('End Turn - Unit States:', refreshedUnits.map(u => ({
+            id: u.id,
+            playerId: u.playerId,
+            hasMoved: u.hasMoved,
+            hasAttacked: u.hasAttacked,
+            hasUsedAbility: u.hasUsedAbility
+        })));
+    }
+
     const livingUnits = refreshedUnits.filter((unit) => unit.health > 0);
     const previousLivingIds = new Set(state.units.filter((unit) => unit.health > 0).map((unit) => unit.id));
     const currentLivingIds = new Set(livingUnits.map((unit) => unit.id));

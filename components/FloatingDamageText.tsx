@@ -41,7 +41,9 @@ export const FloatingDamageText: React.FC<FloatingDamageTextProps> = ({ damage, 
     const elapsed = (performance.now() - startedAtRef.current) / 1000
     const progress = Math.min(elapsed / DURATION_SECONDS, 1)
 
-    group.position.set(position[0], position[1] + progress * 0.9, position[2])
+    // Floating animation with arc
+    const floatOffset = Math.sin(progress * Math.PI) * 0.6
+    group.position.set(position[0], position[1] + floatOffset, position[2])
 
     const material = text.material as Material & { opacity?: number; transparent?: boolean }
     if (material) {
