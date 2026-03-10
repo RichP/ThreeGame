@@ -43,7 +43,10 @@ export const AnimationSettings: React.FC<AnimationSettingsProps> = ({
         onClick={() => setIsOpen(!isOpen)}
         className="settings-toggle"
         style={{
-          background: '#334155',
+          position: 'fixed',
+          left: '20px',
+          bottom: '300px',
+          background: '#335542',
           color: '#e2e8f0',
           border: '1px solid #475569',
           padding: '8px 12px',
@@ -61,7 +64,7 @@ export const AnimationSettings: React.FC<AnimationSettingsProps> = ({
           className="settings-panel"
           style={{
             position: 'fixed',
-            top: '60px',
+            top: '140px', /* 60px + 80px navbar height */
             right: '20px',
             width: '280px',
             background: '#1e293b',

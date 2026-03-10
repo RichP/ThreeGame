@@ -3,6 +3,7 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
 import type { NextPage } from 'next'
+import MainLayout from '../components/MainLayout'
 
 const SceneCanvas = dynamic(
   () => import('../components/SceneCanvas'),
@@ -14,15 +15,15 @@ const SceneCanvas = dynamic(
 
 const Home: NextPage = () => {
   return (
-    <div className="container">
+    <MainLayout>
       <Head>
-        <title>Grid Tactics Prototype</title>
+        <title>ThreeGame — Next.js + React Three Fiber</title>
       </Head>
-      <h1>ThreeGame — Next.js + React Three Fiber</h1>
-      <div style={{ width: '100vw', height: '100vh' }}>
+      
+      <div style={{ width: '100%', height: '100%' }}>
         <SceneCanvas canvasProps={undefined} />
       </div>
-    </div>
+    </MainLayout>
   )
 }
 

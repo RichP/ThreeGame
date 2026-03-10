@@ -1,7 +1,7 @@
 /* GameStatus.module.css */
 .statusContainer {
   position: fixed;
-  top: 120px;
+  top: 200px; /* 120px + 80px navbar height */
   right: 20px;
   z-index: 100;
 }
@@ -15,6 +15,140 @@
   font-family: 'Courier New', monospace;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   min-width: 200px;
+}
+
+/* Responsive scaling for smaller viewports */
+@media (max-width: 1024px) {
+  .statusContainer {
+    top: 180px; /* 100px + 80px navbar height */
+    right: 16px;
+  }
+  
+  .statusBox {
+    padding: 14px;
+    min-width: 180px;
+  }
+  
+  .title {
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+  
+  .label {
+    font-size: 11px;
+  }
+  
+  .playerName, .phase, .turn, .remaining {
+    font-size: 13px;
+  }
+  
+  .hintLabel {
+    font-size: 9px;
+  }
+  
+  .hintText {
+    font-size: 11px;
+  }
+  
+  .previewTitle {
+    font-size: 10px;
+  }
+  
+  .previewRow {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 768px) {
+  .statusContainer {
+    top: 150px; /* 80px + 70px navbar height */
+    right: 12px;
+  }
+  
+  .statusBox {
+    padding: 12px;
+    min-width: 160px;
+    max-width: 200px;
+  }
+  
+  .title {
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .label {
+    font-size: 10px;
+  }
+  
+  .playerName, .phase, .turn, .remaining {
+    font-size: 12px;
+  }
+  
+  .hintLabel {
+    font-size: 8px;
+  }
+  
+  .hintText {
+    font-size: 10px;
+  }
+  
+  .previewTitle {
+    font-size: 9px;
+  }
+  
+  .previewRow {
+    font-size: 10px;
+  }
+  
+  .playerInfo, .phaseInfo, .turnInfo, .remainingInfo {
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .statusContainer {
+    top: 130px; /* 60px + 70px navbar height */
+    right: 8px;
+  }
+  
+  .statusBox {
+    padding: 10px;
+    min-width: 140px;
+    max-width: 160px;
+  }
+  
+  .title {
+    font-size: 11px;
+    margin-bottom: 10px;
+  }
+  
+  .label {
+    font-size: 9px;
+  }
+  
+  .playerName, .phase, .turn, .remaining {
+    font-size: 11px;
+  }
+  
+  .hintLabel {
+    font-size: 7px;
+  }
+  
+  .hintText {
+    font-size: 9px;
+  }
+  
+  .previewTitle {
+    font-size: 8px;
+  }
+  
+  .previewRow {
+    font-size: 9px;
+  }
+  
+  .playerInfo, .phaseInfo, .turnInfo, .remainingInfo {
+    margin-bottom: 8px;
+  }
 }
 
 .turnPulse {

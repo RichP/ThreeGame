@@ -1,7 +1,7 @@
 /* Controls.module.css */
 .controlsContainer {
   position: fixed;
-  bottom: 20px;
+  bottom: 140px; /* 20px + 120px footer height */
   right: 20px;
   z-index: 100;
   display: flex;
@@ -28,6 +28,115 @@
   transition: all 0.2s ease;
   font-family: 'Courier New', monospace;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive scaling for smaller viewports */
+@media (max-width: 1024px) {
+  .controlsContainer {
+    bottom: 116px; /* 16px + 100px footer height */
+    right: 16px;
+  }
+  
+  .button {
+    padding: 10px 16px;
+    font-size: 12px;
+    letter-spacing: 0.8px;
+  }
+  
+  .mapPanel {
+    min-width: 220px;
+    padding: 8px;
+  }
+  
+  .mapTitle {
+    font-size: 10px;
+  }
+  
+  .mapLabel {
+    font-size: 10px;
+  }
+  
+  .select, .seedInput {
+    font-size: 11px;
+    padding: 6px 7px;
+  }
+  
+  .toggleLabel {
+    font-size: 10px;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 768px) {
+  .controlsContainer {
+    bottom: 112px; /* 12px + 100px footer height */
+    right: 12px;
+  }
+  
+  .button {
+    padding: 8px 14px;
+    font-size: 11px;
+    letter-spacing: 0.6px;
+  }
+  
+  .mapPanel {
+    min-width: 200px;
+    padding: 7px;
+  }
+  
+  .mapTitle {
+    font-size: 9px;
+  }
+  
+  .mapLabel {
+    font-size: 9px;
+  }
+  
+  .select, .seedInput {
+    font-size: 10px;
+    padding: 5px 6px;
+  }
+  
+  .toggleLabel {
+    font-size: 9px;
+    gap: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .controlsContainer {
+    bottom: 108px; /* 8px + 100px footer height */
+    right: 8px;
+  }
+  
+  .button {
+    padding: 6px 12px;
+    font-size: 10px;
+    letter-spacing: 0.4px;
+  }
+  
+  .mapPanel {
+    min-width: 180px;
+    padding: 6px;
+  }
+  
+  .mapTitle {
+    font-size: 8px;
+  }
+  
+  .mapLabel {
+    font-size: 8px;
+  }
+  
+  .select, .seedInput {
+    font-size: 9px;
+    padding: 4px 5px;
+  }
+  
+  .toggleLabel {
+    font-size: 8px;
+    gap: 4px;
+  }
 }
 
 .button:hover:not(.disabled) {

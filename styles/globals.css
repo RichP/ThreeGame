@@ -1,6 +1,12 @@
 :root {
   --bg: #0f172a;
   --fg: #e6eef8;
+  --navbar-bg: rgba(15, 23, 42, 0.8);
+  --navbar-border: rgba(148, 163, 184, 0.2);
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --text-primary: #e6eef8;
+  --text-secondary: #94a3b8;
 }
 
 html, body, #__next {
@@ -22,9 +28,12 @@ body {
 
 .canvasWrap {
   position: fixed;
-  inset: 0; /* top:0; right:0; bottom:0; left:0 */
+  top: 80px; /* Below the navbar */
+  right: 0;
+  bottom: 260px; /* Above the footer */
+  left: 0;
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 340px); /* Account for navbar (80px) + footer (120px) */
   background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005));
   border-radius: 0;
   box-shadow: none;
@@ -35,4 +44,279 @@ body {
 h1 {
   margin: 0;
   font-size: 1.25rem;
+}
+
+/* Navigation Bar Styles */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--navbar-bg);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--navbar-border);
+  z-index: 100;
+  padding: 1rem 0;
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+}
+
+.brand-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-decoration: none;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.navbar-menu {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: color 0.2s ease;
+  padding: 0.5rem 0;
+  border-bottom: 2px solid transparent;
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+  border-bottom-color: var(--primary);
+}
+
+.navbar-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.play-btn {
+  background: linear-gradient(135deg, var(--primary), #2563eb);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.play-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.login-btn {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--navbar-border);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.login-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+  background: rgba(148, 163, 184, 0.1);
+}
+
+/* Main Layout Styles */
+.main-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  padding-top: 80px; /* Space for fixed navbar */
+  width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 0 1rem;
+  }
+  
+  .navbar-menu {
+    display: none;
+  }
+  
+  .navbar-actions {
+    gap: 0.5rem;
+  }
+  
+  .play-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+  }
+  
+  .login-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+  }
+  
+  .main-content {
+    padding-top: 70px; /* Adjust for smaller navbar on mobile */
+  }
+}
+
+/* CanvasWrap Responsive Design */
+@media (max-width: 768px) {
+  .canvasWrap {
+    top: 70px; /* Adjust for smaller navbar on mobile */
+    bottom: 100px; /* Adjust for smaller footer on mobile */
+    height: calc(100vh - 170px); /* Account for navbar (70px) + footer (100px) */
+  }
+}
+
+/* Footer Styles */
+.footer {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--navbar-border);
+  margin-top: auto; /* Push footer to bottom */
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.footer-section h3,
+.footer-section h4 {
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+  font-weight: 600;
+}
+
+.footer-title {
+  font-size: 1.25rem;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.footer-description {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.footer-heading {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 0.5rem;
+}
+
+.footer-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: var(--text-primary);
+}
+
+.footer-social {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.social-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  padding: 0.25rem 0;
+}
+
+.social-link:hover {
+  color: var(--text-primary);
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid var(--navbar-border);
+}
+
+.footer-copyright {
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.footer-version {
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: 0.75rem;
+}
+
+/* Footer Responsive Design */
+@media (max-width: 768px) {
+  .footer-container {
+    padding: 1.5rem;
+  }
+  
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .footer-bottom {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
 }

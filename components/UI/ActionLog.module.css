@@ -1,7 +1,7 @@
 .logContainer {
   position: fixed;
   right: 20px;
-  bottom: 20px;
+  bottom: 140px; /* 20px + 120px footer height */
   width: min(360px, calc(100vw - 40px));
   max-height: 220px;
   display: flex;
@@ -13,6 +13,148 @@
   border-radius: 12px;
   z-index: 210;
   box-shadow: 0 10px 24px rgba(2, 6, 23, 0.35);
+}
+
+/* Responsive scaling for smaller viewports */
+@media (max-width: 1024px) {
+  .logContainer {
+    right: 16px;
+    bottom: 116px; /* 16px + 100px footer height */
+    width: min(320px, calc(100vw - 32px));
+    max-height: 200px;
+  }
+  
+  .header {
+    padding: 8px 10px;
+    font-size: 0.75rem;
+  }
+  
+  .controls {
+    gap: 6px;
+  }
+  
+  .filterBtn, .clearBtn {
+    padding: 3px 7px;
+    font-size: 9px;
+  }
+  
+  .filterBar {
+    gap: 10px;
+    margin: 6px 10px 0;
+    padding: 6px;
+  }
+  
+  .filterLabel {
+    gap: 5px;
+    font-size: 10px;
+  }
+  
+  .list {
+    padding: 8px 10px 10px;
+  }
+  
+  .entry {
+    font-size: 0.85rem;
+    padding: 6px 8px;
+  }
+  
+  .eventType {
+    font-size: 0.65rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .logContainer {
+    right: 12px;
+    bottom: 112px; /* 12px + 100px footer height */
+    width: min(280px, calc(100vw - 24px));
+    max-height: 180px;
+  }
+  
+  .header {
+    padding: 7px 9px;
+    font-size: 0.7rem;
+  }
+  
+  .controls {
+    gap: 5px;
+  }
+  
+  .filterBtn, .clearBtn {
+    padding: 3px 6px;
+    font-size: 8px;
+  }
+  
+  .filterBar {
+    gap: 8px;
+    margin: 5px 9px 0;
+    padding: 5px;
+  }
+  
+  .filterLabel {
+    gap: 4px;
+    font-size: 9px;
+  }
+  
+  .list {
+    padding: 7px 9px 9px;
+  }
+  
+  .entry {
+    font-size: 0.8rem;
+    padding: 5px 7px;
+  }
+  
+  .eventType {
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .logContainer {
+    right: 8px;
+    bottom: 108px; /* 8px + 100px footer height */
+    width: min(240px, calc(100vw - 16px));
+    max-height: 160px;
+  }
+  
+  .header {
+    padding: 6px 8px;
+    font-size: 0.65rem;
+  }
+  
+  .controls {
+    gap: 4px;
+  }
+  
+  .filterBtn, .clearBtn {
+    padding: 2px 5px;
+    font-size: 7px;
+  }
+  
+  .filterBar {
+    gap: 6px;
+    margin: 4px 8px 0;
+    padding: 4px;
+  }
+  
+  .filterLabel {
+    gap: 3px;
+    font-size: 8px;
+  }
+  
+  .list {
+    padding: 6px 8px 8px;
+  }
+  
+  .entry {
+    font-size: 0.75rem;
+    padding: 4px 6px;
+  }
+  
+  .eventType {
+    font-size: 0.55rem;
+  }
 }
 
 .header {

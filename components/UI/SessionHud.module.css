@@ -1,6 +1,6 @@
 .hudContainer {
   position: fixed;
-  top: 20px;
+  top: 100px; /* 20px + 80px navbar height */
   right: 20px;
   z-index: 30;
   pointer-events: auto;
@@ -23,6 +23,82 @@
   gap: 8px;
   font-size: 12px;
   backdrop-filter: blur(8px);
+}
+
+/* Responsive scaling for smaller viewports */
+@media (max-width: 1024px) {
+  .hudContainer {
+    top: 96px; /* 16px + 80px navbar height */
+    right: 16px;
+  }
+  
+  .hudBox {
+    padding: 10px 12px;
+    min-width: 240px;
+    font-size: 11px;
+  }
+  
+  .title {
+    font-size: 10px;
+  }
+  
+  .progressLabel {
+    font-size: 9px;
+  }
+  
+  .progressText {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hudContainer {
+    top: 82px; /* 12px + 70px navbar height */
+    right: 12px;
+  }
+  
+  .hudBox {
+    padding: 9px 11px;
+    min-width: 220px;
+    font-size: 10px;
+  }
+  
+  .title {
+    font-size: 9px;
+  }
+  
+  .progressLabel {
+    font-size: 8px;
+  }
+  
+  .progressText {
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hudContainer {
+    top: 78px; /* 8px + 70px navbar height */
+    right: 8px;
+  }
+  
+  .hudBox {
+    padding: 8px 10px;
+    min-width: 200px;
+    font-size: 9px;
+  }
+  
+  .title {
+    font-size: 8px;
+  }
+  
+  .progressLabel {
+    font-size: 7px;
+  }
+  
+  .progressText {
+    font-size: 7px;
+  }
 }
 
 .hudBox::before {

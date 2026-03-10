@@ -1,7 +1,7 @@
 /* UnitInfo.module.css */
 .infoContainer {
   position: fixed;
-  bottom: 20px;
+  bottom: 140px; /* 20px + 120px footer height */
   left: 20px;
   z-index: 100;
 }
@@ -16,6 +16,211 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   min-width: 300px;
   max-width: 350px;
+}
+
+/* Responsive scaling for smaller viewports */
+@media (max-width: 1024px) {
+  .infoContainer {
+    bottom: 116px; /* 16px + 100px footer height */
+    left: 16px;
+  }
+  
+  .infoBox {
+    padding: 14px;
+    min-width: 260px;
+    max-width: 300px;
+  }
+  
+  .unitName {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+  
+  .archetypeBadge {
+    font-size: 10px;
+    padding: 2px 7px;
+  }
+  
+  .infoRow {
+    margin-bottom: 6px;
+    font-size: 12px;
+  }
+  
+  .label {
+    font-size: 10px;
+    margin-right: 6px;
+  }
+  
+  .value {
+    font-size: 12px;
+  }
+  
+  .healthText {
+    font-size: 10px;
+  }
+  
+  .statsGrid {
+    gap: 6px;
+    margin: 10px 0;
+    padding: 6px;
+  }
+  
+  .statValue {
+    font-size: 12px;
+  }
+  
+  .actionRow {
+    font-size: 11px;
+  }
+  
+  .effectBadge {
+    font-size: 10px;
+    padding: 1px 6px;
+  }
+  
+  .enemyItem {
+    font-size: 11px;
+  }
+  
+  .enemyHealth {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .infoContainer {
+    bottom: 112px; /* 12px + 100px footer height */
+    left: 12px;
+  }
+  
+  .infoBox {
+    padding: 12px;
+    min-width: 220px;
+    max-width: 260px;
+  }
+  
+  .unitName {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  
+  .archetypeBadge {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+  
+  .infoRow {
+    margin-bottom: 5px;
+    font-size: 11px;
+  }
+  
+  .label {
+    font-size: 9px;
+    margin-right: 5px;
+  }
+  
+  .value {
+    font-size: 11px;
+  }
+  
+  .healthText {
+    font-size: 9px;
+  }
+  
+  .statsGrid {
+    gap: 5px;
+    margin: 8px 0;
+    padding: 5px;
+  }
+  
+  .statValue {
+    font-size: 11px;
+  }
+  
+  .actionRow {
+    font-size: 10px;
+  }
+  
+  .effectBadge {
+    font-size: 9px;
+    padding: 1px 5px;
+  }
+  
+  .enemyItem {
+    font-size: 10px;
+  }
+  
+  .enemyHealth {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 480px) {
+  .infoContainer {
+    bottom: 108px; /* 8px + 100px footer height */
+    left: 8px;
+  }
+  
+  .infoBox {
+    padding: 10px;
+    min-width: 180px;
+    max-width: 220px;
+  }
+  
+  .unitName {
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+  
+  .archetypeBadge {
+    font-size: 8px;
+    padding: 1px 5px;
+  }
+  
+  .infoRow {
+    margin-bottom: 4px;
+    font-size: 10px;
+  }
+  
+  .label {
+    font-size: 8px;
+    margin-right: 4px;
+  }
+  
+  .value {
+    font-size: 10px;
+  }
+  
+  .healthText {
+    font-size: 8px;
+  }
+  
+  .statsGrid {
+    gap: 4px;
+    margin: 6px 0;
+    padding: 4px;
+  }
+  
+  .statValue {
+    font-size: 10px;
+  }
+  
+  .actionRow {
+    font-size: 9px;
+  }
+  
+  .effectBadge {
+    font-size: 8px;
+    padding: 1px 4px;
+  }
+  
+  .enemyItem {
+    font-size: 9px;
+  }
+  
+  .enemyHealth {
+    font-size: 8px;
+  }
 }
 
 .unitName {
