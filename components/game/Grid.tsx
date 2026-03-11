@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import type { Position } from '../game/gamestate'
+import type { Position } from '../../game/gamestate'
 import Tile from './Tile'
 
 interface GridProps {

@@ -4,16 +4,16 @@ import React, { Suspense } from "react";
 import { Grid } from "./Grid";
 import UnitMesh from "./UnitMesh";
 import FloatingDamageText from "./FloatingDamageText";
-import { CoverVisualizer } from "./UI/CoverVisualizer";
-import { StatusVisualizer } from "./UI/StatusVisualizer";
+import { CoverVisualizer } from "../UI/CoverVisualizer";
+import { StatusVisualizer } from "../UI/StatusVisualizer";
 import { AnimationManager } from "./AnimationManager";
 import { PathVisualizer, PathArrowsVisualizer } from "./PathVisualizer";
 import { SimplePathArrowsVisualizer } from "./SimplePathVisualizer";
 import { MovePathVisualizer } from "./MovePathVisualizer";
 import { ProjectileAnimation, ImpactEffect } from "./ProjectileAnimation";
 import { StatusEffects } from "./StatusEffects";
-import type { AttackOutcome, GameState, Position } from "../game/gamestate";
-import { getUnitById, Phase } from "../game/gamestate";
+import type { AttackOutcome, GameState, Position } from "../../game/gamestate";
+import { getUnitById, Phase } from "../../game/gamestate";
 
 interface BoardProps {
     gameState: GameState;

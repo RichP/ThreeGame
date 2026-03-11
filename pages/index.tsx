@@ -1,31 +1,49 @@
-'use client'
-
-import Head from 'next/head'
-import dynamic from 'next/dynamic'
-import type { NextPage } from 'next'
+import React, { useState } from 'react'
 import MainLayout from '../components/MainLayout'
-import HeroPreview from '../components/HeroPreview'
+import HomeHero from '../components/website/HomeHero'
+import FeaturesGrid from '../components/website/FeaturesGrid'
+import RecentMatches from '../components/website/RecentMatches'
+import styles from './index.module.css'
 
-const SceneCanvas = dynamic(
-  () => import('../components/SceneCanvas'),
-  { 
-    ssr: false,
-    loading: () => <div style={{ color: '#fff', fontSize: '20px' }}>Loading scene...</div>
+export default function HomePage() {
+  const [activeTab, setActiveTab] = useState<'matches' | 'leaderboards' | 'news'>('matches')
+
+  const handlePlayNow = () => {
+    // Navigate to match page or lobby
+    window.location.href = '/match'
   }
-)
 
-const Home: NextPage = () => {
+  const handleWatchTutorial = () => {
+    // Navigate to tutorial page
+    alert('Tutorial coming soon!')
+  }
+
+  const handleViewFeatures = () => {
+    // Scroll to features section
+    const featuresSection = document.getElementById('features')
+    if (featuresSection) {
+      featuresSection.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
   return (
     <MainLayout>
-      <Head>
-        <title>ThreeGame — Next.js + React Three Fiber</title>
-      </Head>
-      
-      <div style={{ width: '100%', height: '100%' }}>
-        <HeroPreview />
+      <div className={styles.home}>
+        {/* Hero Section */}
+        <HomeHero
+          onPlayNow={handlePlayNow}
+          onWatchTutorial={handleWatchTutorial}
+          onViewFeatures={handleViewFeatures}
+        />
+
+        {/* Features Grid */}
+        <div id="features">
+          <FeaturesGrid />
+        </div>
+
+        {/* Recent Matches, Leaderboards & News */}
+        <RecentMatches />
       </div>
     </MainLayout>
   )
 }
-
-export default Home

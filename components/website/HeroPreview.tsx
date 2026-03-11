@@ -1,5 +1,5 @@
 import React from 'react'
-import SceneCanvas from './SceneCanvas'
+import SceneCanvas from '../game/SceneCanvas'
 import styles from './HeroPreview.module.css'
 
 interface HeroPreviewProps {

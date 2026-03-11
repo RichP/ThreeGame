@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Line } from '@react-three/drei';
-import type { Position } from '../game/gamestate';
+import type { Position } from '../../game/gamestate';
 
 interface PathVisualizerProps {
   path: Position[];

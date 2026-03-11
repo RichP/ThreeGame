@@ -5,11 +5,11 @@ import { useFrame } from '@react-three/fiber'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { Board } from './Board'
-import { GameStatus } from './UI/GameStatus'
-import { UnitInfo } from './UI/UnitInfo'
-import { Controls } from './UI/Controls'
-import { ActionLog } from './UI/ActionLog'
-import { SessionHud } from './UI/SessionHud'
+import { GameStatus } from '../UI/GameStatus'
+import { UnitInfo } from '../UI/UnitInfo'
+import { Controls } from '../UI/Controls'
+import { ActionLog } from '../UI/ActionLog'
+import { SessionHud } from '../UI/SessionHud'
 import { AnimationSettings, useAnimationSettings } from './AnimationSettings'
 import { CameraController, CameraEffects } from './CameraController'
 import { DebugAnimations } from './DebugAnimations'
@@ -47,7 +47,7 @@ import {
     type PersistedGameState,
     type Position,
     type TargetingPreview,
-} from '../game/gamestate';
+} from '../../game/gamestate';
 
 const TILE_SIZE = 1
 const GRID_SIZE = 8

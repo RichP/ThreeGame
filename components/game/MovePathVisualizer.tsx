@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SimplePathArrowsVisualizer } from './SimplePathVisualizer';
-import type { Position } from '../game/gamestate';
+import type { Position } from '../../game/gamestate';
 
 interface MovePathVisualizerProps {
   selectedUnitPosition: Position | null;

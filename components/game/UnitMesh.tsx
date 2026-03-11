@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import type { Mesh, MeshStandardMaterial } from 'three';
-import type { AttackOutcome, UnitData } from '../game/gamestate';
+import type { AttackOutcome, UnitData } from '../../game/gamestate';
 
 interface UnitMeshProps {
     unit: UnitData;

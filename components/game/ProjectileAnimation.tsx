@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import type { Mesh } from 'three';
-import type { UnitData } from '../game/gamestate';
+import type { UnitData } from '../../game/gamestate';
 
 interface ProjectileAnimationProps {
   fromUnit: UnitData;

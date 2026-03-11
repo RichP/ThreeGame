@@ -4,7 +4,7 @@ import React, { useRef } from 'react'
 import { Text } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import type { Group, Material } from 'three'
-import type { AttackOutcome } from '../game/gamestate'
+import type { AttackOutcome } from '../../game/gamestate'
 
 interface FloatingDamageTextProps {
   damage: number
