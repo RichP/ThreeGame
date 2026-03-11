@@ -14,12 +14,13 @@ interface UnitMeshProps {
     hitOutcome?: AttackOutcome;
     onHoverStart?: (unitId: string) => void;
     onHoverEnd?: () => void;
+    isPreviewMode?: boolean;
 }
 
 const HIT_DURATION_SECONDS = 0.6;
 const MOVEMENT_DURATION_MS = 600;
 
-export const UnitMesh: React.FC<UnitMeshProps> = ({ unit, actionState = null, isSelected, isPreviewTarget, hitEffectKey, hitOutcome, onHoverStart, onHoverEnd }) => {
+export const UnitMesh: React.FC<UnitMeshProps> = ({ unit, actionState = null, isSelected, isPreviewTarget, hitEffectKey, hitOutcome, onHoverStart, onHoverEnd, isPreviewMode = false }) => {
     const meshRef = useRef<Mesh>(null);
     const materialRef = useRef<MeshStandardMaterial>(null);
     const hitStartedAtRef = useRef<number | null>(null);
@@ -154,8 +155,8 @@ export const UnitMesh: React.FC<UnitMeshProps> = ({ unit, actionState = null, is
                 ref={meshRef}
                 castShadow
                 receiveShadow={false}
-                onPointerOver={() => onHoverStart?.(unit.id)}
-                onPointerOut={() => onHoverEnd?.()}
+                onPointerOver={isPreviewMode ? undefined : () => onHoverStart?.(unit.id)}
+                onPointerOut={isPreviewMode ? undefined : () => onHoverEnd?.()}
             >
                 <boxGeometry args={[0.3, 0.3, 0.3]} />
                 <meshStandardMaterial ref={materialRef} color={finalColor} />

@@ -31,6 +31,7 @@ interface BoardProps {
         outcome: AttackOutcome;
         position: Position;
     } | null;
+    isPreviewMode?: boolean;
 }
 
 export const Board: React.FC<BoardProps> = ({
@@ -44,6 +45,7 @@ export const Board: React.FC<BoardProps> = ({
     hitTargetUnitId = null,
     hitEffectKey = null,
     floatingDamage = null,
+    isPreviewMode = false,
 }) => {
     const selectedUnit = getUnitById(gameState, gameState.selectedUnitId ?? null);
     const tilesToShow = gameState.phase === Phase.ATTACK ? attackableTiles : reachableTiles;
@@ -57,13 +59,18 @@ export const Board: React.FC<BoardProps> = ({
                 reachable={tilesToShow}
                 highlightMode={highlightMode}
                 blockedTiles={gameState.config.blockedTiles}
-                onTileClick={onTileClick}
+                onTileClick={isPreviewMode ? undefined : onTileClick}
                 onTileHoverStart={() => {
-                    // Handle tile hover start
+                    if (!isPreviewMode) {
+                        // Handle tile hover start
+                    }
                 }}
                 onTileHoverEnd={() => {
-                    // Handle tile hover end
+                    if (!isPreviewMode) {
+                        // Handle tile hover end
+                    }
                 }}
+                isPreviewMode={isPreviewMode}
             />
             {gameState.units.map((unit) => {
                 const actionState = unit.playerId !== gameState.currentPlayer
@@ -96,6 +103,7 @@ export const Board: React.FC<BoardProps> = ({
                         onHoverEnd={onUnitHoverEnd}
                         hitEffectKey={unit.id === hitTargetUnitId ? (hitEffectKey ?? undefined) : undefined}
                         hitOutcome={unit.id === hitTargetUnitId ? floatingDamage?.outcome : undefined}
+                        isPreviewMode={isPreviewMode}
                     />
                 );
             })}

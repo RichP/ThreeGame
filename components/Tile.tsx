@@ -16,7 +16,8 @@ const Tile: React.FC<{
   isReachable?: boolean;
   isBlocked?: boolean;
   highlightMode?: TileHighlightMode;
-}> = ({ x, y, onClick, onHoverStart, onHoverEnd, isSelected, isReachable, isBlocked, highlightMode = 'move' }) => {
+  isPreviewMode?: boolean;
+}> = ({ x, y, onClick, onHoverStart, onHoverEnd, isSelected, isReachable, isBlocked, highlightMode = 'move', isPreviewMode = false }) => {
   const [hovered, setHovered] = useState(false)
 
   useEffect(() => {
@@ -48,17 +49,17 @@ const Tile: React.FC<{
   return (
     <group
       position={[x * TILE_SIZE, 0.0, y * TILE_SIZE]}
-      onClick={() => {
+      onClick={isPreviewMode ? undefined : () => {
         if (isBlocked) return
         onClick && onClick(x, y)
       }}
-      onPointerOver={() => {
+      onPointerOver={isPreviewMode ? undefined : () => {
         if (isBlocked) return
         setHovered(true)
         document.body.style.cursor = 'pointer'
         onHoverStart && onHoverStart(x, y)
       }}
-      onPointerOut={() => {
+      onPointerOut={isPreviewMode ? undefined : () => {
         setHovered(false)
         document.body.style.cursor = 'auto'
         onHoverEnd && onHoverEnd()

@@ -13,9 +13,10 @@ interface GridProps {
     onTileClick?: (pos: Position) => void;
     onTileHoverStart?: (pos: Position) => void;
     onTileHoverEnd?: () => void;
+    isPreviewMode?: boolean;
 }
 
-export const Grid: React.FC<GridProps> = ({ size, selected, reachable, highlightMode = 'move', blockedTiles, onTileClick, onTileHoverStart, onTileHoverEnd }) => {
+export const Grid: React.FC<GridProps> = ({ size, selected, reachable, highlightMode = 'move', blockedTiles, onTileClick, onTileHoverStart, onTileHoverEnd, isPreviewMode = false }) => {
     const isReachable = (x: number, y: number) => reachable?.some(pos => pos.x === x && pos.y === y);
     const isBlocked = (x: number, y: number) => blockedTiles?.some(pos => pos.x === x && pos.y === y);
 
@@ -30,15 +31,15 @@ export const Grid: React.FC<GridProps> = ({ size, selected, reachable, highlight
                     key={`${x}-${y}`}
                     x={x}
                     y={y}
-                    onClick={() => onTileClick && onTileClick({ x, y })}
-                    onHoverStart={() => {
+                    onClick={isPreviewMode ? undefined : () => onTileClick && onTileClick({ x, y })}
+                    onHoverStart={isPreviewMode ? undefined : () => {
                       onTileHoverStart && onTileHoverStart({ x, y });
                       // Emit custom event for MovePathVisualizer
                       window.dispatchEvent(new CustomEvent('tile-hover-start', {
                         detail: { position: { x, y } }
                       }));
                     }}
-                    onHoverEnd={() => {
+                    onHoverEnd={isPreviewMode ? undefined : () => {
                       onTileHoverEnd && onTileHoverEnd();
                       // Emit custom event for MovePathVisualizer
                       window.dispatchEvent(new CustomEvent('tile-hover-end'));

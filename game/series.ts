@@ -206,6 +206,10 @@ class SeriesManager {
 
   private loadFromStorage(): void {
     try {
+      if (typeof localStorage === 'undefined') {
+        this.seriesHistory = []
+        return
+      }
       const stored = localStorage.getItem(this.STORAGE_KEY)
       if (stored) {
         const data = JSON.parse(stored)

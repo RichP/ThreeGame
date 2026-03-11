@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useMemo, useRef } from 'react'
+import { useFrame } from '@react-three/fiber'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { Board } from './Board'
@@ -66,6 +67,7 @@ type CanvasProps = any
 
 interface SceneCanvasProps {
   canvasProps?: CanvasProps
+  mode?: 'game' | 'preview'
 }
 
 interface ActiveHitVfx {
@@ -133,7 +135,7 @@ function getNextMapPresetId(current: MapPresetId): MapPresetId {
   return MAP_PRESET_IDS[(index + 1) % MAP_PRESET_IDS.length]
 }
 
-const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps }) => {
+const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' }) => {
     const [initialOptions, setInitialOptions] = useState<InitialGameOptions>({
       mapPresetId: 'crossroads',
       firstPlayer: 'p1',
@@ -144,6 +146,7 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps }) => {
     const [isResolvingAttack, setIsResolvingAttack] = useState(false);
     const [hoveredUnitId, setHoveredUnitId] = useState<string | null>(null);
     const [undoMoveSnapshot, setUndoMoveSnapshot] = useState<UndoMoveSnapshot | null>(null)
+  const orbitControlsRef = useRef<any>(null)
     const [turnBannerText, setTurnBannerText] = useState<string | null>('Player 1 Turn')
     const [seriesState, setSeriesState] = useState<SeriesState>({
       bestOf: 3,
@@ -295,6 +298,60 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps }) => {
     }
   };
 
+  // Custom rotation logic for preview mode - orbit around board center
+  useEffect(() => {
+    let animationId: number;
+    let angle = 0;
+    
+    const animate = () => {
+      if (mode === 'preview' && orbitControlsRef.current) {
+        const controls = orbitControlsRef.current;
+        if (controls.object) {
+          // Calculate orbital position around board center
+          const radius = GRID_SIZE * 1.2; // Distance from center
+          const height = GRID_SIZE * 0.8; // Camera height
+          const center = ((GRID_SIZE - 1) * TILE_SIZE) / 2;
+          
+          angle += 0.002; // Rotation speed
+          
+          const x = center + Math.cos(angle) * radius;
+          const z = center + Math.sin(angle) * radius;
+          
+          controls.object.position.set(x, height, z);
+          controls.target.set(center, 0, center);
+          controls.update();
+        }
+      }
+      animationId = requestAnimationFrame(animate);
+    };
+
+    if (mode === 'preview') {
+      animationId = requestAnimationFrame(animate);
+    }
+
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }, [mode]);
+
+  // Ensure consistent camera position for both modes
+  useEffect(() => {
+    if (orbitControlsRef.current) {
+      const controls = orbitControlsRef.current;
+      if (controls.object) {
+        // Set consistent camera position for both preview and game modes
+        const CENTER = ((GRID_SIZE - 1) * TILE_SIZE) / 2;
+        const consistentPosition: [number, number, number] = [CENTER, GRID_SIZE * 1.0 + 2, CENTER + GRID_SIZE];
+        
+        controls.object.position.set(...consistentPosition);
+        controls.target.set(CENTER, 0, CENTER);
+        controls.update();
+      }
+    }
+  }, [mode]); // Re-run when mode changes to ensure consistency
+
 
 
   const CENTER = ((GRID_SIZE - 1) * TILE_SIZE) / 2
@@ -405,6 +462,7 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps }) => {
     }
   }, [])
 
+
   const restartWith = (options: InitialGameOptions, resetSeries = false) => {
     setInitialOptions(options)
     setActiveHitVfx(null)
@@ -458,7 +516,18 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps }) => {
           shadow-camera-bottom={SHADOW_CAMERA_BOUNDS.bottom}
         />
 
-        <OrbitControls target={[CENTER, 0, CENTER]} enablePan={false} enableDamping={true} />
+        <OrbitControls 
+          ref={orbitControlsRef}
+          target={[CENTER, 0, CENTER]} 
+          enablePan={false} 
+          enableDamping={true}
+          dampingFactor={0.05}
+          enabled={mode === 'game'}
+          enableZoom={mode === 'game'}
+          enableRotate={mode === 'game'}
+          autoRotate={mode === 'preview'}
+          autoRotateSpeed={mode === 'preview' ? 0.5 : 0}
+        />
 
         {/* Camera Effects */}
         <CameraEffects
@@ -491,126 +560,132 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps }) => {
             outcome: activeHitVfx.outcome,
             position: activeHitVfx.position,
           } : null}
+          isPreviewMode={mode === 'preview'}
         />
       </Canvas>
 
-      <GameStatus gameState={gameState} targetingPreview={targetingPreview} />
-      <UnitInfo gameState={gameState} />
-      <ActionLog gameState={gameState} />
-      <Controls 
-        gameState={gameState}
-        isBusy={isResolvingAttack || !!winner}
-        onEndTurn={() => {
-          if (isResolvingAttack || winner) return;
-          // Clear any pending attack animations
-          if (attackTimeoutRef.current) {
-            window.clearTimeout(attackTimeoutRef.current);
-            attackTimeoutRef.current = null;
-          }
-          setActiveHitVfx(null);
-          setIsResolvingAttack(false);
-          setUndoMoveSnapshot(null);
-          
-          setGameState(prev => {
-            if (prev.phase === Phase.MOVE_UNIT) {
-              const selectedUnit = getUnitById(prev, prev.selectedUnitId)
-              if (selectedUnit && !selectedUnit.hasMoved) {
-                return prev
+      {/* Only show UI elements in game mode */}
+      {mode === 'game' && (
+        <>
+          <GameStatus gameState={gameState} targetingPreview={targetingPreview} />
+          <UnitInfo gameState={gameState} />
+          <ActionLog gameState={gameState} />
+          <Controls 
+            gameState={gameState}
+            isBusy={isResolvingAttack || !!winner}
+            onEndTurn={() => {
+              if (isResolvingAttack || winner) return;
+              // Clear any pending attack animations
+              if (attackTimeoutRef.current) {
+                window.clearTimeout(attackTimeoutRef.current);
+                attackTimeoutRef.current = null;
               }
-            }
+              setActiveHitVfx(null);
+              setIsResolvingAttack(false);
+              setUndoMoveSnapshot(null);
+              
+              setGameState(prev => {
+                if (prev.phase === Phase.MOVE_UNIT) {
+                  const selectedUnit = getUnitById(prev, prev.selectedUnitId)
+                  if (selectedUnit && !selectedUnit.hasMoved) {
+                    return prev
+                  }
+                }
 
-            if (prev.phase === Phase.ATTACK) {
-              const selectedUnit = getUnitById(prev, prev.selectedUnitId)
-              if (selectedUnit && !selectedUnit.hasAttacked) {
-                const postSkip = skipAttackForSelectedUnit(prev)
+                if (prev.phase === Phase.ATTACK) {
+                  const selectedUnit = getUnitById(prev, prev.selectedUnitId)
+                  if (selectedUnit && !selectedUnit.hasAttacked) {
+                    const postSkip = skipAttackForSelectedUnit(prev)
+                    return hasAvailableActionsForCurrentPlayer(postSkip)
+                      ? postSkip
+                      : endTurn(postSkip)
+                  }
+                }
+
+                return endTurn(prev)
+              });
+            }}
+            onCancelSelection={() => {
+              if (isResolvingAttack || winner) return;
+              // Clear any pending attack animations
+              if (attackTimeoutRef.current) {
+                window.clearTimeout(attackTimeoutRef.current);
+                attackTimeoutRef.current = null;
+              }
+              setActiveHitVfx(null);
+              setIsResolvingAttack(false);
+              setUndoMoveSnapshot(null);
+              
+              setGameState(prev => {
+                if (prev.phase === Phase.ATTACK) {
+                  const selected = getUnitById(prev, prev.selectedUnitId)
+                  if (selected && selected.hasMoved && !selected.hasAttacked) {
+                    return skipAttackForSelectedUnit(prev)
+                  }
+                }
+                return deselectUnit(prev)
+              });
+            }}
+            onApplyMapConfig={(mapPresetId: MapPresetId, mapSeed?: number) => {
+              if (isResolvingAttack) return
+              restartWith({
+                ...initialOptions,
+                mapPresetId,
+                mapSeed,
+              })
+            }}
+            onSetAutoSkipNoTargetAttack={(enabled: boolean) => {
+              setInitialOptions((prev) => ({
+                ...prev,
+                autoSkipNoTargetAttack: enabled,
+              }))
+
+              setGameState((prev) => {
+                const nextState = {
+                  ...prev,
+                  autoSkipNoTargetAttack: enabled,
+                }
+
+                if (!enabled) return nextState
+                if (nextState.phase !== Phase.ATTACK) return nextState
+
+                const selected = getUnitById(nextState, nextState.selectedUnitId)
+                if (!selected || selected.hasAttacked) return nextState
+
+                const attackable = getAttackableEnemies(nextState, selected)
+                if (attackable.length > 0) return nextState
+
+                const postSkip = skipAttackForSelectedUnit(nextState)
                 return hasAvailableActionsForCurrentPlayer(postSkip)
                   ? postSkip
                   : endTurn(postSkip)
-              }
-            }
+              })
+            }}
+            canUndoMove={canUndoMove}
+            onUndoMove={handleUndoMove}
+            onUseAbility={() => {
+              if (isResolvingAttack || winner) return
+              setGameState((prev) => useActiveAbilityForSelectedUnit(prev))
+            }}
+          />
 
-            return endTurn(prev)
-          });
-        }}
-        onCancelSelection={() => {
-          if (isResolvingAttack || winner) return;
-          // Clear any pending attack animations
-          if (attackTimeoutRef.current) {
-            window.clearTimeout(attackTimeoutRef.current);
-            attackTimeoutRef.current = null;
-          }
-          setActiveHitVfx(null);
-          setIsResolvingAttack(false);
-          setUndoMoveSnapshot(null);
-          
-          setGameState(prev => {
-            if (prev.phase === Phase.ATTACK) {
-              const selected = getUnitById(prev, prev.selectedUnitId)
-              if (selected && selected.hasMoved && !selected.hasAttacked) {
-                return skipAttackForSelectedUnit(prev)
-              }
-            }
-            return deselectUnit(prev)
-          });
-        }}
-        onApplyMapConfig={(mapPresetId: MapPresetId, mapSeed?: number) => {
-          if (isResolvingAttack) return
-          restartWith({
-            ...initialOptions,
-            mapPresetId,
-            mapSeed,
-          })
-        }}
-        onSetAutoSkipNoTargetAttack={(enabled: boolean) => {
-          setInitialOptions((prev) => ({
-            ...prev,
-            autoSkipNoTargetAttack: enabled,
-          }))
+          <SessionHud
+            bestOf={seriesState.bestOf}
+            wins={seriesState.wins}
+            saveState={saveState}
+            lastSavedAt={lastSavedAt}
+          />
 
-          setGameState((prev) => {
-            const nextState = {
-              ...prev,
-              autoSkipNoTargetAttack: enabled,
-            }
+          {/* Animation Settings */}
+          <AnimationSettings
+            settings={settings}
+            onChange={setSettings}
+          />
 
-            if (!enabled) return nextState
-            if (nextState.phase !== Phase.ATTACK) return nextState
-
-            const selected = getUnitById(nextState, nextState.selectedUnitId)
-            if (!selected || selected.hasAttacked) return nextState
-
-            const attackable = getAttackableEnemies(nextState, selected)
-            if (attackable.length > 0) return nextState
-
-            const postSkip = skipAttackForSelectedUnit(nextState)
-            return hasAvailableActionsForCurrentPlayer(postSkip)
-              ? postSkip
-              : endTurn(postSkip)
-          })
-        }}
-        canUndoMove={canUndoMove}
-        onUndoMove={handleUndoMove}
-        onUseAbility={() => {
-          if (isResolvingAttack || winner) return
-          setGameState((prev) => useActiveAbilityForSelectedUnit(prev))
-        }}
-      />
-
-      <SessionHud
-        bestOf={seriesState.bestOf}
-        wins={seriesState.wins}
-        saveState={saveState}
-        lastSavedAt={lastSavedAt}
-      />
-
-      {/* Animation Settings */}
-      <AnimationSettings
-        settings={settings}
-        onChange={setSettings}
-      />
-
-      {/* Debug Info */}
-      <DebugAnimations gameState={gameState} />
+          {/* Debug Info */}
+          <DebugAnimations gameState={gameState} />
+        </>
+      )}
 
       {turnBannerText && !winner && (
         <div style={TURN_BANNER_OVERLAY_STYLE}>
