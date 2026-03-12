@@ -1,0 +1,93 @@
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.filterLabel {
+  font-size: 12px;
+  color: #8aa0ff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filterButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filterButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: #a0a0c0;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filterButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+}
+
+.filterActive {
+  background: linear-gradient(135deg, #8aa0ff 0%, #a78bfa 100%);
+  border: none;
+  color: white;
+  box-shadow: 0 4px 15px rgba(138, 166, 255, 0.3);
+}
+
+.filterIcon {
+  font-size: 14px;
+}
+
+.filterText {
+  font-weight: 700;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .filters {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .filterGroup {
+    min-width: 100%;
+  }
+  
+  .filterButtons {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .filterButton {
+    justify-content: flex-start;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  
+  .filterActive {
+    box-shadow: 0 4px 15px rgba(138, 166, 255, 0.4);
+  }
+}

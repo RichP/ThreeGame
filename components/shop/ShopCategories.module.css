@@ -1,0 +1,84 @@
+.shopCategories {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 16px 0;
+  border-bottom: 2px solid #8aa0ff;
+  padding-bottom: 8px;
+  display: inline-block;
+}
+
+.categoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.categoryButton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.categoryButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateX(4px);
+}
+
+.categoryButtonActive {
+  background: linear-gradient(135deg, #8aa0ff 0%, #a78bfa 100%);
+  border-color: rgba(138, 166, 255, 0.8);
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(138, 166, 255, 0.3);
+}
+
+.categoryIcon {
+  font-size: 20px;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.categoryName {
+  flex: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .shopCategories {
+    padding: 16px;
+  }
+  
+  .categoryButton {
+    padding: 10px;
+  }
+  
+  .categoryIcon {
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+  }
+}

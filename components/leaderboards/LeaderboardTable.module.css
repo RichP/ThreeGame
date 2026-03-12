@@ -1,0 +1,411 @@
+.tableContainer {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 1px solid #2a2a40;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tableHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tableTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.tableActions {
+  display: flex;
+  gap: 8px;
+}
+
+.exportButton,
+.refreshButton {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 6px 12px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.exportButton:hover,
+.refreshButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  max-height: 600px;
+}
+
+.leaderboardTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.leaderboardTable th {
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  color: #8aa0ff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.leaderboardTable td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 14px;
+  color: #ffffff;
+  vertical-align: middle;
+}
+
+.tableRow {
+  transition: all 0.3s ease;
+}
+
+.tableRow:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.topThree {
+  position: relative;
+}
+
+.topThree::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+}
+
+/* Column Styles */
+.rankColumn {
+  width: 80px;
+  text-align: center;
+}
+
+.playerColumn {
+  width: 300px;
+}
+
+.ratingColumn {
+  width: 120px;
+  text-align: right;
+}
+
+.winRateColumn {
+  width: 100px;
+  text-align: center;
+}
+
+.gamesColumn {
+  width: 100px;
+  text-align: right;
+}
+
+.divisionColumn {
+  width: 120px;
+  text-align: center;
+}
+
+.seasonColumn {
+  width: 120px;
+  text-align: right;
+}
+
+.lastActiveColumn {
+  width: 150px;
+  text-align: right;
+}
+
+/* Cell Content Styles */
+.rankNumber {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.rankIcon {
+  font-size: 18px;
+  margin-left: 8px;
+}
+
+.playerInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatarContainer {
+  position: relative;
+}
+
+.playerAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  object-fit: cover;
+}
+
+.countryFlag {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  font-size: 14px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 50%;
+  padding: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.playerDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.username {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.winsLosses {
+  font-size: 11px;
+  color: #a0a0c0;
+  font-weight: 600;
+}
+
+.ratingValue {
+  font-weight: 700;
+  font-size: 16px;
+  color: #ffffff;
+}
+
+.winRateValue {
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.highWinRate {
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.mediumWinRate {
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.4);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.lowWinRate {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.gamesValue {
+  font-weight: 600;
+}
+
+.divisionBadge {
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.seasonPoints {
+  font-weight: 700;
+  color: #a78bfa;
+}
+
+.lastActiveValue {
+  font-size: 12px;
+  color: #a0a0c0;
+  font-weight: 600;
+}
+
+/* Footer Styles */
+.tableFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pageButton {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 6px 12px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pageButton:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.pageButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pageInfo {
+  font-size: 12px;
+  color: #a0a0c0;
+  font-weight: 600;
+}
+
+.tableInfo {
+  font-size: 12px;
+  color: #8aa0ff;
+  font-weight: 600;
+}
+
+/* Loading State */
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 16px;
+}
+
+.loadingSpinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid #8aa0ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loadingText {
+  font-size: 14px;
+  color: #a0a0c0;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .tableWrapper {
+    max-height: 500px;
+  }
+}
+
+@media (max-width: 768px) {
+  .tableHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .tableActions {
+    align-self: flex-end;
+  }
+  
+  .tableWrapper {
+    max-height: 400px;
+  }
+  
+  .leaderboardTable th,
+  .leaderboardTable td {
+    padding: 8px;
+    font-size: 12px;
+  }
+  
+  .playerInfo {
+    gap: 8px;
+  }
+  
+  .playerAvatar {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .tableFooter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .pagination {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .tableWrapper {
+    max-height: 300px;
+  }
+  
+  .leaderboardTable th,
+  .leaderboardTable td {
+    padding: 6px;
+    font-size: 11px;
+  }
+  
+  .playerAvatar {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .rankNumber {
+    font-size: 14px;
+  }
+  
+  .ratingValue {
+    font-size: 14px;
+  }
+}

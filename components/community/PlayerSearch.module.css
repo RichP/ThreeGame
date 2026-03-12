@@ -1,0 +1,469 @@
+.playerSearch {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 1px solid #2a2a40;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.searchHeader {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.searchTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+}
+
+.searchSubtitle {
+  font-size: 14px;
+  color: #a0a0c0;
+  margin: 0;
+  font-weight: 500;
+}
+
+.searchForm {
+  margin-bottom: 24px;
+}
+
+.searchInputContainer {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.searchInput {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 500;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.searchInput::placeholder {
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.searchInput:focus {
+  border-color: rgba(138, 166, 255, 0.5);
+  box-shadow: 0 0 15px rgba(138, 166, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.searchButton {
+  background: linear-gradient(135deg, #8aa0ff 0%, #a78bfa 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(138, 166, 255, 0.3);
+  min-width: 120px;
+}
+
+.searchButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(138, 166, 255, 0.4);
+}
+
+.searchButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Searching State */
+.searchingState {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.loadingSpinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(138, 166, 255, 0.3);
+  border-top: 3px solid #8aa0ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loadingText {
+  font-size: 16px;
+  color: #a0a0c0;
+  font-weight: 600;
+}
+
+/* Results Container */
+.resultsContainer {
+  margin-top: 24px;
+}
+
+.resultsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.resultsTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.resultsCount {
+  font-size: 14px;
+  color: #8aa0ff;
+  font-weight: 600;
+  background: rgba(138, 166, 255, 0.1);
+  padding: 4px 8px;
+  border-radius: 20px;
+  border: 1px solid rgba(138, 166, 255, 0.3);
+}
+
+.resultsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.playerResult {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.playerResult:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.onlineResult {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+}
+
+.playerInfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.avatarSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatarContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.resultAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  object-fit: cover;
+}
+
+.statusIndicator {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+.playerDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.playerName {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.playerMeta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.playerDivision {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.playerRating {
+  font-size: 12px;
+  color: #a0a0c0;
+  font-weight: 600;
+}
+
+.playerCountry {
+  font-size: 14px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 50%;
+  padding: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.playerStatus {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.playerStatusText {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.playerActions {
+  display: flex;
+  gap: 8px;
+}
+
+.addFriendButton,
+.challengeButton,
+.viewProfileButton {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 6px 12px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.addFriendButton:hover,
+.challengeButton:hover,
+.viewProfileButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.addFriendButton {
+  background: linear-gradient(135deg, #8aa0ff 0%, #a78bfa 100%);
+  border: none;
+  color: white;
+  box-shadow: 0 4px 15px rgba(138, 166, 255, 0.3);
+}
+
+.addFriendButton:hover {
+  box-shadow: 0 6px 20px rgba(138, 166, 255, 0.4);
+}
+
+.addFriendButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+  box-shadow: none;
+}
+
+.challengeButton {
+  background: linear-gradient(135deg, #10b981 0%, #22c55e 100%);
+  border: none;
+  color: white;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.challengeButton:hover {
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.challengeButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+  box-shadow: none;
+}
+
+.viewProfileButton {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.viewProfileButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* No Results State */
+.noResults {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin-top: 24px;
+}
+
+.noResultsIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.noResultsText {
+  font-size: 16px;
+  color: #a0a0c0;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.noResultsSubtext {
+  font-size: 12px;
+  color: #8aa0ff;
+  font-weight: 600;
+}
+
+/* Empty Search State */
+.emptySearch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin-top: 24px;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.emptyText {
+  font-size: 16px;
+  color: #a0a0c0;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.emptySubtext {
+  font-size: 12px;
+  color: #8aa0ff;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .searchInputContainer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .searchButton {
+    width: 100%;
+  }
+  
+  .playerInfo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .playerActions {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .resultsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .playerResult {
+    padding: 12px;
+  }
+  
+  .resultAvatar {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .statusIndicator {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .searchingState {
+    padding: 16px;
+  }
+  
+  .loadingText {
+    font-size: 14px;
+  }
+}

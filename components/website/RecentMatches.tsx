@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import Link from 'next/link'
 import styles from './RecentMatches.module.css'
 
 interface Match {
@@ -138,7 +139,9 @@ export const RecentMatches: React.FC = () => {
                     </div>
                   ))}
                 </div>
-                <button className={styles.viewAllButton}>View All Matches</button>
+                <Link href="/leaderboards" className={`${styles.viewAllButton} ${styles.linkButton}`}>
+                  View All Matches
+                </Link>
               </div>
             )}
             
@@ -165,7 +168,9 @@ export const RecentMatches: React.FC = () => {
                     </div>
                   ))}
                 </div>
-                <button className={styles.viewAllButton}>View Full Leaderboard</button>
+                <Link href="/leaderboards" className={`${styles.viewAllButton} ${styles.linkButton}`}>
+                  View Full Leaderboard
+                </Link>
               </div>
             )}
             
@@ -207,7 +212,9 @@ export const RecentMatches: React.FC = () => {
                 </p>
               </div>
             </div>
-            <button className={styles.viewAllButton}>Read All News</button>
+            <Link href="/news" className={`${styles.viewAllButton} ${styles.linkButton}`}>
+              Read All News
+            </Link>
           </div>
         </div>
       </div>

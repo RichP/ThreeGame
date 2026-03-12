@@ -265,21 +265,44 @@
 }
 
 .viewAllButton {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  padding: 12px 24px;
+  background: linear-gradient(135deg, #8aa0ff 0%, #a78bfa 100%);
+  border: none;
   border-radius: 8px;
-  font-weight: 600;
+  padding: 8px 16px;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
-  width: 100%;
-  text-align: center;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 16px;
+  align-self: flex-start;
+  box-shadow: 0 4px 15px rgba(138, 166, 255, 0.3);
 }
 
-.viewAllButton:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.4);
+.linkButton {
+  margin-top: 24px;
+}
+
+/* Proper pseudo-class order: :hover, :active, :focus */
+.viewAllButton.linkButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(138, 166, 255, 0.4);
+  background: linear-gradient(135deg, #93a5ff 0%, #b598ff 100%);
+}
+
+.viewAllButton.linkButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(138, 166, 255, 0.3);
+  background: linear-gradient(135deg, #7a8fff 0%, #9a7bff 100%);
+}
+
+.viewAllButton.linkButton:focus {
+  outline: 2px solid rgba(138, 166, 255, 0.5);
+  outline-offset: 2px;
 }
 
 /* Mobile responsive */

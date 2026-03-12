@@ -1,0 +1,219 @@
+.profile {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  padding: 24px;
+  color: #ffffff;
+}
+
+.profileHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.avatarSection {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #8aa0ff;
+  box-shadow: 0 8px 32px rgba(138, 166, 255, 0.3);
+  background: linear-gradient(135deg, #8aa0ff 0%, #a78bfa 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.username {
+  font-size: 32px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+.userMeta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.userMeta span {
+  font-size: 14px;
+  color: #a0a0c0;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-weight: 600;
+}
+
+.profileActions {
+  display: flex;
+  gap: 12px;
+}
+
+.editProfileButton,
+.settingsButton {
+  background: linear-gradient(135deg, #8aa0ff 0%, #a78bfa 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(138, 166, 255, 0.3);
+}
+
+.editProfileButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(138, 166, 255, 0.4);
+}
+
+.settingsButton {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.settingsButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.profileNav {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow-x: auto;
+}
+
+.navButton {
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 20px;
+  color: #a0a0c0;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.navButton:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.navButtonActive {
+  background: linear-gradient(135deg, #8aa0ff 0%, #a78bfa 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(138, 166, 255, 0.3);
+  border: none;
+}
+
+.profileContent {
+  min-height: 400px;
+}
+
+.tabContent {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .profile {
+    padding: 16px;
+  }
+  
+  .profileHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .avatarSection {
+    gap: 16px;
+  }
+  
+  .avatar {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .username {
+    font-size: 24px;
+  }
+  
+  .userMeta {
+    gap: 8px;
+  }
+  
+  .profileActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .editProfileButton,
+  .settingsButton {
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .profileNav {
+    padding: 4px;
+  }
+  
+  .navButton {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+}
