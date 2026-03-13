@@ -1,0 +1,154 @@
+.privacyPage {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0f172a 0%, #0b1020 100%);
+  color: white;
+}
+
+.hero {
+  text-align: center;
+  padding: 60px 20px 40px;
+  background: linear-gradient(135deg, rgba(138, 160, 255, 0.1), rgba(59, 130, 246, 0.1));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin: 0 0 10px 0;
+  background: linear-gradient(135deg, #8aa0ff, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p {
+  font-size: 1.1rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.intro {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 40px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 40px;
+}
+
+.intro p {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #e2e8f0;
+  margin: 0;
+}
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.section {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 40px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.section:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.section h2 {
+  margin: 0 0 25px 0;
+  font-size: 1.8rem;
+  color: #8aa0ff;
+  border-bottom: 2px solid rgba(138, 160, 255, 0.3);
+  padding-bottom: 15px;
+}
+
+.section p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #e2e8f0;
+  margin-bottom: 20px;
+}
+
+.section ul {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.section li {
+  padding: 15px 0;
+  padding-left: 30px;
+  position: relative;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #cbd5e1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section li:last-child {
+  border-bottom: none;
+}
+
+.section li:before {
+  content: '🔒';
+  position: absolute;
+  left: 0;
+  font-size: 1.2rem;
+}
+
+.section strong {
+  color: #e2e8f0;
+  font-weight: 700;
+}
+
+.section strong:first-letter {
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2rem;
+  }
+  
+  .intro {
+    padding: 30px 20px;
+  }
+  
+  .intro p {
+    font-size: 1.1rem;
+  }
+  
+  .section {
+    padding: 30px 20px;
+  }
+  
+  .section h2 {
+    font-size: 1.5rem;
+  }
+  
+  .section p {
+    font-size: 1rem;
+  }
+  
+  .section li {
+    font-size: 1rem;
+    padding-left: 25px;
+  }
+  
+  .section li:before {
+    font-size: 1rem;
+  }
+}
