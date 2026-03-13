@@ -1,7 +1,18 @@
 import React from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { useAuth } from './auth/AuthContext'
 
 const NavBar: React.FC = () => {
+  const { user, logout } = useAuth()
+  const router = useRouter()
+
+  const handleLogout = () => {
+    logout()
+    // Redirect to home page after logout
+    router.push('/')
+  }
+
   return (
     <nav className="navbar">
       <div className="navbar-container">
@@ -30,8 +41,22 @@ const NavBar: React.FC = () => {
         </div>
         
         <div className="navbar-actions">
-          <button className="play-btn">Play Now</button>
-          <button className="login-btn">Login</button>
+          {user ? (
+            <>
+              <span className="user-greeting">Welcome, {user.username}!</span>
+              <button className="play-btn">Play Now</button>
+              <button className="logout-btn" onClick={handleLogout}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <button className="play-btn">Play Now</button>
+              <Link href="/auth">
+                <button className="login-btn">Login</button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>

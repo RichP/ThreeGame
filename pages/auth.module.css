@@ -1,0 +1,40 @@
+.authPage {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0f172a 0%, #0b1020 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.authContainer {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.authContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .authPage {
+    padding: 20px 16px;
+  }
+  
+  .authContainer {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .authPage {
+    padding: 16px 12px;
+  }
+}

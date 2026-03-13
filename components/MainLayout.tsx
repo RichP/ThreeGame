@@ -1,6 +1,7 @@
 import React from 'react'
 import NavBar from './NavBar'
 import Footer from './Footer'
+import { AuthProvider } from './auth/AuthContext'
 
 interface MainLayoutProps {
   children: React.ReactNode
@@ -8,13 +9,15 @@ interface MainLayoutProps {
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
-    <div className="main-layout">
-      <NavBar />
-      <main className="main-content">
-        {children}
-      </main>
-      <Footer />
-    </div>
+    <AuthProvider>
+      <div className="main-layout">
+        <NavBar />
+        <main className="main-content">
+          {children}
+        </main>
+        <Footer />
+      </div>
+    </AuthProvider>
   )
 }
 

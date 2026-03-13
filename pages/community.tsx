@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import MainLayout from '../components/MainLayout'
+import { ProtectedRoute } from '../components/auth/ProtectedRoute'
 import CommunityTabs from '../components/community/CommunityTabs'
 import PlayerSearch from '../components/community/PlayerSearch'
 import FriendsList from '../components/community/FriendsList'
@@ -97,52 +98,54 @@ export default function CommunityPage() {
   }
 
   return (
-    <MainLayout>
-      <div className={styles.community}>
-        <div className={styles.container}>
-          {/* Header Section */}
-          <div className={styles.header}>
-            <div className={styles.headerContent}>
-              <h1 className={styles.title}>Community Hub</h1>
-              <p className={styles.subtitle}>
-                Connect with players, track your friends, and climb the leaderboards
-              </p>
+    <ProtectedRoute>
+      <MainLayout>
+        <div className={styles.community}>
+          <div className={styles.container}>
+            {/* Header Section */}
+            <div className={styles.header}>
+              <div className={styles.headerContent}>
+                <h1 className={styles.title}>Community Hub</h1>
+                <p className={styles.subtitle}>
+                  Connect with players, track your friends, and climb the leaderboards
+                </p>
+              </div>
+            </div>
+
+            {/* Community Tabs */}
+            <CommunityTabs 
+              activeTab={activeTab}
+              onTabChange={handleTabChange}
+            />
+
+            {/* Main Content */}
+            <div className={styles.content}>
+              {activeTab === 'leaderboards' && (
+                <LeaderboardPreview 
+                  topPlayers={topPlayers}
+                  onViewAll={() => window.location.href = '/leaderboards'}
+                />
+              )}
+
+              {activeTab === 'friends' && (
+                <FriendsList 
+                  friends={friends}
+                  onRemoveFriend={handleRemoveFriend}
+                  onChallenge={handleChallenge}
+                />
+              )}
+
+              {activeTab === 'search' && (
+                <PlayerSearch 
+                  onSearch={handleSearch}
+                  onAddFriend={handleAddFriend}
+                  onChallenge={handleChallenge}
+                />
+              )}
             </div>
           </div>
-
-          {/* Community Tabs */}
-          <CommunityTabs 
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-          />
-
-          {/* Main Content */}
-          <div className={styles.content}>
-            {activeTab === 'leaderboards' && (
-              <LeaderboardPreview 
-                topPlayers={topPlayers}
-                onViewAll={() => window.location.href = '/leaderboards'}
-              />
-            )}
-
-            {activeTab === 'friends' && (
-              <FriendsList 
-                friends={friends}
-                onRemoveFriend={handleRemoveFriend}
-                onChallenge={handleChallenge}
-              />
-            )}
-
-            {activeTab === 'search' && (
-              <PlayerSearch 
-                onSearch={handleSearch}
-                onAddFriend={handleAddFriend}
-                onChallenge={handleChallenge}
-              />
-            )}
-          </div>
         </div>
-      </div>
-    </MainLayout>
+      </MainLayout>
+    </ProtectedRoute>
   )
 }

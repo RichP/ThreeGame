@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import MainLayout from '../components/MainLayout'
+import { ProtectedRoute } from '../components/auth/ProtectedRoute'
 import LeaderboardTabs from '../components/leaderboards/LeaderboardTabs'
 import LeaderboardFilters from '../components/leaderboards/LeaderboardFilters'
 import LeaderboardTable from '../components/leaderboards/LeaderboardTable'
@@ -95,60 +96,62 @@ export default function LeaderboardsPage() {
   }
 
   return (
-    <MainLayout>
-      <div className={styles.leaderboards}>
-        <div className={styles.container}>
-          {/* Header Section */}
-          <div className={styles.header}>
-            <div className={styles.headerContent}>
-              <h1 className={styles.title}>Global Leaderboards</h1>
-              <p className={styles.subtitle}>
-                Compete for glory and track your progress against players worldwide
-              </p>
+    <ProtectedRoute>
+      <MainLayout>
+        <div className={styles.leaderboards}>
+          <div className={styles.container}>
+            {/* Header Section */}
+            <div className={styles.header}>
+              <div className={styles.headerContent}>
+                <h1 className={styles.title}>Global Leaderboards</h1>
+                <p className={styles.subtitle}>
+                  Compete for glory and track your progress against players worldwide
+                </p>
+              </div>
+              
+              <div className={styles.headerActions}>
+                <button className={styles.refreshButton}>
+                  🔄 Refresh Rankings
+                </button>
+                <button className={styles.exportButton}>
+                  📊 Export Data
+                </button>
+              </div>
             </div>
-            
-            <div className={styles.headerActions}>
-              <button className={styles.refreshButton}>
-                🔄 Refresh Rankings
-              </button>
-              <button className={styles.exportButton}>
-                📊 Export Data
-              </button>
+
+            {/* Stats Overview */}
+            {stats && (
+              <LeaderboardStats stats={stats} />
+            )}
+
+            {/* Filters and Tabs */}
+            <div className={styles.filtersSection}>
+              <LeaderboardTabs 
+                activeTab={activeTab}
+                onTabChange={handleTabChange}
+              />
+              
+              <LeaderboardFilters
+                timeFilter={timeFilter}
+                regionFilter={regionFilter}
+                divisionFilter={divisionFilter}
+                onTimeFilterChange={handleTimeFilterChange}
+                onRegionFilterChange={handleRegionFilterChange}
+                onDivisionFilterChange={handleDivisionFilterChange}
+              />
             </div>
-          </div>
 
-          {/* Stats Overview */}
-          {stats && (
-            <LeaderboardStats stats={stats} />
-          )}
-
-          {/* Filters and Tabs */}
-          <div className={styles.filtersSection}>
-            <LeaderboardTabs 
-              activeTab={activeTab}
-              onTabChange={handleTabChange}
-            />
-            
-            <LeaderboardFilters
-              timeFilter={timeFilter}
-              regionFilter={regionFilter}
-              divisionFilter={divisionFilter}
-              onTimeFilterChange={handleTimeFilterChange}
-              onRegionFilterChange={handleRegionFilterChange}
-              onDivisionFilterChange={handleDivisionFilterChange}
-            />
-          </div>
-
-          {/* Leaderboard Table */}
-          <div className={styles.tableSection}>
-            <LeaderboardTable
-              data={leaderboardData}
-              loading={loading}
-              activeTab={activeTab}
-            />
+            {/* Leaderboard Table */}
+            <div className={styles.tableSection}>
+              <LeaderboardTable
+                data={leaderboardData}
+                loading={loading}
+                activeTab={activeTab}
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </MainLayout>
+      </MainLayout>
+    </ProtectedRoute>
   )
 }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import MainLayout from '../components/MainLayout'
+import { ProtectedRoute } from '../components/auth/ProtectedRoute'
 import styles from './shop.module.css'
 import { ShopCategories } from '../components/shop/ShopCategories'
 import { ShopFilters } from '../components/shop/ShopFilters'
@@ -14,47 +15,49 @@ export default function ShopPage() {
   const [showCart, setShowCart] = useState(false)
 
   return (
-    <MainLayout>
-      <div className={styles.shop}>
-        {/* Shop Header */}
-        <ShopHeader 
-          onCartClick={() => setShowCart(!showCart)}
-          cartItemCount={3}
-        />
+    <ProtectedRoute>
+      <MainLayout>
+        <div className={styles.shop}>
+          {/* Shop Header */}
+          <ShopHeader 
+            onCartClick={() => setShowCart(!showCart)}
+            cartItemCount={3}
+          />
 
-        {/* Main Shop Layout */}
-        <div className={styles.shopLayout}>
-          {/* Sidebar */}
-          <div className={styles.sidebar}>
-            <ShopCategories 
-              activeCategory={activeCategory}
-              onCategoryChange={setActiveCategory}
-            />
-            <ShopFilters 
-              sortBy={sortBy}
-              onSortChange={setSortBy}
-              priceRange={priceRange}
-              onPriceRangeChange={setPriceRange}
-            />
-          </div>
-
-          {/* Main Content */}
-          <div className={styles.mainContent}>
-            <ShopGrid 
-              category={activeCategory}
-              sortBy={sortBy}
-              priceRange={priceRange}
-            />
-          </div>
-
-          {/* Floating Cart */}
-          {showCart && (
-            <div className={styles.cartSidebar}>
-              <ShopCart onClose={() => setShowCart(false)} />
+          {/* Main Shop Layout */}
+          <div className={styles.shopLayout}>
+            {/* Sidebar */}
+            <div className={styles.sidebar}>
+              <ShopCategories 
+                activeCategory={activeCategory}
+                onCategoryChange={setActiveCategory}
+              />
+              <ShopFilters 
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                priceRange={priceRange}
+                onPriceRangeChange={setPriceRange}
+              />
             </div>
-          )}
+
+            {/* Main Content */}
+            <div className={styles.mainContent}>
+              <ShopGrid 
+                category={activeCategory}
+                sortBy={sortBy}
+                priceRange={priceRange}
+              />
+            </div>
+
+            {/* Floating Cart */}
+            {showCart && (
+              <div className={styles.cartSidebar}>
+                <ShopCart onClose={() => setShowCart(false)} />
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </MainLayout>
+      </MainLayout>
+    </ProtectedRoute>
   )
 }

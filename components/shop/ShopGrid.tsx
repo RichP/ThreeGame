@@ -22,7 +22,7 @@ export const ShopGrid: React.FC<ShopGridProps> = ({
       price: 250,
       category: 'cosmetics',
       image: '/api/placeholder/200/200',
-      rarity: 'epic',
+      rarity: 'epic' as const,
       isLimited: false,
       isOwned: false
     },
@@ -33,7 +33,7 @@ export const ShopGrid: React.FC<ShopGridProps> = ({
       price: 150,
       category: 'units',
       image: '/api/placeholder/200/200',
-      rarity: 'rare',
+      rarity: 'rare' as const,
       isLimited: false,
       isOwned: true
     },
@@ -44,7 +44,7 @@ export const ShopGrid: React.FC<ShopGridProps> = ({
       price: 300,
       category: 'maps',
       image: '/api/placeholder/200/200',
-      rarity: 'epic',
+      rarity: 'epic' as const,
       isLimited: true,
       isOwned: false
     },
@@ -55,7 +55,7 @@ export const ShopGrid: React.FC<ShopGridProps> = ({
       price: 500,
       category: 'bundles',
       image: '/api/placeholder/200/200',
-      rarity: 'legendary',
+      rarity: 'legendary' as const,
       isLimited: true,
       isOwned: false
     },
@@ -66,7 +66,7 @@ export const ShopGrid: React.FC<ShopGridProps> = ({
       price: 50,
       category: 'cosmetics',
       image: '/api/placeholder/200/200',
-      rarity: 'common',
+      rarity: 'common' as const,
       isLimited: false,
       isOwned: false
     },
@@ -77,7 +77,7 @@ export const ShopGrid: React.FC<ShopGridProps> = ({
       price: 120,
       category: 'units',
       image: '/api/placeholder/200/200',
-      rarity: 'rare',
+      rarity: 'rare' as const,
       isLimited: false,
       isOwned: false
     },
@@ -88,7 +88,7 @@ export const ShopGrid: React.FC<ShopGridProps> = ({
       price: 200,
       category: 'maps',
       image: '/api/placeholder/200/200',
-      rarity: 'rare',
+      rarity: 'rare' as const,
       isLimited: false,
       isOwned: true
     },
@@ -99,7 +99,7 @@ export const ShopGrid: React.FC<ShopGridProps> = ({
       price: 100,
       category: 'bundles',
       image: '/api/placeholder/200/200',
-      rarity: 'common',
+      rarity: 'common' as const,
       isLimited: false,
       isOwned: false
     }
