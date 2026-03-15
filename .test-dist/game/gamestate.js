@@ -49,6 +49,7 @@ exports.attackUnit = attackUnit;
 exports.resolveAttack = resolveAttack;
 const fsm_1 = require("./fsm");
 const config_1 = require("./config");
+const constants_1 = require("../constants");
 const series_1 = require("./series");
 const saveSlots_1 = require("./saveSlots");
 const replay_1 = require("./replay");
@@ -677,7 +678,7 @@ function useActiveAbilityForSelectedUnit(state) {
                 hasUsedAbility: true,
                 statusEffects: {
                     ...candidate.statusEffects,
-                    dashBonusMovement: config_1.SCOUT_DASH_BONUS_MOVEMENT,
+                    dashBonusMovement: constants_1.CONSTANTS.COMBAT.SCOUT_DASH_BONUS_MOVEMENT,
                 },
             };
         }
@@ -745,16 +746,16 @@ function resolveAttack(state, targetId) {
     let damageBreakdown = undefined;
     if (outcome !== 'miss') {
         const baseDamage = attacker.attack;
-        const variance = (0, utils_1.randomIntInRange)(config_1.DAMAGE_VARIANCE_MIN, config_1.DAMAGE_VARIANCE_MAX);
+        const variance = (0, utils_1.randomIntInRange)(constants_1.CONSTANTS.COMBAT.DAMAGE_VARIANCE_MIN, constants_1.CONSTANTS.COMBAT.DAMAGE_VARIANCE_MAX);
         const rawDamage = Math.max(1, baseDamage + variance);
-        const preMitigationDamage = outcome === 'crit' ? Math.round(rawDamage * config_1.CRIT_MULTIPLIER) : rawDamage;
-        const armorReduction = target.statusEffects.armorUpTurns > 0 ? config_1.ARMOR_UP_DAMAGE_REDUCTION : 0;
-        const guardReduction = target.statusEffects.guardTurns > 0 ? config_1.BRUISER_GUARD_DAMAGE_REDUCTION : 0;
+        const preMitigationDamage = outcome === 'crit' ? Math.round(rawDamage * constants_1.CONSTANTS.COMBAT.CRIT_MULTIPLIER) : rawDamage;
+        const armorReduction = target.statusEffects.armorUpTurns > 0 ? constants_1.CONSTANTS.COMBAT.ARMOR_UP_DAMAGE_REDUCTION : 0;
+        const guardReduction = target.statusEffects.guardTurns > 0 ? constants_1.CONSTANTS.COMBAT.BRUISER_GUARD_DAMAGE_REDUCTION : 0;
         damage = Math.max(1, preMitigationDamage - armorReduction - guardReduction);
         damageBreakdown = {
             baseAttack: baseDamage,
             variance,
-            critMultiplier: outcome === 'crit' ? config_1.CRIT_MULTIPLIER : 1,
+            critMultiplier: outcome === 'crit' ? constants_1.CONSTANTS.COMBAT.CRIT_MULTIPLIER : 1,
             preMitigationDamage,
             armorReduction,
             guardReduction,
@@ -779,10 +780,10 @@ function resolveAttack(state, targetId) {
             const newHealth = Math.max(0, u.health - damage);
             targetDied = newHealth <= 0 && u.health > 0;
             const nextPoisonTurns = shouldApplyPoison
-                ? Math.max(u.statusEffects.poisonTurns, config_1.POISON_DURATION_TURNS)
+                ? Math.max(u.statusEffects.poisonTurns, constants_1.CONSTANTS.COMBAT.POISON_DURATION_TURNS)
                 : u.statusEffects.poisonTurns;
             if (shouldApplyPoison) {
-                statusesApplied = [...statusesApplied, `Poisoned (${config_1.POISON_DURATION_TURNS} turns)`];
+                statusesApplied = [...statusesApplied, `Poisoned (${constants_1.CONSTANTS.COMBAT.POISON_DURATION_TURNS} turns)`];
             }
             return {
                 ...u,

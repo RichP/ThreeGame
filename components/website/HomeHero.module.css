@@ -4,9 +4,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg) 100%);
   overflow: hidden;
-  padding: 0 20px;
+  padding: 0 var(--spacing-lg);
 }
 
 .heroContent {
@@ -16,25 +16,25 @@
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 40px;
+  gap: var(--spacing-xxl);
   align-items: center;
 }
 
 .heroText {
-  color: white;
+  color: var(--text-primary);
 }
 
 .title {
   font-size: 3.5rem;
   font-weight: 800;
   line-height: 1.1;
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-lg);
   text-transform: uppercase;
   letter-spacing: -1px;
 }
 
 .highlight {
-  background: linear-gradient(135deg, #38bdf8, #a78bfa);
+  background: linear-gradient(135deg, var(--primary), var(--secondary-dark));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -42,24 +42,24 @@
 
 .subtitle {
   font-size: 1.2rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
   line-height: 1.6;
-  margin-bottom: 40px;
+  margin-bottom: var(--spacing-xxxl);
   max-width: 500px;
 }
 
 .heroButtons {
   display: flex;
-  gap: 16px;
+  gap: var(--spacing-md);
   flex-wrap: wrap;
 }
 
 .primaryButton {
-  background: linear-gradient(135deg, #38bdf8, #a78bfa);
+  background: linear-gradient(135deg, var(--primary), var(--secondary-dark));
   color: white;
   border: none;
-  padding: 16px 32px;
-  border-radius: 12px;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--border-radius-lg);
   font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
@@ -75,10 +75,10 @@
 
 .secondaryButton {
   background: transparent;
-  color: white;
+  color: var(--text-primary);
   border: 2px solid rgba(255, 255, 255, 0.2);
-  padding: 16px 32px;
-  border-radius: 12px;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--border-radius-lg);
   font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
@@ -95,10 +95,10 @@
 
 .tertiaryButton {
   background: transparent;
-  color: #94a3b8;
+  color: var(--text-secondary);
   border: 2px solid rgba(148, 163, 184, 0.3);
-  padding: 16px 32px;
-  border-radius: 12px;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--border-radius-lg);
   font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
@@ -108,7 +108,7 @@
 }
 
 .tertiaryButton:hover {
-  color: white;
+  color: var(--text-primary);
   border-color: rgba(148, 163, 184, 0.6);
   transform: translateY(-2px);
 }
@@ -116,10 +116,10 @@
 .heroPreview {
   position: relative;
   z-index: 1;
-  border-radius: 16px;
+  border-radius: var(--border-radius-lg);
   overflow: hidden;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-default);
 }
 
 .floatingElements {
@@ -171,7 +171,7 @@
   .heroContent {
     grid-template-columns: 1fr;
     text-align: center;
-    gap: 30px;
+    gap: var(--spacing-xxxl);
   }
   
   .title {

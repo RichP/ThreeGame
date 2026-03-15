@@ -17,9 +17,9 @@ import type { InitialGameOptions } from '../game/gamestate'
 
 // Mock localStorage for testing
 const mockLocalStorage = {
-    getItem: () => null,
-    setItem: () => {},
-    removeItem: () => {},
+    getItem: (key: string) => null,
+    setItem: (key: string, value: string) => {},
+    removeItem: (key: string) => {},
     clear: () => {},
 };
 
@@ -292,8 +292,8 @@ describe('End-to-End Gameplay Tests', () => {
             assert.ok(serializedState.length > 0);
             
             // Simulate loading from localStorage
-            mockLocalStorage.getItem = () => serializedState;
-            const loadedState = JSON.parse(mockLocalStorage.getItem('game_state') || '{}');
+            const mockGetItem = (key: string) => serializedState;
+            const loadedState = JSON.parse(mockGetItem('game_state') || '{}');
             
             assert.deepStrictEqual(loadedState, initialState);
         });

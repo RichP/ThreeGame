@@ -1,8 +1,9 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { CONSTANTS } from '../../constants'
 
-const TILE_SIZE = 1
+const TILE_SIZE = CONSTANTS.MECHANICS.TILE_SIZE
 
 type TileHighlightMode = 'move' | 'attack'
 
@@ -26,13 +27,13 @@ const Tile: React.FC<{
     }
   }, [])
 
-  const baseColor = '#3b82f6'
-  const moveReachableColor = '#60a5fa'
-  const attackReachableColor = '#f87171'
-  const selectedColor = '#f59e0b'
-  const hoverColor = '#f97316'
-  const blockedColor = '#0b2f68'
-  const buildingColor = '#0b2f68'
+  const baseColor = CONSTANTS.COLORS.TILE_BASE
+  const moveReachableColor = CONSTANTS.COLORS.TILE_MOVE_REACHABLE
+  const attackReachableColor = CONSTANTS.COLORS.TILE_ATTACK_REACHABLE
+  const selectedColor = CONSTANTS.COLORS.TILE_SELECTED
+  const hoverColor = CONSTANTS.COLORS.TILE_HOVER
+  const blockedColor = CONSTANTS.COLORS.TILE_BLOCKED
+  const buildingColor = CONSTANTS.COLORS.TILE_BUILDING
 
   const reachableColor = highlightMode === 'attack' ? attackReachableColor : moveReachableColor
 

@@ -1,12 +1,66 @@
 :root {
+  /* Base colors */
   --bg: #0f172a;
+  --bg-secondary: #1a1a2e;
   --fg: #e6eef8;
-  --navbar-bg: rgba(15, 23, 42, 0.8);
-  --navbar-border: rgba(148, 163, 184, 0.2);
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
+  
+  /* Text colors */
   --text-primary: #e6eef8;
   --text-secondary: #94a3b8;
+  --text-disabled: #6b7280;
+  
+  /* Primary brand colors */
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --secondary: #8aa0ff;
+  --secondary-dark: #a78bfa;
+  
+  /* Status colors */
+  --success: #10b981;
+  --success-dark: #22c55e;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+  
+  /* UI elements */
+  --navbar-bg: rgba(15, 23, 42, 0.8);
+  --navbar-border: rgba(148, 163, 184, 0.2);
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(255, 255, 255, 0.4);
+  --border-active: rgba(255, 255, 255, 0.2);
+  
+  /* Spacing scale */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-xxl: 24px;
+  --spacing-xxxl: 32px;
+  --spacing-xxxxl: 40px;
+  
+  /* Border radius */
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 16px;
+  --border-radius-full: 9999px;
+  
+  /* Typography */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-xxl: 24px;
+  --font-size-xxxl: 32px;
+  --font-size-xxxxl: 64px;
+  
+  /* Shadows */
+  --shadow-primary: rgba(59, 130, 246, 0.3);
+  --shadow-secondary: rgba(138, 166, 255, 0.3);
+  --shadow-success: rgba(16, 185, 129, 0.3);
+  --shadow-warning: rgba(245, 158, 11, 0.3);
+  --shadow-error: rgba(239, 68, 68, 0.3);
 }
 
 html, body, #__next {

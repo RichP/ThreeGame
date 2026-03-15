@@ -177,22 +177,22 @@
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-  .toast {
-    background: #ffffff;
-    color: #000000;
-    border: 2px solid #000000;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-  }
-  
-  .toast.success {
-    background: #ffffff;
-    border-color: #000000;
-  }
-  
-  .toast.warning {
-    background: #ffffff;
-    border-color: #000000;
-  }
+.toast {
+  padding: var(--spacing-md);
+}
+
+.toastTitle {
+  font-weight: 700;
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-xs);
+}
+
+.toastMessage {
+  font-size: var(--font-size-xs);
+  line-height: 1.4;
+  color: var(--text-secondary);
+  word-wrap: break-word;
+}
   
   .toast.error {
     background: #ffffff;

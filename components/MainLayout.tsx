@@ -3,6 +3,7 @@ import NavBar from './NavBar'
 import Footer from './Footer'
 import { AuthProvider } from './auth/AuthContext'
 import { ToastProvider } from './ToastContainer'
+import { ThemeProvider } from './theme/ThemeContext'
 import ErrorBoundary from './ErrorBoundary'
 
 interface MainLayoutProps {
@@ -33,13 +34,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     <ErrorBoundary onError={handleError}>
       <AuthProvider>
         <ToastProvider position="top-right" maxToasts={5}>
-          <div className="main-layout">
-            <NavBar />
-            <main className="main-content">
-              {children}
-            </main>
-            <Footer />
-          </div>
+          <ThemeProvider>
+            <div className="main-layout">
+              <NavBar />
+              <main className="main-content">
+                {children}
+              </main>
+              <Footer />
+            </div>
+          </ThemeProvider>
         </ToastProvider>
       </AuthProvider>
     </ErrorBoundary>
