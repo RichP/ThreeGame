@@ -1,0 +1,406 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.container h1 {
+  color: #1f2937;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.section {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.section h2 {
+  color: #374151;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+
+.formSection {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.formSection h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #374151;
+  font-size: 1.1rem;
+}
+
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: #ffffff;
+}
+
+.formGroup input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.formGroup input.errorInput {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.errorText {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.button.errorButton {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+.button.errorButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+
+.button.warningButton {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+}
+
+.button.warningButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #d97706, #b45309);
+}
+
+.button.infoButton {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+}
+
+.button.infoButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+.button.successButton {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.button.successButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669, #047857);
+}
+
+.dataSection {
+  margin-top: 1.5rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.dataSection h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #374151;
+  font-size: 1.1rem;
+}
+
+.profileCard {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.profileCard p {
+  margin: 0.5rem 0;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+.profileCard strong {
+  color: #1f2937;
+}
+
+.friendsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.friendCard {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.friendName {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 1rem;
+}
+
+.status {
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.online {
+  background: rgba(16, 185, 129, 0.1);
+  color: #065f46;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.offline {
+  background: rgba(156, 163, 175, 0.1);
+  color: #374151;
+  border: 1px solid rgba(156, 163, 175, 0.3);
+}
+
+.rating {
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .section {
+    padding: 1.5rem;
+  }
+  
+  .formSection {
+    padding: 1rem;
+  }
+  
+  .buttonGroup {
+    flex-direction: column;
+  }
+  
+  .button {
+    width: 100%;
+  }
+  
+  .friendsList {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .container h1 {
+    color: #000000;
+  }
+  
+  .section {
+    background: #ffffff;
+    border-color: #000000;
+    color: #000000;
+  }
+  
+  .section h2 {
+    color: #000000;
+    border-bottom-color: #000000;
+  }
+  
+  .formSection {
+    background: #ffffff;
+    border-color: #000000;
+  }
+  
+  .formGroup label {
+    color: #000000;
+  }
+  
+  .formGroup input {
+    border-color: #000000;
+    background: #ffffff;
+    color: #000000;
+  }
+  
+  .errorText {
+    color: #000000;
+    font-weight: bold;
+  }
+  
+  .profileCard {
+    background: #ffffff;
+    border-color: #000000;
+    color: #000000;
+  }
+  
+  .friendCard {
+    background: #ffffff;
+    border-color: #000000;
+    color: #000000;
+  }
+  
+  .friendName {
+    color: #000000;
+  }
+  
+  .rating {
+    color: #000000;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .formGroup input {
+    transition: none;
+  }
+  
+  .formGroup input:focus {
+    box-shadow: none;
+  }
+  
+  .button {
+    transition: none;
+  }
+  
+  .button:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .button:disabled {
+    transform: none;
+  }
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .container {
+    color: #e5e7eb;
+  }
+  
+  .container h1 {
+    color: #f3f4f6;
+  }
+  
+  .section {
+    background: #1f2937;
+    border-color: #374151;
+    color: #e5e7eb;
+  }
+  
+  .section h2 {
+    color: #f3f4f6;
+    border-bottom-color: #374151;
+  }
+  
+  .formSection {
+    background: #111827;
+    border-color: #374151;
+  }
+  
+  .formGroup label {
+    color: #f3f4f6;
+  }
+  
+  .formGroup input {
+    background: #111827;
+    border-color: #374151;
+    color: #e5e7eb;
+  }
+  
+  .formGroup input:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+  }
+  
+  .errorText {
+    color: #fca5a5;
+  }
+  
+  .profileCard {
+    background: #111827;
+    border-color: #374151;
+    color: #e5e7eb;
+  }
+  
+  .friendCard {
+    background: #111827;
+    border-color: #374151;
+    color: #e5e7eb;
+  }
+  
+  .friendName {
+    color: #f3f4f6;
+  }
+  
+  .rating {
+    color: #9ca3af;
+  }
+}

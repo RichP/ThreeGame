@@ -1,0 +1,114 @@
+.toastContainer {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+}
+
+/* Position variants */
+.top-right {
+  top: 0;
+  right: 0;
+  align-items: flex-end;
+}
+
+.top-left {
+  top: 0;
+  left: 0;
+  align-items: flex-start;
+}
+
+.bottom-right {
+  bottom: 0;
+  right: 0;
+  align-items: flex-end;
+}
+
+.bottom-left {
+  bottom: 0;
+  left: 0;
+  align-items: flex-start;
+}
+
+.top-center {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  align-items: center;
+}
+
+.bottom-center {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  align-items: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .toastContainer {
+    padding: 15px;
+    gap: 10px;
+  }
+  
+  .top-right,
+  .top-left,
+  .bottom-right,
+  .bottom-left {
+    padding: 15px;
+  }
+  
+  .top-center,
+  .bottom-center {
+    left: 20px;
+    right: 20px;
+    transform: none;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 480px) {
+  .toastContainer {
+    padding: 10px;
+    gap: 8px;
+  }
+  
+  .top-center,
+  .bottom-center {
+    left: 10px;
+    right: 10px;
+  }
+}
+
+/* Animation for container entrance */
+.toastContainer > * {
+  animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .toastContainer {
+    padding: 10px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .toastContainer > * {
+    animation: none;
+  }
+}

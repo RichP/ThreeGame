@@ -1,0 +1,278 @@
+.toast {
+  position: relative;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  min-width: 300px;
+  max-width: 400px;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 9999;
+}
+
+.toast.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.toast.exiting {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.toastContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+}
+
+.toastIcon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.toastText {
+  flex: 1;
+  min-width: 0;
+}
+
+.toastTitle {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+
+.toastMessage {
+  font-size: 13px;
+  line-height: 1.4;
+  color: #64748b;
+  word-wrap: break-word;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.closeButton:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #334155;
+}
+
+.closeButton:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.3);
+  animation: progress 5s linear forwards;
+}
+
+@keyframes progress {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+/* Toast type variants */
+.success {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(34, 197, 94, 0.1));
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.success .toastTitle {
+  color: #059669;
+}
+
+.success .toastIcon svg path {
+  stroke: #059669;
+}
+
+.warning {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(234, 179, 8, 0.1));
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.warning .toastTitle {
+  color: #92400e;
+}
+
+.warning .toastIcon svg path {
+  stroke: #92400e;
+}
+
+.error {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(248, 113, 113, 0.1));
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.error .toastTitle {
+  color: #b91c1c;
+}
+
+.error .toastIcon svg path {
+  stroke: #b91c1c;
+}
+
+.info {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(96, 165, 250, 0.1));
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.info .toastTitle {
+  color: #1d4ed8;
+}
+
+.info .toastIcon svg path {
+  stroke: #1d4ed8;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .toast {
+    min-width: 280px;
+    max-width: calc(100vw - 40px);
+    margin: 0 20px;
+  }
+  
+  .toastContent {
+    padding: 12px;
+  }
+  
+  .toastTitle {
+    font-size: 13px;
+  }
+  
+  .toastMessage {
+    font-size: 12px;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .toast {
+    background: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  }
+  
+  .toast.success {
+    background: #ffffff;
+    border-color: #000000;
+  }
+  
+  .toast.warning {
+    background: #ffffff;
+    border-color: #000000;
+  }
+  
+  .toast.error {
+    background: #ffffff;
+    border-color: #000000;
+  }
+  
+  .toast.info {
+    background: #ffffff;
+    border-color: #000000;
+  }
+  
+  .toastTitle {
+    color: #000000;
+  }
+  
+  .toastMessage {
+    color: #000000;
+  }
+  
+  .closeButton {
+    color: #000000;
+  }
+  
+  .closeButton:hover {
+    background: #000000;
+    color: #ffffff;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    transition: none;
+  }
+  
+  .toast.visible {
+    opacity: 1;
+    transform: none;
+  }
+  
+  .toast.exiting {
+    opacity: 0;
+    transform: none;
+  }
+  
+  .progress {
+    animation: none;
+  }
+  
+  .closeButton {
+    transition: none;
+  }
+  
+  .closeButton:hover {
+    background: none;
+  }
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .toast {
+    background: rgba(17, 24, 39, 0.95);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #e5e7eb;
+  }
+  
+  .toastMessage {
+    color: #9ca3af;
+  }
+  
+  .closeButton {
+    color: #9ca3af;
+  }
+  
+  .closeButton:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #d1d5db;
+  }
+  
+  .progress {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}

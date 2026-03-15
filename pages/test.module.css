@@ -1,0 +1,557 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.header h1 {
+  color: #1f2937;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #3b82f6, #10b981);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  color: #6b7280;
+  font-size: 1.2rem;
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.testSections {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.section {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+}
+
+.section h2 {
+  color: #1f2937;
+  font-size: 1.75rem;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 3px solid #3b82f6;
+  padding-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.section p {
+  color: #4b5563;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+/* Checklist Styles */
+.checklist {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.checklistItem {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.checklistItem:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+}
+
+.checklistItem h3 {
+  color: #1e293b;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checklistItem ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: #475569;
+}
+
+.checklistItem li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+/* Testing Steps */
+.testingSteps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.step {
+  display: flex;
+  gap: 1.5rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.step:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+}
+
+.stepNumber {
+  background: linear-gradient(135deg, #3b82f6, #10b981);
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.stepContent h4 {
+  color: #1e293b;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.stepContent p {
+  color: #475569;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Resources */
+.resources {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.resourceCard {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.resourceCard:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+}
+
+.resourceCard h3 {
+  color: #1e293b;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.resourceCard p {
+  color: #475569;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.resourceCard a {
+  display: inline-block;
+  background: linear-gradient(135deg, #3b82f6, #10b981);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.resourceCard a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.resourceCard ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: #475569;
+}
+
+.resourceCard li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+/* Notes */
+.notes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.note {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.note:hover {
+  background: #fef3c7;
+  border-color: #f59e0b;
+  transform: translateY(-2px);
+}
+
+.note h4 {
+  color: #92400e;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.note p {
+  color: #78350f;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .header h1 {
+    font-size: 2rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+  
+  .section {
+    padding: 1.5rem;
+  }
+  
+  .section h2 {
+    font-size: 1.5rem;
+  }
+  
+  .checklist {
+    grid-template-columns: 1fr;
+  }
+  
+  .testingSteps {
+    grid-template-columns: 1fr;
+  }
+  
+  .step {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .stepNumber {
+    margin-bottom: 1rem;
+  }
+  
+  .resources {
+    grid-template-columns: 1fr;
+  }
+  
+  .notes {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .container {
+    color: #000000;
+  }
+  
+  .header h1 {
+    color: #000000;
+    background: none;
+    -webkit-text-fill-color: #000000;
+  }
+  
+  .subtitle {
+    color: #000000;
+  }
+  
+  .section {
+    background: #ffffff;
+    border-color: #000000;
+    color: #000000;
+  }
+  
+  .section h2 {
+    color: #000000;
+    border-bottom-color: #000000;
+  }
+  
+  .section p {
+    color: #000000;
+  }
+  
+  .checklistItem {
+    background: #ffffff;
+    border-color: #000000;
+    color: #000000;
+  }
+  
+  .step {
+    background: #ffffff;
+    border-color: #000000;
+    color: #000000;
+  }
+  
+  .stepNumber {
+    background: #000000;
+    color: #ffffff;
+    box-shadow: none;
+  }
+  
+  .resourceCard {
+    background: #ffffff;
+    border-color: #000000;
+    color: #000000;
+  }
+  
+  .resourceCard a {
+    background: #000000;
+    color: #ffffff;
+    box-shadow: none;
+  }
+  
+  .note {
+    background: #ffffff;
+    border-color: #000000;
+    color: #000000;
+  }
+  
+  .note h4 {
+    color: #000000;
+  }
+  
+  .note p {
+    color: #000000;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .section {
+    transition: none;
+  }
+  
+  .section:hover {
+    transform: none;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  }
+  
+  .checklistItem {
+    transition: none;
+  }
+  
+  .checklistItem:hover {
+    transform: none;
+    background: #f8fafc;
+  }
+  
+  .step {
+    transition: none;
+  }
+  
+  .step:hover {
+    transform: none;
+    background: #f8fafc;
+  }
+  
+  .resourceCard {
+    transition: none;
+  }
+  
+  .resourceCard:hover {
+    transform: none;
+    background: #f8fafc;
+  }
+  
+  .note {
+    transition: none;
+  }
+  
+  .note:hover {
+    transform: none;
+    background: #fffbeb;
+  }
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .container {
+    color: #e5e7eb;
+  }
+  
+  .header h1 {
+    background: linear-gradient(135deg, #60a5fa, #34d399);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .subtitle {
+    color: #9ca3af;
+  }
+  
+  .section {
+    background: #1f2937;
+    border-color: #374151;
+    color: #e5e7eb;
+  }
+  
+  .section h2 {
+    color: #f3f4f6;
+    border-bottom-color: #3b82f6;
+  }
+  
+  .section p {
+    color: #cbd5e1;
+  }
+  
+  .checklistItem {
+    background: #111827;
+    border-color: #374151;
+    color: #cbd5e1;
+  }
+  
+  .checklistItem:hover {
+    background: #0b1220;
+    border-color: #4b5563;
+  }
+  
+  .checklistItem h3 {
+    color: #f1f5f9;
+  }
+  
+  .checklistItem ul {
+    color: #94a3b8;
+  }
+  
+  .step {
+    background: #111827;
+    border-color: #374151;
+    color: #cbd5e1;
+  }
+  
+  .step:hover {
+    background: #0b1220;
+    border-color: #4b5563;
+  }
+  
+  .stepContent h4 {
+    color: #f1f5f9;
+  }
+  
+  .stepContent p {
+    color: #94a3b8;
+  }
+  
+  .resourceCard {
+    background: #111827;
+    border-color: #374151;
+    color: #cbd5e1;
+  }
+  
+  .resourceCard:hover {
+    background: #0b1220;
+    border-color: #4b5563;
+  }
+  
+  .resourceCard h3 {
+    color: #f1f5f9;
+  }
+  
+  .resourceCard p {
+    color: #94a3b8;
+  }
+  
+  .resourceCard a {
+    background: linear-gradient(135deg, #60a5fa, #34d399);
+    box-shadow: 0 4px 15px rgba(96, 165, 250, 0.3);
+  }
+  
+  .resourceCard a:hover {
+    box-shadow: 0 6px 20px rgba(96, 165, 250, 0.4);
+  }
+  
+  .resourceCard ul {
+    color: #94a3b8;
+  }
+  
+  .note {
+    background: #1f1908;
+    border-color: #452a00;
+    color: #fde68a;
+  }
+  
+  .note:hover {
+    background: #2b2006;
+    border-color: #653a00;
+  }
+  
+  .note h4 {
+    color: #f59e0b;
+  }
+  
+  .note p {
+    color: #fde68a;
+  }
+}
