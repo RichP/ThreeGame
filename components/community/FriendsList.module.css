@@ -25,9 +25,9 @@
 
 .friendCount {
   font-size: 14px;
-  color: #8aa0ff;
+  color: var(--color-secondary);
   font-weight: 600;
-  background: rgba(138, 166, 255, 0.1);
+  background: var(--bg-secondary);
   padding: 4px 8px;
   border-radius: 20px;
   border: 1px solid rgba(138, 166, 255, 0.3);
@@ -176,38 +176,38 @@
 }
 
 .challengeButton {
-  background: linear-gradient(135deg, #10b981 0%, #22c55e 100%);
+  background: linear-gradient(135deg, var(--color-success) 0%, var(--success-dark) 100%);
   border: none;
   color: white;
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 15px var(--shadow-success);
 }
 
 .challengeButton:hover {
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 6px 20px var(--shadow-success);
 }
 
 .challengeButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+  background: linear-gradient(135deg, var(--text-disabled) 0%, var(--text-secondary) 100%);
   box-shadow: none;
 }
 
 .messageButton {
-  background: linear-gradient(135deg, #8aa0ff 0%, #a78bfa 100%);
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary-dark) 100%);
   border: none;
   color: white;
-  box-shadow: 0 4px 15px rgba(138, 166, 255, 0.3);
+  box-shadow: 0 4px 15px var(--shadow-secondary);
 }
 
 .messageButton:hover {
-  box-shadow: 0 6px 20px rgba(138, 166, 255, 0.4);
+  box-shadow: 0 6px 20px var(--shadow-secondary);
 }
 
 .removeButton {
-  background: rgba(239, 68, 68, 0.2);
+  background: var(--bg-error);
   border: 1px solid rgba(239, 68, 68, 0.4);
-  color: #ef4444;
+  color: var(--color-error);
   box-shadow: none;
 }
 
@@ -245,7 +245,7 @@
 
 .emptySubtext {
   font-size: 12px;
-  color: #8aa0ff;
+  color: var(--color-secondary);
   font-weight: 600;
 }
 

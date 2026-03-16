@@ -62,24 +62,24 @@
 }
 
 .searchButton {
-  background: linear-gradient(135deg, #8aa0ff 0%, #a78bfa 100%);
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary-dark) 100%);
   border: none;
-  border-radius: 12px;
-  padding: 12px 24px;
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
   color: white;
-  font-size: 16px;
+  font-size: var(--font-size-md);
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  box-shadow: 0 4px 15px rgba(138, 166, 255, 0.3);
+  box-shadow: 0 4px 15px var(--shadow-secondary);
   min-width: 120px;
 }
 
 .searchButton:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(138, 166, 255, 0.4);
+  box-shadow: 0 6px 20px var(--shadow-secondary);
 }
 
 .searchButton:disabled {
@@ -144,9 +144,9 @@
 
 .resultsCount {
   font-size: 14px;
-  color: #8aa0ff;
+  color: var(--color-secondary);
   font-weight: 600;
-  background: rgba(138, 166, 255, 0.1);
+  background: var(--bg-secondary);
   padding: 4px 8px;
   border-radius: 20px;
   border: 1px solid rgba(138, 166, 255, 0.3);
@@ -301,38 +301,38 @@
 }
 
 .addFriendButton {
-  background: linear-gradient(135deg, #8aa0ff 0%, #a78bfa 100%);
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary-dark) 100%);
   border: none;
   color: white;
-  box-shadow: 0 4px 15px rgba(138, 166, 255, 0.3);
+  box-shadow: 0 4px 15px var(--shadow-secondary);
 }
 
 .addFriendButton:hover {
-  box-shadow: 0 6px 20px rgba(138, 166, 255, 0.4);
+  box-shadow: 0 6px 20px var(--shadow-secondary);
 }
 
 .addFriendButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+  background: linear-gradient(135deg, var(--text-disabled) 0%, var(--text-secondary) 100%);
   box-shadow: none;
 }
 
 .challengeButton {
-  background: linear-gradient(135deg, #10b981 0%, #22c55e 100%);
+  background: linear-gradient(135deg, var(--color-success) 0%, var(--success-dark) 100%);
   border: none;
   color: white;
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 15px var(--shadow-success);
 }
 
 .challengeButton:hover {
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 6px 20px var(--shadow-success);
 }
 
 .challengeButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+  background: linear-gradient(135deg, var(--text-disabled) 0%, var(--text-secondary) 100%);
   box-shadow: none;
 }
 

@@ -22,6 +22,42 @@
   --error: #ef4444;
   --info: #3b82f6;
   
+  /* Component Colors */
+  --color-primary: #3b82f6;
+  --color-secondary: #8aa0ff;
+  --color-secondary-dark: #a78bfa;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #1d4ed8;
+  
+  /* Status Colors */
+  --color-win: #10b981;
+  --color-loss: #ef4444;
+  --color-neutral: #64748b;
+  --color-online: #10b981;
+  --color-offline: #64748b;
+  
+  /* Button Colors */
+  --color-button-primary: #8aa0ff;
+  --color-button-success: #10b981;
+  --color-button-warning: #f59e0b;
+  --color-button-error: #ef4444;
+  --color-button-info: #1d4ed8;
+  
+  /* Background Colors */
+  --bg-success: rgba(16, 185, 129, 0.1);
+  --bg-warning: rgba(245, 158, 11, 0.1);
+  --bg-error: rgba(239, 68, 68, 0.1);
+  --bg-info: rgba(29, 78, 216, 0.1);
+  
+  /* Badge Colors */
+  --color-badge-success: #10b981;
+  --color-badge-warning: #f59e0b;
+  --color-badge-error: #ef4444;
+  --color-badge-info: #1d4ed8;
+  --color-badge-neutral: #94a3b8;
+  
   /* UI elements */
   --navbar-bg: rgba(15, 23, 42, 0.8);
   --navbar-border: rgba(148, 163, 184, 0.2);

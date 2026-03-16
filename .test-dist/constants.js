@@ -189,6 +189,63 @@ exports.COLORS = {
     GUARD: '#ffffff',
     AIM: '#3b82f6',
     DASH: '#ffffff',
+    // Additional UI colors for components
+    GRAY_50: '#f9fafb',
+    GRAY_100: '#f3f4f6',
+    GRAY_200: '#e5e7eb',
+    GRAY_300: '#d1d5db',
+    GRAY_400: '#9ca3af',
+    GRAY_500: '#64748b',
+    GRAY_600: '#475569',
+    GRAY_700: '#374151',
+    GRAY_800: '#1f2937',
+    GRAY_900: '#0f172a',
+    // Component-specific colors
+    COMPONENT_BORDER: 'rgba(255, 255, 255, 0.1)',
+    COMPONENT_HOVER: 'rgba(255, 255, 255, 0.1)',
+    COMPONENT_ACTIVE: 'rgba(255, 255, 255, 0.2)',
+    // Gradient colors
+    GRADIENT_START: '#1a1a2e',
+    GRADIENT_END: '#16213e',
+    // Theme colors
+    THEME_DEFAULT: '#8aa0ff',
+    THEME_DARK: '#a78bfa',
+    THEME_CYBERPUNK: '#f59e0b',
+    THEME_PASTEL: '#10b981',
+    // Button colors
+    BUTTON_PRIMARY: '#8aa0ff',
+    BUTTON_PRIMARY_HOVER: '#a78bfa',
+    BUTTON_SUCCESS: '#10b981',
+    BUTTON_WARNING: '#f59e0b',
+    BUTTON_ERROR: '#ef4444',
+    BUTTON_INFO: '#1d4ed8',
+    // Text colors for different contexts
+    TEXT_SUCCESS: '#10b981',
+    TEXT_WARNING: '#f59e0b',
+    TEXT_ERROR: '#ef4444',
+    TEXT_INFO: '#1d4ed8',
+    // Background colors for different states
+    BG_SUCCESS: 'rgba(16, 185, 129, 0.1)',
+    BG_WARNING: 'rgba(245, 158, 11, 0.1)',
+    BG_ERROR: 'rgba(239, 68, 68, 0.1)',
+    BG_INFO: 'rgba(29, 78, 216, 0.1)',
+    // Win/Loss colors
+    WIN_COLOR: '#10b981',
+    LOSS_COLOR: '#ef4444',
+    NEUTRAL_COLOR: '#64748b',
+    // Activity colors
+    ONLINE_COLOR: '#10b981',
+    OFFLINE_COLOR: '#64748b',
+    // Progress colors
+    PROGRESS_SUCCESS: '#10b981',
+    PROGRESS_WARNING: '#f59e0b',
+    PROGRESS_ERROR: '#ef4444',
+    // Badge colors
+    BADGE_SUCCESS: '#10b981',
+    BADGE_WARNING: '#f59e0b',
+    BADGE_ERROR: '#ef4444',
+    BADGE_INFO: '#1d4ed8',
+    BADGE_NEUTRAL: '#94a3b8',
 };
 // =============================================================================
 // GAME MECHANICS CONSTANTS
