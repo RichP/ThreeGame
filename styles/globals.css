@@ -120,10 +120,10 @@ body {
   position: fixed;
   top: 80px; /* Below the navbar */
   right: 0;
-  bottom: 260px; /* Above the footer */
+  bottom: 0px; /* Above the footer */
   left: 0;
   width: 100vw;
-  height: calc(100vh - 340px); /* Account for navbar (80px) + footer (120px) */
+  height: calc(100vh - 100px); /* Account for navbar (80px) + footer (120px) */
   background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005));
   border-radius: 0;
   box-shadow: none;

@@ -1,0 +1,315 @@
+/* Game Dropdown Styles */
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 999;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.dropdown {
+  position: fixed;
+  top: 70px;
+  left: 20px;
+  width: 300px;
+  background: rgba(20, 20, 30, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  animation: slideDown 0.2s ease-out;
+  overflow: hidden;
+}
+
+@keyframes slideDown {
+  from { 
+    opacity: 0; 
+    transform: translateY(-10px) scale(0.95); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
+}
+
+.dropdownHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.dropdownTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.closeButton {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 6px 8px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.closeButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.closeIcon {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.dropdownContent {
+  padding: 16px;
+}
+
+/* Style all links inside dropdown sections */
+.dropdownSection a {
+  display: block !important;
+  width: 100% !important;
+  padding: 12px 16px !important;
+  color: #ffffff !important;
+  text-decoration: none !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  margin: 0 !important;
+  text-align: left !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+  line-height: 1.2 !important;
+  position: relative !important;
+  overflow: hidden !important;
+  -webkit-text-decoration: none !important;
+  text-decoration: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+.dropdownSection a:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  transform: translateX(4px) !important;
+}
+
+.dropdownSection a:active {
+  transform: translateX(2px) !important;
+}
+
+/* Style all buttons inside dropdown sections */
+.dropdownSection button {
+  display: block !important;
+  width: 100% !important;
+  padding: 12px 16px !important;
+  color: #ffffff !important;
+  text-decoration: none !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  margin: 0 !important;
+  text-align: left !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+  line-height: 1.2 !important;
+  position: relative !important;
+  overflow: hidden !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  border-style: solid !important;
+  border-width: 1px !important;
+  border-color: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: auto !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
+  line-height: normal !important;
+  text-shadow: none !important;
+  text-decoration: none !important;
+  text-decoration-color: currentColor !important;
+  text-decoration-style: solid !important;
+  text-decoration-thickness: auto !important;
+  text-underline-offset: auto !important;
+  text-indent: 0 !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  clip: auto !important;
+  clip-path: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+.dropdownSection button:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  transform: translateX(4px) !important;
+}
+
+.dropdownSection button:active {
+  transform: translateX(2px) !important;
+}
+
+.dropdownDivider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 8px 0;
+}
+
+.dropdownSection {
+  margin-bottom: 8px;
+}
+
+.dropdownSectionTitle {
+  font-size: 10px;
+  font-weight: 700;
+  color: #a0a0c0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 12px 0 8px 0;
+  padding: 0 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dropdown {
+    left: 15px;
+    right: 15px;
+    width: auto;
+    top: 60px;
+  }
+  
+  .dropdownHeader {
+    padding: 14px 16px;
+  }
+  
+  .dropdownTitle {
+    font-size: 14px;
+  }
+  
+  .dropdownContent {
+    padding: 14px;
+  }
+  
+  .dropdownItem,
+  .dropdownLink {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dropdown {
+    left: 10px;
+    right: 10px;
+    top: 55px;
+  }
+  
+  .dropdownHeader {
+    padding: 12px 14px;
+  }
+  
+  .dropdownTitle {
+    font-size: 13px;
+  }
+  
+  .dropdownContent {
+    padding: 12px;
+  }
+  
+  .dropdownItem,
+  .dropdownLink {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .backdrop,
+  .dropdown {
+    animation: none;
+  }
+  
+  .dropdownItem,
+  .dropdownLink,
+  .closeButton {
+    transition: none;
+  }
+  
+  .dropdownItem:hover,
+  .dropdownLink:hover,
+  .closeButton:hover {
+    transform: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .dropdown {
+    background: #1a1a1a;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 2px #000000;
+  }
+  
+  .dropdownHeader {
+    background: #000000;
+    border-bottom: 2px solid #ffffff;
+  }
+  
+  .dropdownItem,
+  .dropdownLink {
+    border-width: 2px;
+  }
+  
+  .dropdownItem:hover,
+  .dropdownLink:hover {
+    background: #333333;
+    border-color: #ffffff;
+  }
+}

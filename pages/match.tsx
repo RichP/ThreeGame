@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import MainLayout from '../components/MainLayout'
+import GameLayout from '../components/GameLayout'
 import SceneCanvas from '../components/game/SceneCanvas'
 import { GameStatus } from '../components/UI/GameStatus'
 import { Controls } from '../components/UI/Controls'
@@ -15,7 +15,7 @@ export default function MatchPage() {
   const [isDebugMode, setIsDebugMode] = useState(false)
 
   return (
-    <MainLayout>
+    <GameLayout>
       <div className={styles.matchInterface}>
         {/* Game Canvas */}
         <SceneCanvas 
@@ -40,6 +40,6 @@ export default function MatchPage() {
           </button>
         </div>
       </div>
-    </MainLayout>
+    </GameLayout>
   )
 }

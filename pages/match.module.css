@@ -13,7 +13,7 @@
 
 .debugToggle {
   position: fixed;
-  top: 20px;
+  top: 80px;
   left: 20px;
   z-index: 200;
   background: rgba(2, 6, 23, 0.8);
