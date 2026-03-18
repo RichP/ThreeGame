@@ -61,6 +61,7 @@ import {
     calculateReachableTilesInState,
     getEffectiveMovement,
 } from './rules/movement'
+import { findPath, getShortestPathToPosition } from './pathfinding'
 import {
     applyTurnStartClassBuffs,
     applyTurnStartStatusTick,
@@ -493,9 +494,12 @@ export function moveSelectedUnit(state: GameState, newPos: Position): GameState 
     if (!canUnitMove(selectedUnit)) return state;
 
     if (isBlockedTile(state, newPos)) return state;
-    const distance = manhattanDistance(selectedUnit.position, newPos);
+    
+    // Use A* pathfinding to check if the position is reachable
     const effectiveMovement = getEffectiveMovement(selectedUnit);
-    if (distance > effectiveMovement) return state;
+    const path = getShortestPathToPosition(state, selectedUnit.position, newPos, effectiveMovement);
+    
+    if (path.length === 0) return state;
 
     const occupiedUnit = getUnitAt(state, newPos);
     if (occupiedUnit && occupiedUnit.id !== selectedUnitId) return state;

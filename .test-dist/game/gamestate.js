@@ -74,6 +74,7 @@ const selectors_1 = require("./selectors");
 const persistence_1 = require("./persistence");
 const combat_1 = require("./rules/combat");
 const movement_1 = require("./rules/movement");
+const pathfinding_1 = require("./pathfinding");
 const turns_1 = require("./rules/turns");
 const utils_1 = require("./utils");
 var Phase;
@@ -291,9 +292,10 @@ function moveSelectedUnit(state, newPos) {
         return state;
     if ((0, selectors_1.isBlockedTile)(state, newPos))
         return state;
-    const distance = (0, utils_1.manhattanDistance)(selectedUnit.position, newPos);
+    // Use A* pathfinding to check if the position is reachable
     const effectiveMovement = (0, movement_1.getEffectiveMovement)(selectedUnit);
-    if (distance > effectiveMovement)
+    const path = (0, pathfinding_1.getShortestPathToPosition)(state, selectedUnit.position, newPos, effectiveMovement);
+    if (path.length === 0)
         return state;
     const occupiedUnit = (0, selectors_1.getUnitAt)(state, newPos);
     if (occupiedUnit && occupiedUnit.id !== selectedUnitId)

@@ -200,10 +200,14 @@ const gamestate_1 = require("./gamestate");
     strict_1.default.ok(afterAbility);
     strict_1.default.equal(afterAbility.hasUsedAbility, true);
     strict_1.default.equal(afterAbility.statusEffects.dashBonusMovement > 0, true);
-    state = (0, gamestate_1.moveSelectedUnit)(state, { x: 1, y: 6 });
+    // Scout base movement is 3, dash adds +2, so total movement is 5
+    // Moving from (1,1) to (1,6) is blocked by u2 at (1,3), so move to (4,1) instead
+    // Distance from (1,1) to (4,1) is 3, which should be reachable
+    state = (0, gamestate_1.moveSelectedUnit)(state, { x: 4, y: 1 });
     const afterMove = (0, gamestate_1.getUnitById)(state, 'u1');
     strict_1.default.ok(afterMove);
-    strict_1.default.equal(afterMove.position.y, 6);
+    strict_1.default.equal(afterMove.position.x, 4);
+    strict_1.default.equal(afterMove.position.y, 1);
     strict_1.default.equal(afterMove.statusEffects.dashBonusMovement, 0);
 });
 (0, node_test_1.default)('bruiser guard reduces incoming damage', () => {

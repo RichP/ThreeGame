@@ -8,6 +8,10 @@ interface AnimationSettings {
   cameraShake: boolean;
   particleEffects: boolean;
   statusEffects: boolean;
+  /** When a unit is moving, keep showing movement highlights until the animation finishes. */
+  keepMoveHighlightsDuringMove: boolean;
+  /** If true, show only the path tiles during move animation; otherwise show all reachable move tiles. */
+  showMovePathOnlyDuringMove: boolean;
 }
 
 interface AnimationSettingsProps {
@@ -34,11 +38,22 @@ export const AnimationSettings: React.FC<AnimationSettingsProps> = ({
       cameraShake: true,
       particleEffects: true,
       statusEffects: true,
+      keepMoveHighlightsDuringMove: true,
+      showMovePathOnlyDuringMove: false,
     });
   };
 
   return (
-    <div className="animation-settings">
+    <div
+      className="animation-settings"
+      style={{
+        // Keep all animation-settings UI above the WebGL canvas.
+        position: 'fixed',
+        inset: 0,
+        zIndex: 1100,
+        pointerEvents: 'none',
+      }}
+    >
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="settings-toggle"
@@ -53,7 +68,10 @@ export const AnimationSettings: React.FC<AnimationSettingsProps> = ({
           borderRadius: '6px',
           cursor: 'pointer',
           fontSize: '12px',
-          fontWeight: '600'
+          fontWeight: '600',
+          // The parent disables pointer events to avoid blocking the game canvas;
+          // the actual controls re-enable them.
+          pointerEvents: 'auto',
         }}
       >
         Animation Settings
@@ -72,8 +90,9 @@ export const AnimationSettings: React.FC<AnimationSettingsProps> = ({
             borderRadius: '8px',
             padding: '16px',
             boxShadow: '0 10px 25px rgba(0, 0, 0, 0.5)',
-            zIndex: 1000,
-            color: '#e2e8f0'
+            zIndex: 1100,
+            color: '#e2e8f0',
+            pointerEvents: 'auto',
           }}
         >
           <div style={{ marginBottom: '12px', fontWeight: '700', fontSize: '14px' }}>
@@ -184,6 +203,31 @@ export const AnimationSettings: React.FC<AnimationSettingsProps> = ({
             </label>
           </div>
 
+          {/* Move highlight behavior */}
+          <div style={{ marginBottom: '12px' }}>
+            <div style={{ fontSize: '12px', marginBottom: '6px', fontWeight: 600 }}>
+              Move Highlights
+            </div>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', marginBottom: 6 }}>
+              <input
+                type="checkbox"
+                checked={settings.keepMoveHighlightsDuringMove}
+                onChange={(e) => handleToggle('keepMoveHighlightsDuringMove', e.target.checked)}
+                disabled={!settings.enabled}
+              />
+              Keep move highlights during move animation
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
+              <input
+                type="checkbox"
+                checked={settings.showMovePathOnlyDuringMove}
+                onChange={(e) => handleToggle('showMovePathOnlyDuringMove', e.target.checked)}
+                disabled={!settings.enabled || !settings.keepMoveHighlightsDuringMove}
+              />
+              Show path only (instead of all reachable squares)
+            </label>
+          </div>
+
           {/* Reset button */}
           <button
             onClick={resetToDefaults}
@@ -216,6 +260,8 @@ export const useAnimationSettings = () => {
     cameraShake: true,
     particleEffects: true,
     statusEffects: true,
+    keepMoveHighlightsDuringMove: true,
+    showMovePathOnlyDuringMove: false,
   });
 
   useEffect(() => {
@@ -224,7 +270,10 @@ export const useAnimationSettings = () => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        setSettings(parsed);
+        setSettings((prev) => ({
+          ...prev,
+          ...parsed,
+        }));
       } catch {
         // Use defaults if parsing fails
       }

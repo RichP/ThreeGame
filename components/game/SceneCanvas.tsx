@@ -48,6 +48,7 @@ import {
     type Position,
     type TargetingPreview,
 } from '../../game/gamestate';
+import { getShortestPathToPosition } from '../../game/pathfinding'
 
 const TILE_SIZE = 1
 const GRID_SIZE = 8
@@ -146,6 +147,8 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' })
     const [isResolvingAttack, setIsResolvingAttack] = useState(false);
     const [hoveredUnitId, setHoveredUnitId] = useState<string | null>(null);
     const [undoMoveSnapshot, setUndoMoveSnapshot] = useState<UndoMoveSnapshot | null>(null)
+    const [isAnimatingMove, setIsAnimatingMove] = useState(false)
+    const [moveHighlightTiles, setMoveHighlightTiles] = useState<Position[] | null>(null)
   const orbitControlsRef = useRef<any>(null)
     const [turnBannerText, setTurnBannerText] = useState<string | null>('Player 1 Turn')
     const [seriesState, setSeriesState] = useState<SeriesState>({
@@ -200,6 +203,14 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' })
     ),
     [gameState, gameState.selectedUnitId, gameState.units, gameState.config.gridSize, gameState.config.blockedTiles]);
 
+    // While the move animation plays, optionally keep movement highlights visible.
+    const effectiveReachableTiles = useMemo(() => {
+      if (!settings.enabled) return reachableTiles
+      if (!settings.keepMoveHighlightsDuringMove) return reachableTiles
+      if (!isAnimatingMove) return reachableTiles
+      return moveHighlightTiles ?? reachableTiles
+    }, [isAnimatingMove, moveHighlightTiles, reachableTiles, settings.enabled, settings.keepMoveHighlightsDuringMove])
+
     const attackableTiles = useMemo(() => calculateAttackableTilesInState(
         gameState,
         gameState.units.find(u => u.id === gameState.selectedUnitId)
@@ -215,6 +226,7 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' })
     const handleTileClick = (tilePos: Position) => {
     if (winner) return;
     if (isResolvingAttack) return;
+    if (isAnimatingMove) return;
 
     setHoveredUnitId(null)
 
@@ -232,13 +244,38 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' })
           return;
         }
         if (selectedUnit) {
+          // Cache tiles we want to keep highlighting while animating.
+          if (settings.enabled && settings.keepMoveHighlightsDuringMove) {
+            if (settings.showMovePathOnlyDuringMove) {
+              const path = getShortestPathToPosition(gameState, selectedUnit.position, tilePos, selectedUnit.movement)
+              setMoveHighlightTiles([
+                { ...selectedUnit.position },
+                ...path,
+              ])
+            } else {
+              setMoveHighlightTiles([...reachableTiles])
+            }
+          } else {
+            setMoveHighlightTiles(null)
+          }
+
           setUndoMoveSnapshot({
             unitId: selectedUnit.id,
             from: { ...selectedUnit.position },
             to: { ...tilePos },
           })
+          
+          // For animation, we need to trigger the pathfinding before updating state
+          // The UnitMesh component will handle the animation based on the path
+          setGameState(prev => moveSelectedUnit(prev, tilePos));
+
+          // Keep UI in MOVE state until the movement animation finishes.
+          setIsAnimatingMove(true)
+          window.setTimeout(() => {
+            setIsAnimatingMove(false)
+            setMoveHighlightTiles(null)
+          }, MOVEMENT_DURATION_MS)
         }
-        setGameState(prev => moveSelectedUnit(prev, tilePos));
         break;
       case Phase.ATTACK:
         const targetUnit = getUnitAt(gameState, tilePos);
@@ -546,7 +583,7 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' })
 
         <Board
           gameState={gameState}
-          reachableTiles={reachableTiles}
+          reachableTiles={effectiveReachableTiles}
           attackableTiles={attackableTiles}
           onTileClick={handleTileClick}
           onUnitHoverStart={(unitId) => setHoveredUnitId(unitId)}
@@ -561,6 +598,7 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' })
             position: activeHitVfx.position,
           } : null}
           isPreviewMode={mode === 'preview'}
+          phaseOverride={isAnimatingMove && settings.enabled && settings.keepMoveHighlightsDuringMove ? Phase.MOVE_UNIT : undefined}
         />
       </Canvas>
 

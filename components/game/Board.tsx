@@ -32,6 +32,12 @@ interface BoardProps {
         position: Position;
     } | null;
     isPreviewMode?: boolean;
+    /**
+     * Allows the caller (SceneCanvas) to temporarily override phase-driven rendering,
+     * e.g. keep showing MOVE_UNIT highlights while a movement animation plays even
+     * though gameState.phase has already advanced to ATTACK.
+     */
+    phaseOverride?: Phase;
 }
 
 export const Board: React.FC<BoardProps> = ({
@@ -46,10 +52,12 @@ export const Board: React.FC<BoardProps> = ({
     hitEffectKey = null,
     floatingDamage = null,
     isPreviewMode = false,
+    phaseOverride,
 }) => {
     const selectedUnit = getUnitById(gameState, gameState.selectedUnitId ?? null);
-    const tilesToShow = gameState.phase === Phase.ATTACK ? attackableTiles : reachableTiles;
-    const highlightMode: 'move' | 'attack' = gameState.phase === Phase.ATTACK ? 'attack' : 'move';
+    const effectivePhase = phaseOverride ?? gameState.phase;
+    const tilesToShow = effectivePhase === Phase.ATTACK ? attackableTiles : reachableTiles;
+    const highlightMode: 'move' | 'attack' = effectivePhase === Phase.ATTACK ? 'attack' : 'move';
     
     return (
         <>
@@ -104,6 +112,7 @@ export const Board: React.FC<BoardProps> = ({
                         hitEffectKey={unit.id === hitTargetUnitId ? (hitEffectKey ?? undefined) : undefined}
                         hitOutcome={unit.id === hitTargetUnitId ? floatingDamage?.outcome : undefined}
                         isPreviewMode={isPreviewMode}
+                        gameState={gameState}
                     />
                 );
             })}
@@ -124,7 +133,7 @@ export const Board: React.FC<BoardProps> = ({
                 gameState={gameState}
                 selectedUnitId={gameState.selectedUnitId}
                 hoveredUnitId={previewTargetUnitId}
-                isVisible={gameState.phase === Phase.ATTACK && !!gameState.selectedUnitId}
+                isVisible={effectivePhase === Phase.ATTACK && !!gameState.selectedUnitId}
             />
             
             <StatusVisualizer

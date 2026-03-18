@@ -1,9 +1,10 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import type { Mesh, MeshStandardMaterial } from 'three';
-import type { AttackOutcome, UnitData } from '../../game/gamestate';
+import type { AttackOutcome, UnitData, Position, GameState } from '../../game/gamestate';
+import { getShortestPathToPosition } from '../../game/pathfinding';
 
 interface UnitMeshProps {
     unit: UnitData;
@@ -15,18 +16,42 @@ interface UnitMeshProps {
     onHoverStart?: (unitId: string) => void;
     onHoverEnd?: () => void;
     isPreviewMode?: boolean;
+    gameState?: GameState;
 }
 
 const HIT_DURATION_SECONDS = 0.6;
 const MOVEMENT_DURATION_MS = 600;
 
-export const UnitMesh: React.FC<UnitMeshProps> = ({ unit, actionState = null, isSelected, isPreviewTarget, hitEffectKey, hitOutcome, onHoverStart, onHoverEnd, isPreviewMode = false }) => {
+export const UnitMesh: React.FC<UnitMeshProps> = ({ unit, actionState = null, isSelected, isPreviewTarget, hitEffectKey, hitOutcome, onHoverStart, onHoverEnd, isPreviewMode = false, gameState }) => {
     const meshRef = useRef<Mesh>(null);
     const materialRef = useRef<MeshStandardMaterial>(null);
     const hitStartedAtRef = useRef<number | null>(null);
     const moveStartedAtRef = useRef<number | null>(null);
     const moveFromRef = useRef({ x: unit.position.x, y: unit.position.y });
     const [animatedPosition, setAnimatedPosition] = useState({ x: unit.position.x, y: 0.2, z: unit.position.y });
+    const [currentPath, setCurrentPath] = useState<Position[]>([]);
+    const [currentPathIndex, setCurrentPathIndex] = useState(0);
+    const [isMovingAlongPath, setIsMovingAlongPath] = useState(false);
+
+    // Create a temporary state where THIS unit is still at moveFromRef.
+    // This prevents pathfinding from rejecting the destination as "occupied" by itself
+    // (because gameState already updated the unit to its destination tile).
+    const pathfindingState = useMemo(() => {
+        if (!gameState) return undefined;
+        const from = moveFromRef.current;
+        const needsOverride =
+            (from.x !== unit.position.x || from.y !== unit.position.y);
+        if (!needsOverride) return gameState;
+
+        return {
+            ...gameState,
+            units: gameState.units.map((u) =>
+                u.id === unit.id
+                    ? { ...u, position: { x: from.x, y: from.y } }
+                    : u
+            ),
+        } as GameState;
+    }, [gameState, unit.id, unit.position.x, unit.position.y]);
 
     const baseColor = unit.playerId === 'p1' ? '#3b82f6' : '#ef4444';
     
@@ -70,20 +95,39 @@ export const UnitMesh: React.FC<UnitMeshProps> = ({ unit, actionState = null, is
         }
     }, [hitEffectKey, hitOutcome]);
 
-    // Handle movement animation
+    // Handle movement animation - calculate path when unit moves
     useEffect(() => {
         // Check if unit has moved
         const hasMoved = moveFromRef.current.x !== unit.position.x || moveFromRef.current.y !== unit.position.y;
         
-        if (hasMoved) {
-            // Start movement animation
+        if (hasMoved && pathfindingState) {
+            // Calculate the path from old position to new position
+            const path = getShortestPathToPosition(
+                pathfindingState,
+                moveFromRef.current,
+                { x: unit.position.x, y: unit.position.y },
+                unit.movement
+            );
+            
+            // Set up path animation
+            // Ensure the path always includes a start point for segment interpolation.
+            // getShortestPathToPosition returns positions AFTER the start, so we prepend.
+            const pathWithStart: Position[] = [
+                { ...moveFromRef.current },
+                ...path,
+            ];
+
+            setCurrentPath(pathWithStart);
+            setCurrentPathIndex(0);
+            setIsMovingAlongPath(pathWithStart.length > 1);
             moveStartedAtRef.current = performance.now();
-            moveFromRef.current = { x: moveFromRef.current.x, y: moveFromRef.current.y };
+
+            // IMPORTANT: don't update moveFromRef yet; we still need it while animating.
         }
         
         // Update target position
         setAnimatedPosition({ x: unit.position.x, y: 0.2, z: unit.position.y });
-    }, [unit.position.x, unit.position.y]);
+    }, [unit.position.x, unit.position.y, pathfindingState, unit.movement]);
 
     useFrame(() => {
         const mesh = meshRef.current;
@@ -93,31 +137,46 @@ export const UnitMesh: React.FC<UnitMeshProps> = ({ unit, actionState = null, is
 
         const now = performance.now();
 
-        // Handle movement animation
-        const moveStartedAt = moveStartedAtRef.current;
-        if (moveStartedAt) {
-            const elapsed = now - moveStartedAt;
-            const progress = Math.min(elapsed / MOVEMENT_DURATION_MS, 1);
+        // Handle step-by-step movement animation along path
+        if (isMovingAlongPath && currentPath.length > 0) {
+            const moveStartedAt = moveStartedAtRef.current;
             
-            if (progress >= 1) {
-                // Movement complete
-                moveStartedAtRef.current = null;
-                moveFromRef.current = { x: unit.position.x, y: unit.position.y };
-            } else {
-                // Animate movement
-                const startX = moveFromRef.current.x;
-                const startY = moveFromRef.current.y;
-                const endX = unit.position.x;
-                const endY = unit.position.y;
+            if (moveStartedAt) {
+                const totalMovementTime = MOVEMENT_DURATION_MS;
+                // We animate between consecutive points, so number of segments is (n - 1)
+                const segmentCount = Math.max(1, currentPath.length - 1);
+                const timePerStep = totalMovementTime / segmentCount;
+                const elapsed = now - moveStartedAt;
                 
-                // Ease function
-                const ease = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
+                // Calculate which step we should be on and the progress within that step
+                const currentStepFloat = elapsed / timePerStep;
+                const currentStepIndex = Math.floor(currentStepFloat);
+                const stepProgress = currentStepFloat - currentStepIndex;
                 
-                const currentX = startX + (endX - startX) * ease;
-                const currentZ = startY + (endY - startY) * ease;
-                
-                mesh.position.set(currentX, 0.2, currentZ);
-                return; // Skip other animations during movement
+                if (currentStepIndex >= currentPath.length - 1) {
+                    // Movement complete - ensure we're at the final position
+                    setIsMovingAlongPath(false);
+                    moveStartedAtRef.current = null;
+                    moveFromRef.current = { x: unit.position.x, y: unit.position.y };
+                    mesh.position.set(unit.position.x, 0.2, unit.position.y);
+                    return;
+                } else {
+                    // Get current and next positions for smooth interpolation
+                    const currentStep = currentPath[currentStepIndex];
+                    const nextStep = currentPath[currentStepIndex + 1];
+                    
+                    // Ease function for smooth movement between squares
+                    const ease = stepProgress < 0.5 
+                        ? 2 * stepProgress * stepProgress 
+                        : -1 + (4 - 2 * stepProgress) * stepProgress;
+                    
+                    // Interpolate between current and next step
+                    const currentX = currentStep.x + (nextStep.x - currentStep.x) * ease;
+                    const currentZ = currentStep.y + (nextStep.y - currentStep.y) * ease;
+                    
+                    mesh.position.set(currentX, 0.2, currentZ);
+                    return; // Skip other animations during movement
+                }
             }
         }
 
