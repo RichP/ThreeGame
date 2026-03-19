@@ -209,6 +209,11 @@ export const COLORS = {
   TILE_BLOCKED: '#0b2f68',
   TILE_BUILDING: '#0b2f68',
   
+  // Terrain colors
+  TILE_TERRAIN_COVER: '#22c55e',
+  TILE_TERRAIN_HIGH_GROUND: '#a78bfa',
+  TILE_TERRAIN_POISON: '#ef4444',
+  
   // Status effect colors
   POISON: '#22c55e',
   ARMOR: '#94a3b8',

@@ -1,5 +1,5 @@
 import type { GameState, Position } from './gamestate'
-import { isBlockedTile, getUnitAt } from './selectors'
+import { isBlockedTile, getUnitAt, getTerrainAt } from './selectors'
 import { isWithinBounds, positionKey } from './utils'
 
 export interface PathNode {

@@ -4,6 +4,7 @@ import React, { useMemo, useState, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { CONSTANTS } from '../../constants'
 import { emitSfx } from './sfxBus'
+import type { TerrainType } from '../../game/config'
 
 const TILE_SIZE = CONSTANTS.MECHANICS.TILE_SIZE
 
@@ -18,9 +19,10 @@ const Tile: React.FC<{
   isSelected?: boolean;
   isReachable?: boolean;
   isBlocked?: boolean;
+  terrain?: TerrainType | null;
   highlightMode?: TileHighlightMode;
   isPreviewMode?: boolean;
-}> = ({ x, y, onClick, onHoverStart, onHoverEnd, isSelected, isReachable, isBlocked, highlightMode = 'move', isPreviewMode = false }) => {
+}> = ({ x, y, onClick, onHoverStart, onHoverEnd, isSelected, isReachable, isBlocked, terrain, highlightMode = 'move', isPreviewMode = false }) => {
   const [hovered, setHovered] = useState(false)
   const [pulse, setPulse] = useState(0)
   const [invalidFlash, setInvalidFlash] = useState(0)
@@ -59,6 +61,11 @@ const Tile: React.FC<{
     return invalidFlash * (2 - invalidFlash)
   }, [invalidFlash])
 
+  const terrainColor = terrain === 'cover' ? CONSTANTS.COLORS.TILE_TERRAIN_COVER
+    : terrain === 'high_ground' ? CONSTANTS.COLORS.TILE_TERRAIN_HIGH_GROUND
+    : terrain === 'poison' ? CONSTANTS.COLORS.TILE_TERRAIN_POISON
+    : null
+
   const color = isBlocked
     ? blockedColor
     : invalidIntensity > 0
@@ -69,7 +76,7 @@ const Tile: React.FC<{
           ? reachableColor
           : hovered
             ? hoverColor
-            : baseColor
+            : terrainColor || baseColor
 
   return (
     <group
@@ -155,6 +162,28 @@ const Tile: React.FC<{
         <mesh position={[0, 0.5, 0]} castShadow receiveShadow>
           <boxGeometry args={[0.9, 1.0, 0.9]} />
           <meshStandardMaterial color={buildingColor} metalness={0.3} roughness={0.6} />
+        </mesh>
+      )}
+
+      {/* Terrain effects */}
+      {terrain === 'cover' && (
+        <mesh position={[0, 0.15, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.35, 0.4, 0.3, 16]} />
+          <meshStandardMaterial color={CONSTANTS.COLORS.TILE_TERRAIN_COVER} transparent opacity={0.8} />
+        </mesh>
+      )}
+
+      {terrain === 'high_ground' && (
+        <mesh position={[0, 0.25, 0]} castShadow receiveShadow>
+          <boxGeometry args={[0.8, 0.5, 0.8]} />
+          <meshStandardMaterial color={CONSTANTS.COLORS.TILE_TERRAIN_HIGH_GROUND} metalness={0.2} roughness={0.7} />
+        </mesh>
+      )}
+
+      {terrain === 'poison' && (
+        <mesh position={[0, 0.15, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[0.25, 0.35, 16]} />
+          <meshBasicMaterial color={CONSTANTS.COLORS.TILE_TERRAIN_POISON} transparent opacity={0.6} />
         </mesh>
       )}
     </group>

@@ -1,6 +1,7 @@
 import { FSM } from "./fsm";
 import {
     FIXED_MAP_PRESETS,
+    FIXED_TERRAIN_PRESETS,
     UNIT_ARCHETYPES,
     UNIT_START_POSITIONS,
     type MapPresetId,
@@ -8,6 +9,7 @@ import {
     type Position,
     type UnitArchetype,
     type UnitArchetypeStats,
+    type TerrainType,
 } from './config'
 import { CONSTANTS } from '../constants'
 import { seriesManager } from './series'
@@ -38,6 +40,7 @@ import {
     canUnitMove,
     canUseActiveAbility,
     getActiveAbilityCooldownTurns,
+    getTerrainAt,
     getUnitAt,
     getUnitById,
     hasAvailableActionsForCurrentPlayer,
@@ -102,6 +105,7 @@ export interface GameConfig {
     readonly mapPresetId: MapPresetId;
     readonly mapSeed?: number;
     readonly blockedTiles: ReadonlyArray<Position>;
+    readonly terrain: Readonly<Record<string, TerrainType>>;
 }
 
 
@@ -314,6 +318,7 @@ function createGameConfig(
             mapPresetId,
             mapSeed: seed,
             blockedTiles: generateSeededBlockedTiles(gridSize, seed, UNIT_START_POSITIONS),
+            terrain: {}, // No terrain for random maps yet
         };
     }
 
@@ -321,6 +326,7 @@ function createGameConfig(
         gridSize,
         mapPresetId,
         blockedTiles: sanitizeBlockedTilesAgainstSpawns(FIXED_MAP_PRESETS[mapPresetId]),
+        terrain: FIXED_TERRAIN_PRESETS[mapPresetId],
     };
 }
 
@@ -586,9 +592,32 @@ export function endTurn(state: GameState): GameState {
         };
     });
 
+    // Apply poison terrain effects
+    const unitsAfterTerrain = refreshedUnits.map((unit) => {
+        const terrain = getTerrainAt({ config: state.config } as GameState, unit.position);
+        if (terrain === 'poison' && unit.health > 0) {
+            const newHealth = Math.max(0, unit.health - CONSTANTS.COMBAT.POISON_DAMAGE_PER_TURN);
+            const targetDied = newHealth <= 0 && unit.health > 0;
+            
+            if (targetDied) {
+                // Unit dies from poison terrain
+                return {
+                    ...unit,
+                    health: 0,
+                };
+            }
+            
+            return {
+                ...unit,
+                health: newHealth,
+            };
+        }
+        return unit;
+    });
+
     // (tech-debt) Removed dev console spam.
 
-    const livingUnits = refreshedUnits.filter((unit) => unit.health > 0);
+    const livingUnits = unitsAfterTerrain.filter((unit) => unit.health > 0);
     const previousLivingIds = new Set(state.units.filter((unit) => unit.health > 0).map((unit) => unit.id));
     const currentLivingIds = new Set(livingUnits.map((unit) => unit.id));
     const deathsFromTick: DeathEvent[] = Array.from(previousLivingIds)

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BRUISER_GUARD_DAMAGE_REDUCTION = exports.SNIPER_AIM_MOVE_PENALTY = exports.SNIPER_AIM_CRIT_BONUS = exports.SCOUT_DASH_BONUS_MOVEMENT = exports.COVER_MISS_BONUS = exports.ARMOR_UP_DAMAGE_REDUCTION = exports.ARMOR_UP_DURATION_TURNS = exports.POISON_DURATION_TURNS = exports.POISON_DAMAGE_PER_TURN = exports.CRIT_MULTIPLIER = exports.DAMAGE_VARIANCE_MAX = exports.DAMAGE_VARIANCE_MIN = exports.CRIT_CHANCE = exports.MISS_CHANCE = exports.FIXED_MAP_PRESETS = exports.UNIT_START_POSITIONS = exports.MAP_PRESET_LABELS = exports.UNIT_ARCHETYPES = void 0;
+exports.BRUISER_GUARD_DAMAGE_REDUCTION = exports.SNIPER_AIM_MOVE_PENALTY = exports.SNIPER_AIM_CRIT_BONUS = exports.SCOUT_DASH_BONUS_MOVEMENT = exports.COVER_MISS_BONUS = exports.ARMOR_UP_DAMAGE_REDUCTION = exports.ARMOR_UP_DURATION_TURNS = exports.POISON_DURATION_TURNS = exports.POISON_DAMAGE_PER_TURN = exports.CRIT_MULTIPLIER = exports.DAMAGE_VARIANCE_MAX = exports.DAMAGE_VARIANCE_MIN = exports.CRIT_CHANCE = exports.MISS_CHANCE = exports.HIGH_GROUND_TARGET_MISS_BONUS = exports.HIGH_GROUND_MISS_REDUCTION = exports.HIGH_GROUND_CRIT_BONUS = exports.FIXED_TERRAIN_PRESETS = exports.FIXED_MAP_PRESETS = exports.UNIT_START_POSITIONS = exports.MAP_PRESET_LABELS = exports.UNIT_ARCHETYPES = void 0;
 const balance_1 = require("./balance");
 const constants_1 = require("../constants");
 exports.UNIT_ARCHETYPES = {
@@ -69,6 +69,46 @@ exports.FIXED_MAP_PRESETS = {
         { x: 4, y: 5 },
     ],
 };
+/**
+ * Additional terrain layers beyond hard-blocking tiles.
+ * Keys are position strings in the form "x,y".
+ */
+exports.FIXED_TERRAIN_PRESETS = {
+    crossroads: {
+        '0,0': 'high_ground',
+        '7,7': 'high_ground',
+        '0,7': 'high_ground',
+        '7,0': 'high_ground',
+        '1,4': 'cover',
+        '6,3': 'cover',
+        '3,1': 'poison',
+        '4,6': 'poison',
+    },
+    lanes: {
+        '3,1': 'high_ground',
+        '4,6': 'high_ground',
+        '1,5': 'cover',
+        '6,2': 'cover',
+        '3,3': 'poison',
+        '4,4': 'poison',
+    },
+    fortress: {
+        '1,1': 'high_ground',
+        '6,6': 'high_ground',
+        '1,6': 'high_ground',
+        '6,1': 'high_ground',
+        '3,1': 'cover',
+        '4,1': 'cover',
+        '3,6': 'cover',
+        '4,6': 'cover',
+        '2,2': 'poison',
+        '5,5': 'poison',
+    },
+};
+// Terrain balance knobs.
+exports.HIGH_GROUND_CRIT_BONUS = 0.05;
+exports.HIGH_GROUND_MISS_REDUCTION = 0.05;
+exports.HIGH_GROUND_TARGET_MISS_BONUS = 0.05;
 // Combat system parameters from balance config
 exports.MISS_CHANCE = balance_1.BALANCE_CONFIG.combat.minHitChance;
 exports.CRIT_CHANCE = balance_1.BALANCE_CONFIG.combat.baseCritChance;

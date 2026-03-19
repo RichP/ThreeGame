@@ -6,11 +6,14 @@ import {
   CRIT_MULTIPLIER,
   DAMAGE_VARIANCE_MAX,
   DAMAGE_VARIANCE_MIN,
+  HIGH_GROUND_CRIT_BONUS,
+  HIGH_GROUND_MISS_REDUCTION,
+  HIGH_GROUND_TARGET_MISS_BONUS,
   MISS_CHANCE,
   SNIPER_AIM_CRIT_BONUS,
 } from '../config'
 import type { GameState, Position, TargetingPreview, UnitData } from '../gamestate'
-import { canUnitAttack, isBlockedTile } from '../selectors'
+import { canUnitAttack, isBlockedTile, isCoverTerrain, isHighGroundTerrain } from '../selectors'
 import { clamp01, isWithinBounds, manhattanDistance } from '../utils'
 
 export function isAdjacentToBlockedTile(state: GameState, position: Position): boolean {

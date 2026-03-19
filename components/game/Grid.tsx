@@ -10,13 +10,14 @@ interface GridProps {
     reachable?: ReadonlyArray<Position>;
     highlightMode?: 'move' | 'attack';
     blockedTiles?: ReadonlyArray<Position>;
+    terrain?: Readonly<Record<string, string>>;
     onTileClick?: (pos: Position) => void;
     onTileHoverStart?: (pos: Position) => void;
     onTileHoverEnd?: () => void;
     isPreviewMode?: boolean;
 }
 
-export const Grid: React.FC<GridProps> = ({ size, selected, reachable, highlightMode = 'move', blockedTiles, onTileClick, onTileHoverStart, onTileHoverEnd, isPreviewMode = false }) => {
+export const Grid: React.FC<GridProps> = ({ size, selected, reachable, highlightMode = 'move', blockedTiles, terrain, onTileClick, onTileHoverStart, onTileHoverEnd, isPreviewMode = false }) => {
     const isReachable = (x: number, y: number) => reachable?.some(pos => pos.x === x && pos.y === y);
     const isBlocked = (x: number, y: number) => blockedTiles?.some(pos => pos.x === x && pos.y === y);
 
@@ -26,6 +27,9 @@ export const Grid: React.FC<GridProps> = ({ size, selected, reachable, highlight
 
     for (let x = 0; x < size; x++) {
         for (let y = 0; y < size; y++) {
+            const terrainKey = `${x},${y}`;
+            const terrainType = terrain?.[terrainKey] as any;
+
             tiles.push(
                 <Tile
                     key={`${x}-${y}`}
@@ -48,6 +52,7 @@ export const Grid: React.FC<GridProps> = ({ size, selected, reachable, highlight
                     isReachable={isReachable(x, y)}
                     highlightMode={highlightMode}
                     isBlocked={isBlocked(x, y)}
+                    terrain={terrainType}
                 />
             );
         }

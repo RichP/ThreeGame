@@ -78,6 +78,7 @@ export const Board: React.FC<BoardProps> = ({
                 reachable={tilesToShow}
                 highlightMode={highlightMode}
                 blockedTiles={gameState.config.blockedTiles}
+                terrain={gameState.config.terrain}
                 onTileClick={isPreviewMode ? undefined : onTileClick}
                 onTileHoverStart={isPreviewMode ? undefined : onTileHoverStart}
                 onTileHoverEnd={isPreviewMode ? undefined : onTileHoverEnd}

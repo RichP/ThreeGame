@@ -1,6 +1,6 @@
 import type { GameState, Position, UnitData } from '../gamestate'
 import { SNIPER_AIM_MOVE_PENALTY } from '../config'
-import { canUnitMove, getUnitAt, isBlockedTile } from '../selectors'
+import { canUnitMove, getUnitAt, isBlockedTile, getTerrainAt } from '../selectors'
 import { isWithinBounds, manhattanDistance, positionKey } from '../utils'
 import { findPath } from '../pathfinding'
 

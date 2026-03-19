@@ -133,12 +133,14 @@ function createGameConfig(mapPresetId, mapSeed) {
             mapPresetId,
             mapSeed: seed,
             blockedTiles: generateSeededBlockedTiles(gridSize, seed, config_1.UNIT_START_POSITIONS),
+            terrain: {}, // No terrain for random maps yet
         };
     }
     return {
         gridSize,
         mapPresetId,
         blockedTiles: sanitizeBlockedTilesAgainstSpawns(config_1.FIXED_MAP_PRESETS[mapPresetId]),
+        terrain: config_1.FIXED_TERRAIN_PRESETS[mapPresetId],
     };
 }
 const PHASE_TRANSITIONS = {
@@ -368,8 +370,28 @@ function endTurn(state) {
             abilityCooldownRemaining: Math.max(0, (buffed.abilityCooldownRemaining ?? 0) - 1),
         };
     });
+    // Apply poison terrain effects
+    const unitsAfterTerrain = refreshedUnits.map((unit) => {
+        const terrain = (0, selectors_1.getTerrainAt)({ config: state.config }, unit.position);
+        if (terrain === 'poison' && unit.health > 0) {
+            const newHealth = Math.max(0, unit.health - constants_1.CONSTANTS.COMBAT.POISON_DAMAGE_PER_TURN);
+            const targetDied = newHealth <= 0 && unit.health > 0;
+            if (targetDied) {
+                // Unit dies from poison terrain
+                return {
+                    ...unit,
+                    health: 0,
+                };
+            }
+            return {
+                ...unit,
+                health: newHealth,
+            };
+        }
+        return unit;
+    });
     // (tech-debt) Removed dev console spam.
-    const livingUnits = refreshedUnits.filter((unit) => unit.health > 0);
+    const livingUnits = unitsAfterTerrain.filter((unit) => unit.health > 0);
     const previousLivingIds = new Set(state.units.filter((unit) => unit.health > 0).map((unit) => unit.id));
     const currentLivingIds = new Set(livingUnits.map((unit) => unit.id));
     const deathsFromTick = Array.from(previousLivingIds)

@@ -1,6 +1,7 @@
 export type PlayerId = 'p1' | 'p2'
 export type UnitArchetype = 'scout' | 'bruiser' | 'sniper'
 export type MapPresetId = 'crossroads' | 'lanes' | 'fortress' | 'random-seeded'
+export type TerrainType = 'cover' | 'high_ground' | 'poison'
 
 import { BALANCE_CONFIG } from './balance'
 import { CONSTANTS } from '../constants'
@@ -88,6 +89,48 @@ export const FIXED_MAP_PRESETS: Record<Exclude<MapPresetId, 'random-seeded'>, Re
     { x: 4, y: 5 },
   ],
 }
+
+/**
+ * Additional terrain layers beyond hard-blocking tiles.
+ * Keys are position strings in the form "x,y".
+ */
+export const FIXED_TERRAIN_PRESETS: Record<Exclude<MapPresetId, 'random-seeded'>, Readonly<Record<string, TerrainType>>> = {
+  crossroads: {
+    '0,0': 'high_ground',
+    '7,7': 'high_ground',
+    '0,7': 'high_ground',
+    '7,0': 'high_ground',
+    '1,4': 'cover',
+    '6,3': 'cover',
+    '3,1': 'poison',
+    '4,6': 'poison',
+  },
+  lanes: {
+    '3,1': 'high_ground',
+    '4,6': 'high_ground',
+    '1,5': 'cover',
+    '6,2': 'cover',
+    '3,3': 'poison',
+    '4,4': 'poison',
+  },
+  fortress: {
+    '1,1': 'high_ground',
+    '6,6': 'high_ground',
+    '1,6': 'high_ground',
+    '6,1': 'high_ground',
+    '3,1': 'cover',
+    '4,1': 'cover',
+    '3,6': 'cover',
+    '4,6': 'cover',
+    '2,2': 'poison',
+    '5,5': 'poison',
+  },
+}
+
+// Terrain balance knobs.
+export const HIGH_GROUND_CRIT_BONUS = 0.05
+export const HIGH_GROUND_MISS_REDUCTION = 0.05
+export const HIGH_GROUND_TARGET_MISS_BONUS = 0.05
 
 // Combat system parameters from balance config
 export const MISS_CHANCE = BALANCE_CONFIG.combat.minHitChance

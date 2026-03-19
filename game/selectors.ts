@@ -1,5 +1,6 @@
 import type { GameState, Position, UnitData } from './gamestate'
 import { BALANCE_CONFIG } from './balance'
+import type { TerrainType } from './config'
 
 export type ActiveAbilityId = 'dash' | 'guard' | 'aim'
 
@@ -61,6 +62,26 @@ export function isBlockedTile(state: GameState, position: Position): boolean {
   return state.config.blockedTiles.some(
     (tile) => tile.x === position.x && tile.y === position.y,
   )
+}
+
+export function getTerrainAt(state: GameState, position: Position): TerrainType | null {
+  const key = `${position.x},${position.y}`;
+  return state.config.terrain[key] || null;
+}
+
+export function isCoverTerrain(state: GameState, position: Position): boolean {
+  const terrain = getTerrainAt(state, position);
+  return terrain === 'cover';
+}
+
+export function isHighGroundTerrain(state: GameState, position: Position): boolean {
+  const terrain = getTerrainAt(state, position);
+  return terrain === 'high_ground';
+}
+
+export function isPoisonTerrain(state: GameState, position: Position): boolean {
+  const terrain = getTerrainAt(state, position);
+  return terrain === 'poison';
 }
 
 export function isCurrentPlayersUnit(state: GameState, unit?: UnitData): boolean {

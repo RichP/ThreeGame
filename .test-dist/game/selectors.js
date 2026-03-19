@@ -6,6 +6,10 @@ exports.getActiveAbilityCooldownTurns = getActiveAbilityCooldownTurns;
 exports.getUnitById = getUnitById;
 exports.getUnitAt = getUnitAt;
 exports.isBlockedTile = isBlockedTile;
+exports.getTerrainAt = getTerrainAt;
+exports.isCoverTerrain = isCoverTerrain;
+exports.isHighGroundTerrain = isHighGroundTerrain;
+exports.isPoisonTerrain = isPoisonTerrain;
 exports.isCurrentPlayersUnit = isCurrentPlayersUnit;
 exports.canUnitMove = canUnitMove;
 exports.canUnitAttack = canUnitAttack;
@@ -53,6 +57,22 @@ function getUnitAt(state, position) {
 }
 function isBlockedTile(state, position) {
     return state.config.blockedTiles.some((tile) => tile.x === position.x && tile.y === position.y);
+}
+function getTerrainAt(state, position) {
+    const key = `${position.x},${position.y}`;
+    return state.config.terrain[key] || null;
+}
+function isCoverTerrain(state, position) {
+    const terrain = getTerrainAt(state, position);
+    return terrain === 'cover';
+}
+function isHighGroundTerrain(state, position) {
+    const terrain = getTerrainAt(state, position);
+    return terrain === 'high_ground';
+}
+function isPoisonTerrain(state, position) {
+    const terrain = getTerrainAt(state, position);
+    return terrain === 'poison';
 }
 function isCurrentPlayersUnit(state, unit) {
     return !!unit && unit.playerId === state.currentPlayer;
