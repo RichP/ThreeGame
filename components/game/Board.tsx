@@ -19,6 +19,13 @@ interface BoardProps {
     gameState: GameState;
     reachableTiles: ReadonlyArray<Position>;
     attackableTiles?: ReadonlyArray<Position>;
+    /**
+     * Optional override for what tile should be considered “selected” for highlight/path UI.
+     * Useful while a unit is animating from A→B but the logical state has already updated.
+     */
+    selectedPositionOverride?: Position | null;
+    onTileHoverStart?: (pos: Position) => void;
+    onTileHoverEnd?: () => void;
     onTileClick: (pos: Position) => void;
     onUnitHoverStart?: (unitId: string) => void;
     onUnitHoverEnd?: () => void;
@@ -44,6 +51,9 @@ export const Board: React.FC<BoardProps> = ({
     gameState,
     reachableTiles,
     attackableTiles = [],
+    selectedPositionOverride,
+    onTileHoverStart,
+    onTileHoverEnd,
     onTileClick,
     onUnitHoverStart,
     onUnitHoverEnd,
@@ -56,6 +66,7 @@ export const Board: React.FC<BoardProps> = ({
 }) => {
     const selectedUnit = getUnitById(gameState, gameState.selectedUnitId ?? null);
     const effectivePhase = phaseOverride ?? gameState.phase;
+    const selectedPosition = selectedPositionOverride ?? selectedUnit?.position ?? null;
     const tilesToShow = effectivePhase === Phase.ATTACK ? attackableTiles : reachableTiles;
     const highlightMode: 'move' | 'attack' = effectivePhase === Phase.ATTACK ? 'attack' : 'move';
     
@@ -63,21 +74,13 @@ export const Board: React.FC<BoardProps> = ({
         <>
             <Grid
                 size={gameState.config.gridSize}
-                selected={selectedUnit?.position ?? null}
+                selected={selectedPosition}
                 reachable={tilesToShow}
                 highlightMode={highlightMode}
                 blockedTiles={gameState.config.blockedTiles}
                 onTileClick={isPreviewMode ? undefined : onTileClick}
-                onTileHoverStart={() => {
-                    if (!isPreviewMode) {
-                        // Handle tile hover start
-                    }
-                }}
-                onTileHoverEnd={() => {
-                    if (!isPreviewMode) {
-                        // Handle tile hover end
-                    }
-                }}
+                onTileHoverStart={isPreviewMode ? undefined : onTileHoverStart}
+                onTileHoverEnd={isPreviewMode ? undefined : onTileHoverEnd}
                 isPreviewMode={isPreviewMode}
             />
             {gameState.units.map((unit) => {
@@ -89,16 +92,7 @@ export const Board: React.FC<BoardProps> = ({
                             ? 'can_attack'
                             : 'exhausted';
 
-                // Debug logging
-                if (process.env.NODE_ENV === 'development') {
-                    console.log(`Unit ${unit.id}:`, {
-                        playerId: unit.playerId,
-                        currentPlayer: gameState.currentPlayer,
-                        hasMoved: unit.hasMoved,
-                        hasAttacked: unit.hasAttacked,
-                        actionState
-                    });
-                }
+                // (tech-debt) Removed per-render dev logging; it spammed console and hurt perf.
 
                 return (
                     <UnitMesh
@@ -153,9 +147,9 @@ export const Board: React.FC<BoardProps> = ({
             />
 
             {/* Path Visualization - Line from unit to hovered tile */}
-            {gameState.phase === Phase.MOVE_UNIT && gameState.selectedUnitId && (
+            {effectivePhase === Phase.MOVE_UNIT && gameState.selectedUnitId && selectedPosition && (
                 <MovePathVisualizer
-                    selectedUnitPosition={selectedUnit!.position}
+                    selectedUnitPosition={selectedPosition}
                     reachableTiles={Array.from(reachableTiles)}
                     color={gameState.currentPlayer === 'p1' ? '#3b82f6' : '#ef4444'}
                     visible={true}

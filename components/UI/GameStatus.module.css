@@ -353,3 +353,21 @@
   color: #f8fafc;
   font-weight: 700;
 }
+
+.killLow {
+  color: #fca5a5;
+}
+
+.killMid {
+  color: #fde68a;
+}
+
+.killHigh {
+  color: #86efac;
+}
+
+.skull {
+  margin-left: 6px;
+  font-size: 12px;
+  opacity: 0.95;
+}

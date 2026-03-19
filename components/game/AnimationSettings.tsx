@@ -17,11 +17,19 @@ interface AnimationSettings {
 interface AnimationSettingsProps {
   settings: AnimationSettings;
   onChange: (settings: AnimationSettings) => void;
+  sfxMuted: boolean
+  sfxVolume: number
+  onSfxMutedChange: (muted: boolean) => void
+  onSfxVolumeChange: (volume: number) => void
 }
 
 export const AnimationSettings: React.FC<AnimationSettingsProps> = ({
   settings,
-  onChange
+  onChange,
+  sfxMuted,
+  sfxVolume,
+  onSfxMutedChange,
+  onSfxVolumeChange,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -226,6 +234,36 @@ export const AnimationSettings: React.FC<AnimationSettingsProps> = ({
               />
               Show path only (instead of all reachable squares)
             </label>
+          </div>
+
+          {/* SFX settings */}
+          <div style={{ marginBottom: '12px' }}>
+            <div style={{ fontSize: '12px', marginBottom: '6px', fontWeight: 600 }}>
+              Sound Effects
+            </div>
+
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', marginBottom: 8 }}>
+              <input
+                type="checkbox"
+                checked={!sfxMuted}
+                onChange={(e) => onSfxMutedChange(!e.target.checked ? true : false)}
+              />
+              Enable SFX
+            </label>
+
+            <div style={{ fontSize: '12px', marginBottom: '4px', opacity: sfxMuted ? 0.6 : 1 }}>
+              SFX Volume: {Math.round(sfxVolume * 100)}%
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={sfxVolume}
+              onChange={(e) => onSfxVolumeChange(parseFloat(e.target.value))}
+              disabled={sfxMuted}
+              style={{ width: '100%' }}
+            />
           </div>
 
           {/* Reset button */}

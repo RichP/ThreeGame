@@ -2,6 +2,7 @@
 
 import React from 'react'
 import type { UnitData } from '../../game/gamestate'
+import { getActiveAbilityAvailability } from '../../game/gamestate'
 import styles from './AbilityTooltip.module.css'
 
 interface AbilityTooltipProps {
@@ -15,13 +16,17 @@ export const AbilityTooltip: React.FC<AbilityTooltipProps> = ({ unit, isVisible,
     return null
   }
 
+  const availability = getActiveAbilityAvailability(unit)
+
   const getAbilityInfo = () => {
     switch (unit.archetype) {
       case 'scout':
         return {
           name: 'Dash',
           description: 'Grants +2 movement for this turn only',
-          cooldown: 'Ready',
+          cooldown: availability?.cooldownRemaining
+            ? `${availability.cooldownRemaining} turns`
+            : 'Ready',
           effect: 'Movement bonus: +2',
           activation: 'Instant'
         }
@@ -29,7 +34,9 @@ export const AbilityTooltip: React.FC<AbilityTooltipProps> = ({ unit, isVisible,
         return {
           name: 'Guard',
           description: 'Reduces incoming damage by 3 for 1 turn',
-          cooldown: 'Ready',
+          cooldown: availability?.cooldownRemaining
+            ? `${availability.cooldownRemaining} turns`
+            : 'Ready',
           effect: 'Damage reduction: -3',
           activation: 'Instant'
         }
@@ -37,7 +44,9 @@ export const AbilityTooltip: React.FC<AbilityTooltipProps> = ({ unit, isVisible,
         return {
           name: 'Aim',
           description: 'Increases critical chance by 16% but reduces movement by 2',
-          cooldown: 'Ready',
+          cooldown: availability?.cooldownRemaining
+            ? `${availability.cooldownRemaining} turns`
+            : 'Ready',
           effect: 'Crit chance: +16%, Movement: -2',
           activation: 'Instant'
         }
@@ -93,8 +102,15 @@ export const AbilityTooltip: React.FC<AbilityTooltipProps> = ({ unit, isVisible,
       </div>
 
       <div className={styles.status}>
-        <span className={`${styles.statusIndicator} ${unit.hasUsedAbility ? styles.used : styles.ready}`}>
-          {unit.hasUsedAbility ? 'USED' : 'READY'}
+        <span
+          className={`${styles.statusIndicator} ${availability?.canUse ? styles.ready : styles.used}`}
+          title={availability?.reason}
+        >
+          {availability?.canUse
+            ? 'READY'
+            : availability?.cooldownRemaining
+              ? `CD ${availability.cooldownRemaining}`
+              : 'USED'}
         </span>
       </div>
     </div>

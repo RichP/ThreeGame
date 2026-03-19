@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useRouter } from 'next/router'
 import MainLayout from '../components/MainLayout'
 import { ProtectedRoute } from '../components/auth/ProtectedRoute'
 import CommunityTabs from '../components/community/CommunityTabs'
@@ -26,6 +27,7 @@ interface LeaderboardEntry {
 }
 
 export default function CommunityPage() {
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState<'leaderboards' | 'friends' | 'search'>('leaderboards')
   const [searchQuery, setSearchQuery] = useState('')
   const [friends, setFriends] = useState<Friend[]>([
@@ -123,7 +125,7 @@ export default function CommunityPage() {
               {activeTab === 'leaderboards' && (
                 <LeaderboardPreview 
                   topPlayers={topPlayers}
-                  onViewAll={() => window.location.href = '/leaderboards'}
+                  onViewAll={() => router.push('/leaderboards')}
                 />
               )}
 

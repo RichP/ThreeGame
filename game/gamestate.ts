@@ -37,6 +37,7 @@ import {
     canUnitAttack,
     canUnitMove,
     canUseActiveAbility,
+    getActiveAbilityCooldownTurns,
     getUnitAt,
     getUnitById,
     hasAvailableActionsForCurrentPlayer,
@@ -83,6 +84,8 @@ export interface UnitData {
     hasMoved: boolean;
     hasAttacked: boolean;
     hasUsedAbility: boolean;
+    /** Remaining turns until the active ability is ready again (0 = ready). */
+    abilityCooldownRemaining: number;
     statusEffects: UnitStatusEffects;
 }
 
@@ -352,6 +355,7 @@ function createUnitFromArchetype(
         hasMoved: false,
         hasAttacked: false,
         hasUsedAbility: false,
+        abilityCooldownRemaining: 0,
         statusEffects: {
             armorUpTurns: 0,
             poisonTurns: 0,
@@ -427,6 +431,10 @@ export {
     canUnitAttack,
     canUnitMove,
     canUseActiveAbility,
+    getActiveAbilityAvailability,
+    getActiveAbilityCooldownTurns,
+    getActiveAbilityId,
+    getActiveAbilityName,
     getUnitAt,
     getUnitById,
     hasAvailableActionsForCurrentPlayer,
@@ -574,19 +582,11 @@ export function endTurn(state: GameState): GameState {
             hasMoved: false,
             hasAttacked: false,
             hasUsedAbility: false,
+            abilityCooldownRemaining: Math.max(0, (buffed.abilityCooldownRemaining ?? 0) - 1),
         };
     });
 
-    // Debug logging to track unit states
-    if (process.env.NODE_ENV === 'development') {
-        console.log('End Turn - Unit States:', refreshedUnits.map(u => ({
-            id: u.id,
-            playerId: u.playerId,
-            hasMoved: u.hasMoved,
-            hasAttacked: u.hasAttacked,
-            hasUsedAbility: u.hasUsedAbility
-        })));
-    }
+    // (tech-debt) Removed dev console spam.
 
     const livingUnits = refreshedUnits.filter((unit) => unit.health > 0);
     const previousLivingIds = new Set(state.units.filter((unit) => unit.health > 0).map((unit) => unit.id));
@@ -920,6 +920,8 @@ export function useActiveAbilityForSelectedUnit(state: GameState): GameState {
     if (!isCurrentPlayersUnit(state, unit)) return state;
     if (!canUseActiveAbility(unit)) return state;
 
+    const cooldownTurns = getActiveAbilityCooldownTurns(unit)
+
     const units = state.units.map((candidate) => {
         if (candidate.id !== unit.id) return candidate;
 
@@ -928,6 +930,7 @@ export function useActiveAbilityForSelectedUnit(state: GameState): GameState {
             return {
                 ...candidate,
                 hasUsedAbility: true,
+                abilityCooldownRemaining: cooldownTurns,
                 statusEffects: {
                     ...candidate.statusEffects,
                     dashBonusMovement: CONSTANTS.COMBAT.SCOUT_DASH_BONUS_MOVEMENT,
@@ -939,6 +942,7 @@ export function useActiveAbilityForSelectedUnit(state: GameState): GameState {
             return {
                 ...candidate,
                 hasUsedAbility: true,
+                abilityCooldownRemaining: cooldownTurns,
                 statusEffects: {
                     ...candidate.statusEffects,
                     guardTurns: Math.max(candidate.statusEffects.guardTurns, 1),
@@ -950,6 +954,7 @@ export function useActiveAbilityForSelectedUnit(state: GameState): GameState {
             return {
                 ...candidate,
                 hasUsedAbility: true,
+                abilityCooldownRemaining: cooldownTurns,
                 statusEffects: {
                     ...candidate.statusEffects,
                     aimTurns: Math.max(candidate.statusEffects.aimTurns, 1),

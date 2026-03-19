@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useEffect, useMemo, useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { Board } from './Board'
@@ -11,8 +10,9 @@ import { Controls } from '../UI/Controls'
 import { ActionLog } from '../UI/ActionLog'
 import { SessionHud } from '../UI/SessionHud'
 import { AnimationSettings, useAnimationSettings } from './AnimationSettings'
-import { CameraController, CameraEffects } from './CameraController'
+import { CameraEffects } from './CameraController'
 import { DebugAnimations } from './DebugAnimations'
+import { MatchSummaryModal } from '../UI/MatchSummaryModal'
 import {
     type AttackOutcome,
     calculateAttackableTilesInState,
@@ -49,6 +49,10 @@ import {
     type TargetingPreview,
 } from '../../game/gamestate';
 import { getShortestPathToPosition } from '../../game/pathfinding'
+import { getEffectiveMovement } from '../../game/rules/movement'
+import { installSfxBusListener, emitSfx } from './sfxBus'
+import { getSfxSettings, setSfxSettings } from './sfx'
+import { ANIMATION_TIMINGS } from './animationTimings'
 
 const TILE_SIZE = 1
 const GRID_SIZE = 8
@@ -69,6 +73,9 @@ type CanvasProps = any
 interface SceneCanvasProps {
   canvasProps?: CanvasProps
   mode?: 'game' | 'preview'
+  onGameStateChange?: (gameState: GameState) => void
+  /** Override localStorage save key. Useful for tutorial/sandbox sessions. */
+  saveKey?: string
 }
 
 interface ActiveHitVfx {
@@ -85,11 +92,12 @@ interface UndoMoveSnapshot {
   to: Position
 }
 
-const ATTACK_VFX_DURATION_MS = 850
-const TURN_BANNER_DURATION_MS = 700
-const MOVEMENT_DURATION_MS = 600
+// Reserved for future: coordinating VFX cleanup windows.
+// const ATTACK_VFX_DURATION_MS = ANIMATION_TIMINGS.attackVfxDurationMs
+const TURN_BANNER_DURATION_MS = ANIMATION_TIMINGS.turnBannerDurationMs
+const MOVEMENT_DURATION_MS = ANIMATION_TIMINGS.movementDurationMs
 const MAP_PRESET_IDS = Object.keys(MAP_PRESET_LABELS) as MapPresetId[]
-const SAVE_KEY = 'threegame:save:v1'
+const DEFAULT_SAVE_KEY = 'threegame:save:v1'
 const TURN_BANNER_OVERLAY_STYLE = {
   position: 'fixed',
   inset: 0,
@@ -99,23 +107,7 @@ const TURN_BANNER_OVERLAY_STYLE = {
   pointerEvents: 'none',
   zIndex: 35,
 } as const
-const WINNER_OVERLAY_STYLE = {
-  position: 'fixed',
-  inset: 0,
-  background: 'rgba(2, 6, 23, 0.78)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  zIndex: 40,
-} as const
-const WINNER_PANEL_STYLE = {
-  background: 'rgba(15, 23, 42, 0.95)',
-  border: '1px solid rgba(148, 163, 184, 0.35)',
-  borderRadius: 12,
-  padding: '24px 28px',
-  textAlign: 'center',
-  minWidth: 280,
-} as const
+// Winner overlay styles were moved into MatchSummaryModal.
 
 interface SeriesState {
   bestOf: 3 | 5
@@ -136,19 +128,29 @@ function getNextMapPresetId(current: MapPresetId): MapPresetId {
   return MAP_PRESET_IDS[(index + 1) % MAP_PRESET_IDS.length]
 }
 
-const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' }) => {
+const SceneCanvas: React.FC<SceneCanvasProps> = ({
+  canvasProps,
+  mode = 'game',
+  onGameStateChange,
+  saveKey,
+}) => {
     const [initialOptions, setInitialOptions] = useState<InitialGameOptions>({
       mapPresetId: 'crossroads',
       firstPlayer: 'p1',
       autoSkipNoTargetAttack: false,
     })
     const [gameState, setGameState] = useState<GameState>(createInitialGameState());
+    const effectiveSaveKey = saveKey ?? DEFAULT_SAVE_KEY
+    useEffect(() => {
+      onGameStateChange?.(gameState)
+    }, [gameState, onGameStateChange])
     const [activeHitVfx, setActiveHitVfx] = useState<ActiveHitVfx | null>(null);
     const [isResolvingAttack, setIsResolvingAttack] = useState(false);
     const [hoveredUnitId, setHoveredUnitId] = useState<string | null>(null);
     const [undoMoveSnapshot, setUndoMoveSnapshot] = useState<UndoMoveSnapshot | null>(null)
     const [isAnimatingMove, setIsAnimatingMove] = useState(false)
     const [moveHighlightTiles, setMoveHighlightTiles] = useState<Position[] | null>(null)
+    const [hoveredTilePos, setHoveredTilePos] = useState<Position | null>(null)
   const orbitControlsRef = useRef<any>(null)
     const [turnBannerText, setTurnBannerText] = useState<string | null>('Player 1 Turn')
     const [seriesState, setSeriesState] = useState<SeriesState>({
@@ -160,13 +162,14 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' })
     
     // Animation settings
     const { settings, setSettings } = useAnimationSettings();
+    const [sfxMuted, setSfxMuted] = useState<boolean>(getSfxSettings().muted)
+    const [sfxVolume, setSfxVolume] = useState<number>(getSfxSettings().volume)
     const attackTimeoutRef = useRef<number | null>(null);
     const turnBannerTimeoutRef = useRef<number | null>(null)
     const hasShownInitialTurnBannerRef = useRef(false)
     const hasHydratedSaveRef = useRef(false)
     const recordedMatchWinnerRef = useRef<string | null>(null)
     const winner = useMemo(() => getWinner(gameState), [gameState]);
-    const winnerLabel = winner === 'p1' ? 'Player 1' : winner === 'p2' ? 'Player 2' : null
     const isPlayerOneTurn = gameState.currentPlayer === 'p1'
     const turnBannerTheme = isPlayerOneTurn
       ? {
@@ -221,6 +224,30 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' })
         gameState.units.find(u => u.id === gameState.selectedUnitId)
     ),
     [gameState.selectedUnitId, gameState.units, gameState.currentPlayer]);
+
+    const movePreview = useMemo(() => {
+      if (gameState.phase !== Phase.MOVE_UNIT) return null
+      if (!selectedUnit) return null
+      if (!hoveredTilePos) return null
+
+      // Only show preview for reachable tiles.
+      const isHoverReachable = reachableTiles.some(
+        (pos) => pos.x === hoveredTilePos.x && pos.y === hoveredTilePos.y
+      )
+      if (!isHoverReachable) return null
+
+      const budget = getEffectiveMovement(selectedUnit)
+      const path = getShortestPathToPosition(gameState, selectedUnit.position, hoveredTilePos, budget)
+      const steps = path.length
+
+      return {
+        from: { ...selectedUnit.position },
+        to: { ...hoveredTilePos },
+        steps,
+        budget,
+        remaining: Math.max(0, budget - steps),
+      }
+    }, [gameState, hoveredTilePos, reachableTiles, selectedUnit])
         
 
     const handleTileClick = (tilePos: Position) => {
@@ -229,12 +256,14 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' })
     if (isAnimatingMove) return;
 
     setHoveredUnitId(null)
+    setHoveredTilePos(null)
 
     switch (gameState.phase) {
       case Phase.SELECT_UNIT:
         if (isBlockedTile(gameState, tilePos)) return;
         const unit = getUnitAt(gameState, tilePos);
         if (unit && isCurrentPlayersUnit(gameState, unit) && !hasUnitFinishedTurn(unit)) {
+          emitSfx('select')
           setGameState(prev => selectUnit(prev, unit.id));
         }
         break;
@@ -264,6 +293,8 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' })
             from: { ...selectedUnit.position },
             to: { ...tilePos },
           })
+
+          emitSfx('move')
           
           // For animation, we need to trigger the pathfinding before updating state
           // The UnitMesh component will handle the animation based on the path
@@ -280,6 +311,7 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' })
       case Phase.ATTACK:
         const targetUnit = getUnitAt(gameState, tilePos);
         if (targetUnit && targetUnit.id !== gameState.selectedUnitId && attackableEnemies.some(e => e.id === targetUnit.id)) {
+          emitSfx('attack')
           const resolution = resolveAttack(gameState, targetUnit.id);
           if (!resolution) return;
 
@@ -305,6 +337,15 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' })
 
           // Attack sequence: Projectile → Impact → Cleanup
           attackTimeoutRef.current = window.setTimeout(() => {
+            if (resolution.outcome === 'crit') emitSfx('crit')
+            else if (resolution.outcome === 'miss') emitSfx('miss')
+            else emitSfx('hit')
+
+            const targetAfter = getUnitById(resolution.nextState, resolution.targetId)
+            if (!targetAfter || targetAfter.health <= 0) {
+              emitSfx('death')
+            }
+
             // First: Show projectile impact (hit effect) - this triggers FloatingDamageText
             setActiveHitVfx({
               key: vfxKey,
@@ -395,8 +436,33 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' })
   const cameraPosition: [number, number, number] = [CENTER, GRID_SIZE * 1.0 + 2, CENTER + GRID_SIZE]
 
   useEffect(() => {
+    // Re-hydrate when save key changes (e.g. tutorial sessions use a separate key).
+    hasHydratedSaveRef.current = false
+
+    // Install SFX listener once per scene.
+    const uninstall = installSfxBusListener()
+
+    // Restore persisted SFX settings.
     try {
-      const raw = window.localStorage.getItem(SAVE_KEY)
+      const raw = window.localStorage.getItem('threegame:sfx-settings')
+      if (raw) {
+        const parsed = JSON.parse(raw) as { muted?: boolean; volume?: number }
+        if (typeof parsed.muted === 'boolean') {
+          setSfxMuted(parsed.muted)
+          setSfxSettings({ muted: parsed.muted })
+        }
+        if (typeof parsed.volume === 'number') {
+          const v = Math.max(0, Math.min(1, parsed.volume))
+          setSfxVolume(v)
+          setSfxSettings({ volume: v })
+        }
+      }
+    } catch {
+      // ignore
+    }
+
+    try {
+      const raw = window.localStorage.getItem(effectiveSaveKey)
       if (!raw) {
         hasHydratedSaveRef.current = true
         return
@@ -416,7 +482,20 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' })
     } finally {
       hasHydratedSaveRef.current = true
     }
-  }, [])
+
+    return () => {
+      uninstall()
+    }
+  }, [effectiveSaveKey])
+
+  useEffect(() => {
+    setSfxSettings({ muted: sfxMuted, volume: sfxVolume })
+    try {
+      window.localStorage.setItem('threegame:sfx-settings', JSON.stringify({ muted: sfxMuted, volume: sfxVolume }))
+    } catch {
+      // ignore
+    }
+  }, [sfxMuted, sfxVolume])
 
   useEffect(() => {
     if (!hasHydratedSaveRef.current) return
@@ -430,14 +509,14 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' })
     }
 
     try {
-      window.localStorage.setItem(SAVE_KEY, JSON.stringify(payload))
+      window.localStorage.setItem(effectiveSaveKey, JSON.stringify(payload))
       const now = Date.now()
       setLastSavedAt(now)
       setSaveState('saved')
     } catch {
       setSaveState('error')
     }
-  }, [gameState, initialOptions, seriesState])
+  }, [effectiveSaveKey, gameState, initialOptions, seriesState])
 
   useEffect(() => {
     if (saveState !== 'saved') return
@@ -585,7 +664,17 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' })
           gameState={gameState}
           reachableTiles={effectiveReachableTiles}
           attackableTiles={attackableTiles}
+          // While animating a move, keep the “selected tile” highlight on the
+          // origin square so it doesn’t snap to the destination immediately.
+          selectedPositionOverride={isAnimatingMove ? (undoMoveSnapshot?.from ?? null) : undefined}
           onTileClick={handleTileClick}
+          onTileHoverStart={(pos) => {
+            if (isAnimatingMove) return
+            setHoveredTilePos(pos)
+          }}
+          onTileHoverEnd={() => {
+            setHoveredTilePos(null)
+          }}
           onUnitHoverStart={(unitId) => setHoveredUnitId(unitId)}
           onUnitHoverEnd={() => setHoveredUnitId(null)}
           previewTargetUnitId={targetingPreview?.targetId ?? null}
@@ -598,14 +687,18 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' })
             position: activeHitVfx.position,
           } : null}
           isPreviewMode={mode === 'preview'}
-          phaseOverride={isAnimatingMove && settings.enabled && settings.keepMoveHighlightsDuringMove ? Phase.MOVE_UNIT : undefined}
+          // While the unit is animating, keep the board in MOVE_UNIT visuals so
+          // we don't show ATTACK highlights until the move finishes.
+          // Whether move highlights are shown during the animation is controlled
+          // by `effectiveReachableTiles` (and the AnimationSettings flags).
+          phaseOverride={isAnimatingMove ? Phase.MOVE_UNIT : undefined}
         />
       </Canvas>
 
       {/* Only show UI elements in game mode */}
       {mode === 'game' && (
         <>
-          <GameStatus gameState={gameState} targetingPreview={targetingPreview} />
+          <GameStatus gameState={gameState} targetingPreview={targetingPreview} movePreview={movePreview} />
           <UnitInfo gameState={gameState} />
           <ActionLog gameState={gameState} />
           <Controls 
@@ -718,6 +811,10 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' })
           <AnimationSettings
             settings={settings}
             onChange={setSettings}
+            sfxMuted={sfxMuted}
+            sfxVolume={sfxVolume}
+            onSfxMutedChange={setSfxMuted}
+            onSfxVolumeChange={setSfxVolume}
           />
 
           {/* Debug Info */}
@@ -747,134 +844,44 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({ canvasProps, mode = 'game' })
       )}
 
       {winner && (
-        <div style={WINNER_OVERLAY_STYLE}>
-          <div style={WINNER_PANEL_STYLE}>
-            <h2 style={{ marginTop: 0, marginBottom: 8 }}>Game Over</h2>
-            <p style={{ marginTop: 0, marginBottom: 16 }}>
-              {winnerLabel} wins!
-            </p>
-            <div style={{ marginBottom: 12, fontSize: 12, color: '#cbd5e1' }}>
-              Series (BO{seriesState.bestOf}): P1 {seriesState.wins.p1} - P2 {seriesState.wins.p2}
-              {seriesChampion && (
-                <div style={{ marginTop: 4, fontWeight: 700, color: '#fef08a' }}>
-                  {seriesChampion === 'p1' ? 'Player 1' : 'Player 2'} wins the series
-                </div>
-              )}
-            </div>
-            <div
-              style={{
-                textAlign: 'left',
-                marginBottom: 16,
-                padding: '10px 12px',
-                borderRadius: 8,
-                border: '1px solid rgba(148, 163, 184, 0.35)',
-                background: 'rgba(2, 6, 23, 0.45)',
-                display: 'grid',
-                gap: 6,
-                fontSize: 12,
-              }}
-            >
-              <div>Turns played: {gameState.matchStats.turnsPlayed}</div>
-              <div>Total hits: {gameState.matchStats.hits}</div>
-              <div>Total misses: {gameState.matchStats.misses}</div>
-              <div>Total crits: {gameState.matchStats.crits}</div>
-              <div>Damage by Player 1: {gameState.matchStats.damageByPlayer.p1}</div>
-              <div>Damage by Player 2: {gameState.matchStats.damageByPlayer.p2}</div>
-              <div style={{ marginTop: 6, fontWeight: 700 }}>Per-unit:</div>
-              {Object.entries(gameState.matchStats.perUnit).map(([unitId, stats]) => (
-                <div key={unitId} style={{ opacity: 0.95 }}>
-                  {unitId}: K {stats.kills} · DT {stats.damageTaken} · AL {stats.attacksLanded} · TS {stats.turnsSurvived}
-                </div>
-              ))}
-            </div>
-            <div style={{ display: 'grid', gap: 8 }}>
-              <button
-                onClick={() => {
-                  restartWith(initialOptions, !!seriesChampion)
-                }}
-                style={{
-                  border: 'none',
-                  borderRadius: 8,
-                  padding: '10px 16px',
-                  background: '#22c55e',
-                  color: '#052e16',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                }}
-              >
-                {seriesChampion ? 'Start New Series' : 'Rematch'}
-              </button>
-
-              <button
-                onClick={() => {
-                  const swapped: PlayerId = initialOptions.firstPlayer === 'p2' ? 'p1' : 'p2'
-                  restartWith({
-                    ...initialOptions,
-                    firstPlayer: swapped,
-                  })
-                }}
-                style={{
-                  border: 'none',
-                  borderRadius: 8,
-                  padding: '10px 16px',
-                  background: '#38bdf8',
-                  color: '#082f49',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                }}
-              >
-                Swap First Player
-              </button>
-
-              <button
-                onClick={() => {
-                  const nextPreset = getNextMapPresetId(gameState.config.mapPresetId)
-                  const nextSeed = nextPreset === 'random-seeded'
-                    ? (gameState.config.mapSeed ?? 1337) + 1
-                    : undefined
-                  restartWith({
-                    ...initialOptions,
-                    mapPresetId: nextPreset,
-                    mapSeed: nextSeed,
-                  }, false)
-                }}
-                style={{
-                  border: 'none',
-                  borderRadius: 8,
-                  padding: '10px 16px',
-                  background: '#f59e0b',
-                  color: '#451a03',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                }}
-              >
-                New Map
-              </button>
-
-              <button
-                onClick={() => {
-                  const nextBestOf: 3 | 5 = seriesState.bestOf === 3 ? 5 : 3
-                  setSeriesState({
-                    bestOf: nextBestOf,
-                    wins: { p1: 0, p2: 0 },
-                  })
-                  restartWith(initialOptions, false)
-                }}
-                style={{
-                  border: 'none',
-                  borderRadius: 8,
-                  padding: '10px 16px',
-                  background: '#a78bfa',
-                  color: '#2e1065',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                }}
-              >
-                Toggle BO{seriesState.bestOf === 3 ? '5' : '3'}
-              </button>
-            </div>
-          </div>
-        </div>
+        <MatchSummaryModal
+          isOpen={true}
+          winner={winner}
+          gameState={gameState}
+          seriesBestOf={seriesState.bestOf}
+          seriesWins={seriesState.wins}
+          mapPresetId={gameState.config.mapPresetId}
+          mapSeed={gameState.config.mapSeed}
+          onRematch={() => {
+            restartWith(initialOptions, !!seriesChampion)
+          }}
+          onSwapFirstPlayer={() => {
+            const swapped: PlayerId = initialOptions.firstPlayer === 'p2' ? 'p1' : 'p2'
+            restartWith({
+              ...initialOptions,
+              firstPlayer: swapped,
+            })
+          }}
+          onNewMap={() => {
+            const nextPreset = getNextMapPresetId(gameState.config.mapPresetId)
+            const nextSeed = nextPreset === 'random-seeded'
+              ? (gameState.config.mapSeed ?? 1337) + 1
+              : undefined
+            restartWith({
+              ...initialOptions,
+              mapPresetId: nextPreset,
+              mapSeed: nextSeed,
+            }, false)
+          }}
+          onToggleBestOf={() => {
+            const nextBestOf: 3 | 5 = seriesState.bestOf === 3 ? 5 : 3
+            setSeriesState({
+              bestOf: nextBestOf,
+              wins: { p1: 0, p2: 0 },
+            })
+            restartWith(initialOptions, false)
+          }}
+        />
       )}
     </div>
   )

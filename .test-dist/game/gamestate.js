@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.calculateReachableTilesInState = exports.calculateReachableTiles = exports.hasLineOfSight = exports.getTargetingPreview = exports.getAttackableEnemies = exports.calculateAttackableTilesInState = exports.isCurrentPlayersUnit = exports.isBlockedTile = exports.hasUnitFinishedTurn = exports.hasAvailableActionsForCurrentPlayer = exports.getUnitById = exports.getUnitAt = exports.canUseActiveAbility = exports.canUnitMove = exports.canUnitAttack = exports.createPhaseFSM = exports.Phase = exports.BRUISER_GUARD_DAMAGE_REDUCTION = exports.SNIPER_AIM_MOVE_PENALTY = exports.SNIPER_AIM_CRIT_BONUS = exports.SCOUT_DASH_BONUS_MOVEMENT = exports.COVER_MISS_BONUS = exports.ARMOR_UP_DAMAGE_REDUCTION = exports.ARMOR_UP_DURATION_TURNS = exports.POISON_DURATION_TURNS = exports.POISON_DAMAGE_PER_TURN = exports.CRIT_MULTIPLIER = exports.DAMAGE_VARIANCE_MAX = exports.DAMAGE_VARIANCE_MIN = exports.CRIT_CHANCE = exports.MISS_CHANCE = exports.UNIT_ARCHETYPES = exports.MAP_PRESET_LABELS = void 0;
+exports.calculateReachableTilesInState = exports.calculateReachableTiles = exports.hasLineOfSight = exports.getTargetingPreview = exports.getAttackableEnemies = exports.calculateAttackableTilesInState = exports.isCurrentPlayersUnit = exports.isBlockedTile = exports.hasUnitFinishedTurn = exports.hasAvailableActionsForCurrentPlayer = exports.getUnitById = exports.getUnitAt = exports.getActiveAbilityName = exports.getActiveAbilityId = exports.getActiveAbilityCooldownTurns = exports.getActiveAbilityAvailability = exports.canUseActiveAbility = exports.canUnitMove = exports.canUnitAttack = exports.createPhaseFSM = exports.Phase = exports.BRUISER_GUARD_DAMAGE_REDUCTION = exports.SNIPER_AIM_MOVE_PENALTY = exports.SNIPER_AIM_CRIT_BONUS = exports.SCOUT_DASH_BONUS_MOVEMENT = exports.COVER_MISS_BONUS = exports.ARMOR_UP_DAMAGE_REDUCTION = exports.ARMOR_UP_DURATION_TURNS = exports.POISON_DURATION_TURNS = exports.POISON_DAMAGE_PER_TURN = exports.CRIT_MULTIPLIER = exports.DAMAGE_VARIANCE_MAX = exports.DAMAGE_VARIANCE_MIN = exports.CRIT_CHANCE = exports.MISS_CHANCE = exports.UNIT_ARCHETYPES = exports.MAP_PRESET_LABELS = void 0;
 exports.createInitialGameState = createInitialGameState;
 exports.withPhase = withPhase;
 exports.toPersistedGameState = toPersistedGameState;
@@ -164,6 +164,7 @@ function createUnitFromArchetype(id, playerId, archetype, position) {
         hasMoved: false,
         hasAttacked: false,
         hasUsedAbility: false,
+        abilityCooldownRemaining: 0,
         statusEffects: {
             armorUpTurns: 0,
             poisonTurns: 0,
@@ -232,6 +233,10 @@ var selectors_2 = require("./selectors");
 Object.defineProperty(exports, "canUnitAttack", { enumerable: true, get: function () { return selectors_2.canUnitAttack; } });
 Object.defineProperty(exports, "canUnitMove", { enumerable: true, get: function () { return selectors_2.canUnitMove; } });
 Object.defineProperty(exports, "canUseActiveAbility", { enumerable: true, get: function () { return selectors_2.canUseActiveAbility; } });
+Object.defineProperty(exports, "getActiveAbilityAvailability", { enumerable: true, get: function () { return selectors_2.getActiveAbilityAvailability; } });
+Object.defineProperty(exports, "getActiveAbilityCooldownTurns", { enumerable: true, get: function () { return selectors_2.getActiveAbilityCooldownTurns; } });
+Object.defineProperty(exports, "getActiveAbilityId", { enumerable: true, get: function () { return selectors_2.getActiveAbilityId; } });
+Object.defineProperty(exports, "getActiveAbilityName", { enumerable: true, get: function () { return selectors_2.getActiveAbilityName; } });
 Object.defineProperty(exports, "getUnitAt", { enumerable: true, get: function () { return selectors_2.getUnitAt; } });
 Object.defineProperty(exports, "getUnitById", { enumerable: true, get: function () { return selectors_2.getUnitById; } });
 Object.defineProperty(exports, "hasAvailableActionsForCurrentPlayer", { enumerable: true, get: function () { return selectors_2.hasAvailableActionsForCurrentPlayer; } });
@@ -360,18 +365,10 @@ function endTurn(state) {
             hasMoved: false,
             hasAttacked: false,
             hasUsedAbility: false,
+            abilityCooldownRemaining: Math.max(0, (buffed.abilityCooldownRemaining ?? 0) - 1),
         };
     });
-    // Debug logging to track unit states
-    if (process.env.NODE_ENV === 'development') {
-        console.log('End Turn - Unit States:', refreshedUnits.map(u => ({
-            id: u.id,
-            playerId: u.playerId,
-            hasMoved: u.hasMoved,
-            hasAttacked: u.hasAttacked,
-            hasUsedAbility: u.hasUsedAbility
-        })));
-    }
+    // (tech-debt) Removed dev console spam.
     const livingUnits = refreshedUnits.filter((unit) => unit.health > 0);
     const previousLivingIds = new Set(state.units.filter((unit) => unit.health > 0).map((unit) => unit.id));
     const currentLivingIds = new Set(livingUnits.map((unit) => unit.id));
@@ -669,6 +666,7 @@ function useActiveAbilityForSelectedUnit(state) {
         return state;
     if (!(0, selectors_1.canUseActiveAbility)(unit))
         return state;
+    const cooldownTurns = (0, selectors_1.getActiveAbilityCooldownTurns)(unit);
     const units = state.units.map((candidate) => {
         if (candidate.id !== unit.id)
             return candidate;
@@ -678,6 +676,7 @@ function useActiveAbilityForSelectedUnit(state) {
             return {
                 ...candidate,
                 hasUsedAbility: true,
+                abilityCooldownRemaining: cooldownTurns,
                 statusEffects: {
                     ...candidate.statusEffects,
                     dashBonusMovement: constants_1.CONSTANTS.COMBAT.SCOUT_DASH_BONUS_MOVEMENT,
@@ -688,6 +687,7 @@ function useActiveAbilityForSelectedUnit(state) {
             return {
                 ...candidate,
                 hasUsedAbility: true,
+                abilityCooldownRemaining: cooldownTurns,
                 statusEffects: {
                     ...candidate.statusEffects,
                     guardTurns: Math.max(candidate.statusEffects.guardTurns, 1),
@@ -698,6 +698,7 @@ function useActiveAbilityForSelectedUnit(state) {
             return {
                 ...candidate,
                 hasUsedAbility: true,
+                abilityCooldownRemaining: cooldownTurns,
                 statusEffects: {
                     ...candidate.statusEffects,
                     aimTurns: Math.max(candidate.statusEffects.aimTurns, 1),

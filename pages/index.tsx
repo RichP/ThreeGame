@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useRouter } from 'next/router'
 import MainLayout from '../components/MainLayout'
 import HomeHero from '../components/website/HomeHero'
 import FeaturesGrid from '../components/website/FeaturesGrid'
@@ -7,15 +8,16 @@ import styles from './index.module.css'
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<'matches' | 'leaderboards' | 'news'>('matches')
+  const router = useRouter()
 
   const handlePlayNow = () => {
     // Navigate to match page or lobby
-    window.location.href = '/match'
+    router.push('/match')
   }
 
   const handleWatchTutorial = () => {
     // Navigate to tutorial page
-    alert('Tutorial coming soon!')
+    router.push('/tutorial')
   }
 
   const handleViewFeatures = () => {

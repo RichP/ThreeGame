@@ -8,6 +8,7 @@ import {
   canUnitAttack,
   canUnitMove,
   canUseActiveAbility,
+  getActiveAbilityAvailability,
   Phase as PhaseEnum,
   getAttackableEnemies,
   getUnitById,
@@ -75,6 +76,7 @@ export const Controls: React.FC<ControlsProps> = ({
   const selectedUnit = getUnitById(gameState, gameState.selectedUnitId)
   const attackableEnemies = selectedUnit ? getAttackableEnemies(gameState, selectedUnit) : []
   const canSelectedUnitAttack = canUnitAttack(selectedUnit)
+  const abilityAvailability = getActiveAbilityAvailability(selectedUnit)
   const canSelectedUnitUseAbility = canUseActiveAbility(selectedUnit)
   const mustMoveSelectedUnitFirst = gameState.phase === PhaseEnum.MOVE_UNIT && canUnitMove(selectedUnit)
   const canEndTurn = !mustMoveSelectedUnitFirst
@@ -126,7 +128,13 @@ export const Controls: React.FC<ControlsProps> = ({
           disabled={!canSelectedUnitUseAbility || isBusy}
           onMouseEnter={handleAbilityButtonHover}
           onMouseLeave={handleAbilityButtonLeave}
-          title={isBusy ? 'Resolving action...' : (canSelectedUnitUseAbility ? 'Use selected unit active ability' : 'Ability already used or no unit selected')}
+          title={
+            isBusy
+              ? 'Resolving action...'
+              : canSelectedUnitUseAbility
+                ? 'Use selected unit active ability'
+                : (abilityAvailability?.reason ?? 'Ability unavailable')
+          }
         >
           Use Ability
         </button>

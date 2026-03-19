@@ -1,24 +1,32 @@
-import React, { useState, useEffect } from 'react'
+import React, { useMemo, useState } from 'react'
+import { useRouter } from 'next/router'
 import GameLayout from '../components/GameLayout'
 import SceneCanvas from '../components/game/SceneCanvas'
-import { GameStatus } from '../components/UI/GameStatus'
-import { Controls } from '../components/UI/Controls'
-import { UnitInfo } from '../components/UI/UnitInfo'
-import { ActionLog } from '../components/UI/ActionLog'
-import { SessionHud } from '../components/UI/SessionHud'
-import { DebugAnimations } from '../components/game/DebugAnimations'
-import { AnimationSettings, useAnimationSettings } from '../components/game/AnimationSettings'
-import { type MapPresetId } from '../game/gamestate'
+import { TutorialOverlay } from '../components/UI/TutorialOverlay'
+import type { GameState } from '../game/gamestate'
 import styles from './match.module.css'
 
 export default function MatchPage() {
   const [isDebugMode, setIsDebugMode] = useState(false)
+  const router = useRouter()
+  const [latestGameState, setLatestGameState] = useState<GameState | null>(null)
+
+  const tutorialEnabled = useMemo(() => {
+    const q = router.query.tutorial
+    if (!q) return false
+    const value = Array.isArray(q) ? q[0] : q
+    return value === '1' || value === 'true'
+  }, [router.query.tutorial])
 
   return (
     <GameLayout>
       <div className={styles.matchInterface}>
+        <TutorialOverlay enabled={tutorialEnabled} gameState={latestGameState} />
+
         {/* Game Canvas */}
         <SceneCanvas 
+          onGameStateChange={setLatestGameState}
+          saveKey={tutorialEnabled ? 'threegame:save:tutorial:v1' : undefined}
           canvasProps={{
             style: {
               width: '100%',

@@ -2,9 +2,10 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import type { Mesh, MeshStandardMaterial } from 'three';
+import type { Group, Mesh, MeshStandardMaterial } from 'three';
 import type { AttackOutcome, UnitData, Position, GameState } from '../../game/gamestate';
 import { getShortestPathToPosition } from '../../game/pathfinding';
+import { ANIMATION_TIMINGS } from './animationTimings';
 
 interface UnitMeshProps {
     unit: UnitData;
@@ -19,15 +20,18 @@ interface UnitMeshProps {
     gameState?: GameState;
 }
 
-const HIT_DURATION_SECONDS = 0.6;
-const MOVEMENT_DURATION_MS = 600;
+const HIT_DURATION_SECONDS = ANIMATION_TIMINGS.hitFlashDurationSeconds;
+const MOVEMENT_DURATION_MS = ANIMATION_TIMINGS.movementDurationMs;
 
 export const UnitMesh: React.FC<UnitMeshProps> = ({ unit, actionState = null, isSelected, isPreviewTarget, hitEffectKey, hitOutcome, onHoverStart, onHoverEnd, isPreviewMode = false, gameState }) => {
+    // We animate a parent group so *all* sub-meshes (cube + rings) move together.
+    const groupRef = useRef<Group>(null);
     const meshRef = useRef<Mesh>(null);
     const materialRef = useRef<MeshStandardMaterial>(null);
     const hitStartedAtRef = useRef<number | null>(null);
     const moveStartedAtRef = useRef<number | null>(null);
     const moveFromRef = useRef({ x: unit.position.x, y: unit.position.y });
+    // This is the *current rendered* position; during movement it interpolates.
     const [animatedPosition, setAnimatedPosition] = useState({ x: unit.position.x, y: 0.2, z: unit.position.y });
     const [currentPath, setCurrentPath] = useState<Position[]>([]);
     const [currentPathIndex, setCurrentPathIndex] = useState(0);
@@ -68,17 +72,7 @@ export const UnitMesh: React.FC<UnitMeshProps> = ({ unit, actionState = null, is
     
     const finalColor = isSelected ? '#fbbf24' : healthColor;
 
-    // Debug logging for color issues
-    if (process.env.NODE_ENV === 'development') {
-        console.log(`Unit ${unit.id} (${unit.archetype}):`, {
-            playerId: unit.playerId,
-            health: unit.health,
-            baseColor,
-            healthColor,
-            finalColor,
-            isSelected
-        });
-    }
+    // (tech-debt) Removed per-frame dev logging; it spammed console and hurt perf.
     const actionIndicatorColor =
         actionState === 'can_move'
             ? '#22d3ee'
@@ -95,7 +89,9 @@ export const UnitMesh: React.FC<UnitMeshProps> = ({ unit, actionState = null, is
         }
     }, [hitEffectKey, hitOutcome]);
 
-    // Handle movement animation - calculate path when unit moves
+    // Handle movement animation - calculate path when unit moves.
+    // IMPORTANT: We *must not* update animatedPosition to the destination immediately,
+    // otherwise the unit will snap on the same render as the move.
     useEffect(() => {
         // Check if unit has moved
         const hasMoved = moveFromRef.current.x !== unit.position.x || moveFromRef.current.y !== unit.position.y;
@@ -123,17 +119,21 @@ export const UnitMesh: React.FC<UnitMeshProps> = ({ unit, actionState = null, is
             moveStartedAtRef.current = performance.now();
 
             // IMPORTANT: don't update moveFromRef yet; we still need it while animating.
+            // Also keep the rendered position at the start of the move.
+            setAnimatedPosition({ x: moveFromRef.current.x, y: 0.2, z: moveFromRef.current.y });
+            return;
         }
         
-        // Update target position
+        // Not moving: snap rendered position to logical position.
         setAnimatedPosition({ x: unit.position.x, y: 0.2, z: unit.position.y });
     }, [unit.position.x, unit.position.y, pathfindingState, unit.movement]);
 
     useFrame(() => {
+        const group = groupRef.current;
         const mesh = meshRef.current;
         const material = materialRef.current;
 
-        if (!mesh || !material) return;
+        if (!group || !mesh || !material) return;
 
         const now = performance.now();
 
@@ -158,7 +158,8 @@ export const UnitMesh: React.FC<UnitMeshProps> = ({ unit, actionState = null, is
                     setIsMovingAlongPath(false);
                     moveStartedAtRef.current = null;
                     moveFromRef.current = { x: unit.position.x, y: unit.position.y };
-                    mesh.position.set(unit.position.x, 0.2, unit.position.y);
+                    setAnimatedPosition({ x: unit.position.x, y: 0.2, z: unit.position.y });
+                    group.position.set(unit.position.x, 0.2, unit.position.y);
                     return;
                 } else {
                     // Get current and next positions for smooth interpolation
@@ -174,7 +175,10 @@ export const UnitMesh: React.FC<UnitMeshProps> = ({ unit, actionState = null, is
                     const currentX = currentStep.x + (nextStep.x - currentStep.x) * ease;
                     const currentZ = currentStep.y + (nextStep.y - currentStep.y) * ease;
                     
-                    mesh.position.set(currentX, 0.2, currentZ);
+                    // Update rendered position and the group transform.
+                    // Note: we avoid setState every frame except for final snap; but keeping
+                    // animatedPosition in sync helps other effects (rings) that use it.
+                    group.position.set(currentX, 0.2, currentZ);
                     return; // Skip other animations during movement
                 }
             }
@@ -197,7 +201,7 @@ export const UnitMesh: React.FC<UnitMeshProps> = ({ unit, actionState = null, is
 
                 const jitterX = (Math.random() - 0.5) * shakeAmount;
                 const jitterZ = (Math.random() - 0.5) * shakeAmount;
-                mesh.position.set(animatedPosition.x + jitterX, animatedPosition.y, animatedPosition.z + jitterZ);
+                group.position.set(animatedPosition.x + jitterX, animatedPosition.y, animatedPosition.z + jitterZ);
                 return;
             }
         } else {
@@ -205,39 +209,41 @@ export const UnitMesh: React.FC<UnitMeshProps> = ({ unit, actionState = null, is
         }
 
         // Apply current position (no animation)
-        mesh.position.set(animatedPosition.x, animatedPosition.y, animatedPosition.z);
+        group.position.set(animatedPosition.x, animatedPosition.y, animatedPosition.z);
     });
 
     return (
         <>
-            <mesh
-                ref={meshRef}
-                castShadow
-                receiveShadow={false}
-                onPointerOver={isPreviewMode ? undefined : () => onHoverStart?.(unit.id)}
-                onPointerOut={isPreviewMode ? undefined : () => onHoverEnd?.()}
-            >
-                <boxGeometry args={[0.3, 0.3, 0.3]} />
-                <meshStandardMaterial ref={materialRef} color={finalColor} />
-            </mesh>
-
-            {(isSelected || isPreviewTarget) && (
-                <mesh position={[animatedPosition.x, animatedPosition.y - 0.14, animatedPosition.z]} rotation={[-Math.PI / 2, 0, 0]}>
-                    <ringGeometry args={[0.22, 0.31, 28]} />
-                    <meshBasicMaterial
-                        color={isPreviewTarget ? '#fda4af' : '#fde68a'}
-                        transparent
-                        opacity={0.95}
-                    />
+            <group ref={groupRef} position={[animatedPosition.x, animatedPosition.y, animatedPosition.z]}>
+                <mesh
+                    ref={meshRef}
+                    castShadow
+                    receiveShadow={false}
+                    onPointerOver={isPreviewMode ? undefined : () => onHoverStart?.(unit.id)}
+                    onPointerOut={isPreviewMode ? undefined : () => onHoverEnd?.()}
+                >
+                    <boxGeometry args={[0.3, 0.3, 0.3]} />
+                    <meshStandardMaterial ref={materialRef} color={finalColor} />
                 </mesh>
-            )}
 
-            {actionIndicatorColor && (
-                <mesh position={[animatedPosition.x, animatedPosition.y + 0.22, animatedPosition.z]} rotation={[-Math.PI / 2, 0, 0]}>
-                    <ringGeometry args={[0.18, 0.21, 28]} />
-                    <meshBasicMaterial color={actionIndicatorColor} transparent opacity={0.95} />
-                </mesh>
-            )}
+                {(isSelected || isPreviewTarget) && (
+                    <mesh position={[0, -0.14, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                        <ringGeometry args={[0.22, 0.31, 28]} />
+                        <meshBasicMaterial
+                            color={isPreviewTarget ? '#fda4af' : '#fde68a'}
+                            transparent
+                            opacity={0.95}
+                        />
+                    </mesh>
+                )}
+
+                {actionIndicatorColor && (
+                    <mesh position={[0, 0.22, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                        <ringGeometry args={[0.18, 0.21, 28]} />
+                        <meshBasicMaterial color={actionIndicatorColor} transparent opacity={0.95} />
+                    </mesh>
+                )}
+            </group>
         </>
     );
 };

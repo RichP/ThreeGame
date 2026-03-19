@@ -200,6 +200,7 @@ const gamestate_1 = require("./gamestate");
     strict_1.default.ok(afterAbility);
     strict_1.default.equal(afterAbility.hasUsedAbility, true);
     strict_1.default.equal(afterAbility.statusEffects.dashBonusMovement > 0, true);
+    strict_1.default.equal(afterAbility.abilityCooldownRemaining > 0, true);
     // Scout base movement is 3, dash adds +2, so total movement is 5
     // Moving from (1,1) to (1,6) is blocked by u2 at (1,3), so move to (4,1) instead
     // Distance from (1,1) to (4,1) is 3, which should be reachable
@@ -209,6 +210,28 @@ const gamestate_1 = require("./gamestate");
     strict_1.default.equal(afterMove.position.x, 4);
     strict_1.default.equal(afterMove.position.y, 1);
     strict_1.default.equal(afterMove.statusEffects.dashBonusMovement, 0);
+});
+(0, node_test_1.default)('active abilities go on cooldown and refresh after N turns', () => {
+    // Dash cooldown is 2 turns (see balance.ts)
+    let state = (0, gamestate_1.createInitialGameState)();
+    state = (0, gamestate_1.selectUnit)(state, 'u1');
+    state = (0, gamestate_1.useActiveAbilityForSelectedUnit)(state);
+    let u1 = (0, gamestate_1.getUnitById)(state, 'u1');
+    strict_1.default.ok(u1);
+    const initialCooldown = u1.abilityCooldownRemaining;
+    strict_1.default.ok(initialCooldown > 0);
+    // End turn until player 1 is active again (two endTurn calls: p1->p2, p2->p1)
+    state = (0, gamestate_1.endTurn)(state);
+    state = (0, gamestate_1.endTurn)(state);
+    u1 = (0, gamestate_1.getUnitById)(state, 'u1');
+    strict_1.default.ok(u1);
+    strict_1.default.equal(u1.abilityCooldownRemaining, Math.max(0, initialCooldown - 1));
+    // Another full round
+    state = (0, gamestate_1.endTurn)(state);
+    state = (0, gamestate_1.endTurn)(state);
+    u1 = (0, gamestate_1.getUnitById)(state, 'u1');
+    strict_1.default.ok(u1);
+    strict_1.default.equal(u1.abilityCooldownRemaining, Math.max(0, initialCooldown - 2));
 });
 (0, node_test_1.default)('bruiser guard reduces incoming damage', () => {
     const originalRandom = Math.random;

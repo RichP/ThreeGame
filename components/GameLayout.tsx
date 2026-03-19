@@ -5,6 +5,7 @@ import { ThemeProvider } from './theme/ThemeContext'
 import ErrorBoundary from './ErrorBoundary'
 import GameDropdown from './UI/GameDropdown'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import styles from './GameLayout.module.css'
 
 interface GameLayoutProps {
@@ -13,6 +14,7 @@ interface GameLayoutProps {
 
 const GameLayout: React.FC<GameLayoutProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const router = useRouter()
   
   const handleError = (error: Error, errorInfo: ErrorInfo) => {
     // Log error to console in development
@@ -43,7 +45,7 @@ const GameLayout: React.FC<GameLayoutProps> = ({ children }) => {
 
   const handleExitGame = () => {
     // Navigate back to lobby or home page
-    window.location.href = '/lobby'
+    router.push('/lobby')
   }
 
   return (

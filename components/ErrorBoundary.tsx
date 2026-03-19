@@ -1,5 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react'
 import { ApiError } from '../services/api'
+import Router from 'next/router'
 import styles from './ErrorBoundary.module.css'
 
 interface ErrorBoundaryState {
@@ -81,7 +82,8 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 
   private handleGoHome = () => {
-    window.location.href = '/'
+    // Use Next router to preserve SPA navigation.
+    Router.push('/')
   }
 
   render() {

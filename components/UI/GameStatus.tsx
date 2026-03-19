@@ -15,6 +15,13 @@ import styles from './GameStatus.module.css'
 interface GameStatusProps {
   gameState: GameState
   targetingPreview?: TargetingPreview | null
+  movePreview?: {
+    from: { x: number; y: number }
+    to: { x: number; y: number }
+    steps: number
+    budget: number
+    remaining: number
+  } | null
 }
 
 const phaseLabels: Record<string, string> = {
@@ -26,7 +33,26 @@ const phaseLabels: Record<string, string> = {
 
 const toPercent = (value: number): string => `${Math.round(value * 100)}%`
 
-export const GameStatus: React.FC<GameStatusProps> = ({ gameState, targetingPreview = null }) => {
+function clamp01(value: number): number {
+  return Math.max(0, Math.min(1, value))
+}
+
+function average(min: number, max: number): number {
+  return (min + max) / 2
+}
+
+/**
+ * Probability that a uniformly random integer in [min, max] is >= threshold.
+ */
+function chanceAtLeastUniformInt(min: number, max: number, threshold: number): number {
+  if (threshold <= min) return 1
+  if (threshold > max) return 0
+  const total = Math.max(1, max - min + 1)
+  const favorable = Math.max(0, max - threshold + 1)
+  return clamp01(favorable / total)
+}
+
+export const GameStatus: React.FC<GameStatusProps> = ({ gameState, targetingPreview = null, movePreview = null }) => {
   const currentPhase = phaseLabels[gameState.phase]
   const isPlayerOneTurn = gameState.currentPlayerIndex === 0
   const currentPlayer = isPlayerOneTurn ? 'Player 1' : 'Player 2'
@@ -117,9 +143,83 @@ export const GameStatus: React.FC<GameStatusProps> = ({ gameState, targetingPrev
           </div>
         )}
 
+        {movePreview && (
+          <div className={styles.previewBox}>
+            <div className={styles.previewTitle}>Move Preview</div>
+            <div className={styles.previewRow}>
+              <span className={styles.previewLabel}>Path</span>
+              <span className={styles.previewValue}>
+                ({movePreview.from.x},{movePreview.from.y}) → ({movePreview.to.x},{movePreview.to.y})
+              </span>
+            </div>
+            <div className={styles.previewRow}>
+              <span className={styles.previewLabel}>Cost</span>
+              <span className={styles.previewValue}>{movePreview.steps} / {movePreview.budget}</span>
+            </div>
+            <div className={styles.previewRow}>
+              <span className={styles.previewLabel}>Remain</span>
+              <span className={styles.previewValue}>{movePreview.remaining}</span>
+            </div>
+          </div>
+        )}
+
         {targetingPreview && (
           <div className={styles.previewBox}>
             <div className={styles.previewTitle}>Target Preview</div>
+            {(() => {
+              const targetUnit = getUnitById(gameState, targetingPreview.targetId)
+              const mitigation = (targetingPreview.breakdown.armorReduction ?? 0) + (targetingPreview.breakdown.guardReduction ?? 0)
+
+              const hitMin = Math.max(1, targetingPreview.minDamage - mitigation)
+              const hitMax = Math.max(1, targetingPreview.maxDamage - mitigation)
+              const critMin = Math.max(1, targetingPreview.minCritDamage - mitigation)
+              const critMax = Math.max(1, targetingPreview.maxCritDamage - mitigation)
+
+              const expectedDamage =
+                targetingPreview.hitChance * average(hitMin, hitMax) +
+                targetingPreview.critChance * average(critMin, critMax)
+
+              const killChance = targetUnit
+                ? (
+                    targetingPreview.hitChance * chanceAtLeastUniformInt(hitMin, hitMax, targetUnit.health) +
+                    targetingPreview.critChance * chanceAtLeastUniformInt(critMin, critMax, targetUnit.health)
+                  )
+                : null
+
+              const likelyKill = killChance !== null ? killChance >= 0.5 : null
+              const killTone = killChance === null
+                ? null
+                : killChance >= 0.75
+                  ? styles.killHigh
+                  : killChance >= 0.35
+                    ? styles.killMid
+                    : styles.killLow
+              const showSkull = killChance !== null && killChance >= 0.8
+
+              return (
+                <>
+                  <div className={styles.previewRow}>
+                    <span className={styles.previewLabel}>Expected (net)</span>
+                    <span className={styles.previewValue}>{expectedDamage.toFixed(1)}</span>
+                  </div>
+                  {killChance !== null && (
+                    <>
+                      <div className={styles.previewRow}>
+                        <span className={styles.previewLabel}>Kill</span>
+                        <span className={`${styles.previewValue} ${killTone ?? ''}`}>
+                          {toPercent(killChance)}
+                          {showSkull && <span className={styles.skull}>☠</span>}
+                        </span>
+                      </div>
+                      <div className={styles.previewRow}>
+                        <span className={styles.previewLabel}>Likely</span>
+                        <span className={`${styles.previewValue} ${killTone ?? ''}`}>{likelyKill ? 'YES' : 'NO'}</span>
+                      </div>
+                    </>
+                  )}
+                </>
+              )
+            })()}
             <div className={styles.previewRow}>
               <span className={styles.previewLabel}>Miss</span>
               <span className={styles.previewValue}>{toPercent(targetingPreview.missChance)}</span>
