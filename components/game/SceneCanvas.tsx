@@ -8,8 +8,8 @@ import { GameStatus } from '../UI/GameStatus'
 import { UnitInfo } from '../UI/UnitInfo'
 import { Controls } from '../UI/Controls'
 import { ActionLog } from '../UI/ActionLog'
+import { MapPanel } from '../UI/MapPanel'
 import { SessionHud } from '../UI/SessionHud'
-import { AnimationSettings, useAnimationSettings } from './AnimationSettings'
 import { CameraEffects } from './CameraController'
 import { DebugAnimations } from './DebugAnimations'
 import { MatchSummaryModal } from '../UI/MatchSummaryModal'
@@ -76,6 +76,10 @@ interface SceneCanvasProps {
   onGameStateChange?: (gameState: GameState) => void
   /** Override localStorage save key. Useful for tutorial/sandbox sessions. */
   saveKey?: string
+  /** Whether debug mode is enabled */
+  isDebugMode?: boolean
+  /** Whether map panel is open */
+  isMapPanelOpen?: boolean
 }
 
 interface ActiveHitVfx {
@@ -133,6 +137,8 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({
   mode = 'game',
   onGameStateChange,
   saveKey,
+  isDebugMode = false,
+  isMapPanelOpen = false,
 }) => {
     const [initialOptions, setInitialOptions] = useState<InitialGameOptions>({
       mapPresetId: 'crossroads',
@@ -160,8 +166,6 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({
     const [saveState, setSaveState] = useState<SaveState>('idle')
     const [lastSavedAt, setLastSavedAt] = useState<number | null>(null)
     
-    // Animation settings
-    const { settings, setSettings } = useAnimationSettings();
     const [sfxMuted, setSfxMuted] = useState<boolean>(getSfxSettings().muted)
     const [sfxVolume, setSfxVolume] = useState<number>(getSfxSettings().volume)
     const attackTimeoutRef = useRef<number | null>(null);
@@ -208,11 +212,9 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({
 
     // While the move animation plays, optionally keep movement highlights visible.
     const effectiveReachableTiles = useMemo(() => {
-      if (!settings.enabled) return reachableTiles
-      if (!settings.keepMoveHighlightsDuringMove) return reachableTiles
       if (!isAnimatingMove) return reachableTiles
       return moveHighlightTiles ?? reachableTiles
-    }, [isAnimatingMove, moveHighlightTiles, reachableTiles, settings.enabled, settings.keepMoveHighlightsDuringMove])
+    }, [isAnimatingMove, moveHighlightTiles, reachableTiles])
 
     const attackableTiles = useMemo(() => calculateAttackableTilesInState(
         gameState,
@@ -274,19 +276,7 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({
         }
         if (selectedUnit) {
           // Cache tiles we want to keep highlighting while animating.
-          if (settings.enabled && settings.keepMoveHighlightsDuringMove) {
-            if (settings.showMovePathOnlyDuringMove) {
-              const path = getShortestPathToPosition(gameState, selectedUnit.position, tilePos, selectedUnit.movement)
-              setMoveHighlightTiles([
-                { ...selectedUnit.position },
-                ...path,
-              ])
-            } else {
-              setMoveHighlightTiles([...reachableTiles])
-            }
-          } else {
-            setMoveHighlightTiles(null)
-          }
+          setMoveHighlightTiles([...reachableTiles])
 
           setUndoMoveSnapshot({
             unitId: selectedUnit.id,
@@ -649,14 +639,10 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({
         <CameraEffects
           gameState={gameState}
           onCameraShake={(intensity, duration) => {
-            if (settings.enabled && settings.cameraShake) {
-              // Camera shake handled by CameraController
-            }
+            // Camera shake handled by CameraController
           }}
           onCameraZoom={(intensity, duration) => {
-            if (settings.enabled) {
-              // Camera zoom handled by CameraController
-            }
+            // Camera zoom handled by CameraController
           }}
         />
 
@@ -757,14 +743,6 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({
                 return deselectUnit(prev)
               });
             }}
-            onApplyMapConfig={(mapPresetId: MapPresetId, mapSeed?: number) => {
-              if (isResolvingAttack) return
-              restartWith({
-                ...initialOptions,
-                mapPresetId,
-                mapSeed,
-              })
-            }}
             onSetAutoSkipNoTargetAttack={(enabled: boolean) => {
               setInitialOptions((prev) => ({
                 ...prev,
@@ -800,6 +778,56 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({
             }}
           />
 
+          {/* Map Panel - positioned in the top left corner, conditionally rendered */}
+          {isMapPanelOpen && (
+            <div style={{
+              position: 'absolute',
+              top: '20px',
+              left: '20px',
+              zIndex: 20,
+            }}>
+              <MapPanel
+                gameState={gameState}
+                isBusy={isResolvingAttack || !!winner}
+                onApplyMapConfig={(mapPresetId: MapPresetId, mapSeed?: number) => {
+                  if (isResolvingAttack) return
+                  restartWith({
+                    ...initialOptions,
+                    mapPresetId,
+                    mapSeed,
+                  })
+                }}
+                onSetAutoSkipNoTargetAttack={(enabled: boolean) => {
+                  setInitialOptions((prev) => ({
+                    ...prev,
+                    autoSkipNoTargetAttack: enabled,
+                  }))
+
+                  setGameState((prev) => {
+                    const nextState = {
+                      ...prev,
+                      autoSkipNoTargetAttack: enabled,
+                    }
+
+                    if (!enabled) return nextState
+                    if (nextState.phase !== Phase.ATTACK) return nextState
+
+                    const selected = getUnitById(nextState, nextState.selectedUnitId)
+                    if (!selected || selected.hasAttacked) return nextState
+
+                    const attackable = getAttackableEnemies(nextState, selected)
+                    if (attackable.length > 0) return nextState
+
+                    const postSkip = skipAttackForSelectedUnit(nextState)
+                    return hasAvailableActionsForCurrentPlayer(postSkip)
+                      ? postSkip
+                      : endTurn(postSkip)
+                  })
+                }}
+              />
+            </div>
+          )}
+
           <SessionHud
             bestOf={seriesState.bestOf}
             wins={seriesState.wins}
@@ -807,18 +835,8 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({
             lastSavedAt={lastSavedAt}
           />
 
-          {/* Animation Settings */}
-          <AnimationSettings
-            settings={settings}
-            onChange={setSettings}
-            sfxMuted={sfxMuted}
-            sfxVolume={sfxVolume}
-            onSfxMutedChange={setSfxMuted}
-            onSfxVolumeChange={setSfxVolume}
-          />
-
           {/* Debug Info */}
-          <DebugAnimations gameState={gameState} />
+          {isDebugMode && <DebugAnimations gameState={gameState} />}
         </>
       )}
 

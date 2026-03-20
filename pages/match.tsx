@@ -4,12 +4,12 @@ import GameLayout from '../components/GameLayout'
 import SceneCanvas from '../components/game/SceneCanvas'
 import { TutorialOverlay } from '../components/UI/TutorialOverlay'
 import type { GameState } from '../game/gamestate'
-import styles from './match.module.css'
 
 export default function MatchPage() {
-  const [isDebugMode, setIsDebugMode] = useState(false)
   const router = useRouter()
   const [latestGameState, setLatestGameState] = useState<GameState | null>(null)
+  const [isDebugMode, setIsDebugMode] = useState(false)
+  const [isMapPanelOpen, setIsMapPanelOpen] = useState(false)
 
   const tutorialEnabled = useMemo(() => {
     const q = router.query.tutorial
@@ -19,14 +19,21 @@ export default function MatchPage() {
   }, [router.query.tutorial])
 
   return (
-    <GameLayout>
-      <div className={styles.matchInterface}>
+    <GameLayout 
+      isDebugMode={isDebugMode} 
+      onDebugModeChange={setIsDebugMode}
+      isMapPanelOpen={isMapPanelOpen}
+      onMapPanelOpenChange={setIsMapPanelOpen}
+    >
+      <div>
         <TutorialOverlay enabled={tutorialEnabled} gameState={latestGameState} />
 
         {/* Game Canvas */}
         <SceneCanvas 
           onGameStateChange={setLatestGameState}
           saveKey={tutorialEnabled ? 'threegame:save:tutorial:v1' : undefined}
+          isDebugMode={isDebugMode}
+          isMapPanelOpen={isMapPanelOpen}
           canvasProps={{
             style: {
               width: '100%',
@@ -36,17 +43,6 @@ export default function MatchPage() {
             }
           }}
         />
-
-        {/* Debug Toggle */}
-        <div className={styles.debugToggle}>
-          Debug Mode: 
-          <button
-            className={`${styles.debugToggleButton} ${isDebugMode ? styles.debugToggleButtonActive : styles.debugToggleButtonInactive}`}
-            onClick={() => setIsDebugMode(!isDebugMode)}
-          >
-            {isDebugMode ? 'ON' : 'OFF'}
-          </button>
-        </div>
       </div>
     </GameLayout>
   )

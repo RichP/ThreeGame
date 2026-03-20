@@ -31,8 +31,8 @@ export const DebugAnimations: React.FC<DebugAnimationsProps> = ({ gameState }) =
   return (
     <div style={{
       position: 'fixed',
-      top: '100px',
-      left: '10px',
+      top: '80px',
+      left: '20px',
       background: 'rgba(0, 0, 0, 0.8)',
       color: 'white',
       padding: '10px',

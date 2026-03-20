@@ -1,7 +1,7 @@
 /* GameStatus.module.css */
 .statusContainer {
   position: fixed;
-  top: 200px; /* 120px + 80px navbar height */
+  bottom: 80px; /* 120px + 80px navbar height */
   right: 20px;
   z-index: 100;
 }

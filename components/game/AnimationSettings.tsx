@@ -21,6 +21,8 @@ interface AnimationSettingsProps {
   sfxVolume: number
   onSfxMutedChange: (muted: boolean) => void
   onSfxVolumeChange: (volume: number) => void
+  isOpen: boolean
+  onToggle: () => void
 }
 
 export const AnimationSettings: React.FC<AnimationSettingsProps> = ({
@@ -30,9 +32,9 @@ export const AnimationSettings: React.FC<AnimationSettingsProps> = ({
   sfxVolume,
   onSfxMutedChange,
   onSfxVolumeChange,
+  isOpen,
+  onToggle,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
   const handleToggle = (key: keyof AnimationSettings, value: any) => {
     onChange({ ...settings, [key]: value });
   };
@@ -62,36 +64,13 @@ export const AnimationSettings: React.FC<AnimationSettingsProps> = ({
         pointerEvents: 'none',
       }}
     >
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="settings-toggle"
-        style={{
-          position: 'fixed',
-          left: '20px',
-          bottom: '300px',
-          background: '#335542',
-          color: '#e2e8f0',
-          border: '1px solid #475569',
-          padding: '8px 12px',
-          borderRadius: '6px',
-          cursor: 'pointer',
-          fontSize: '12px',
-          fontWeight: '600',
-          // The parent disables pointer events to avoid blocking the game canvas;
-          // the actual controls re-enable them.
-          pointerEvents: 'auto',
-        }}
-      >
-        Animation Settings
-      </button>
-
       {isOpen && (
         <div
           className="settings-panel"
           style={{
             position: 'fixed',
-            top: '140px', /* 60px + 80px navbar height */
-            right: '20px',
+            top: '80px', /* 60px + 80px navbar height */
+            left: '20px',
             width: '280px',
             background: '#1e293b',
             border: '1px solid #334155',
@@ -103,8 +82,32 @@ export const AnimationSettings: React.FC<AnimationSettingsProps> = ({
             pointerEvents: 'auto',
           }}
         >
-          <div style={{ marginBottom: '12px', fontWeight: '700', fontSize: '14px' }}>
-            Animation Settings
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <div style={{ fontSize: '14px', fontWeight: '700' }}>
+              Animation Settings
+            </div>
+            <button
+              onClick={onToggle}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#94a3b8',
+                fontSize: '16px',
+                cursor: 'pointer',
+                padding: '0',
+                width: '24px',
+                height: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '4px',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#e2e8f0'}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#94a3b8'}
+            >
+              ×
+            </button>
           </div>
 
           {/* Toggle animations */}

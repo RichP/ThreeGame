@@ -1,0 +1,181 @@
+.mapPanel {
+  background: rgba(17, 24, 39, 0.9);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  color: #e2e8f0;
+  min-width: 280px;
+  max-width: 320px;
+}
+
+.mapTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #93c5fd;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mapLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.select {
+  background: #0f172a;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.select:hover {
+  border-color: #475569;
+  background: #111827;
+}
+
+.select:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+
+.seedInput {
+  background: #0f172a;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+  outline: none;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.seedInput:hover {
+  border-color: #475569;
+  background: #111827;
+}
+
+.seedInput:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+
+.button {
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 12px;
+}
+
+.applyMap {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  border: 1px solid #3b82f6;
+}
+
+.applyMap:hover:not(.disabled) {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+}
+
+.applyMap:active:not(.disabled) {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #374151;
+  border-color: #4b5563;
+}
+
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+
+.toggleLabel input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #60a5fa;
+  cursor: pointer;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .mapPanel {
+    min-width: 260px;
+    max-width: 280px;
+    padding: 14px;
+  }
+  
+  .mapTitle {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+  
+  .mapLabel {
+    font-size: 11px;
+    margin-bottom: 10px;
+  }
+  
+  .select, .seedInput {
+    font-size: 12px;
+    padding: 7px 9px;
+  }
+  
+  .button {
+    padding: 9px 11px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mapPanel {
+    min-width: 240px;
+    max-width: 260px;
+    padding: 12px;
+  }
+  
+  .mapTitle {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  
+  .mapLabel {
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+  
+  .select, .seedInput {
+    font-size: 11px;
+    padding: 6px 8px;
+  }
+  
+  .button {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+}
