@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import type { UnitData } from '../../game/gamestate'
 import { getActiveAbilityAvailability } from '../../game/gamestate'
 import styles from './AbilityTooltip.module.css'
@@ -12,6 +12,20 @@ interface AbilityTooltipProps {
 }
 
 export const AbilityTooltip: React.FC<AbilityTooltipProps> = ({ unit, isVisible, position }) => {
+  const tooltipRef = useRef<HTMLDivElement>(null)
+  const [tooltipWidth, setTooltipWidth] = useState(300) // fallback width
+  const [tooltipHeight, setTooltipHeight] = useState(200) // fallback height
+
+  useEffect(() => {
+    if (isVisible && tooltipRef.current) {
+      // Measure the actual width and height of the rendered tooltip
+      const width = tooltipRef.current.offsetWidth
+      const height = tooltipRef.current.offsetHeight
+      setTooltipWidth(width)
+      setTooltipHeight(height)
+    }
+  }, [isVisible, unit]) // Re-measure when visibility or unit changes
+
   if (!unit || !isVisible) {
     return null
   }
@@ -62,8 +76,8 @@ export const AbilityTooltip: React.FC<AbilityTooltipProps> = ({ unit, isVisible,
     <div 
       className={styles.tooltip}
       style={{
-        left: position.x,
-        top: position.y,
+        left: position.x - tooltipWidth,
+        top: position.y - (tooltipHeight * 1.4),
         opacity: isVisible ? 1 : 0,
         pointerEvents: isVisible ? 'auto' : 'none'
       }}

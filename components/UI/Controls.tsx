@@ -45,8 +45,8 @@ export const Controls: React.FC<ControlsProps> = ({
     const rect = abilityButtonRef.current?.getBoundingClientRect()
     if (rect) {
       setTooltipPosition({
-        x: rect.left - 10,
-        y: rect.top - 160
+        x: rect.right,
+        y: rect.top
       })
       setTooltipVisible(true)
     }
@@ -72,6 +72,11 @@ export const Controls: React.FC<ControlsProps> = ({
 
   return (
     <div className={styles.controlsContainer}>
+       <AbilityTooltip
+          unit={selectedUnit ?? null}
+          isVisible={tooltipVisible && !!selectedUnit}
+          position={tooltipPosition}
+        />
       <div className={styles.row}>
         <button
           className={`${styles.button} ${styles.endTurn} ${(!canEndTurn || isBusy) ? styles.disabled : ''}`}
@@ -118,11 +123,7 @@ export const Controls: React.FC<ControlsProps> = ({
           Use Ability
         </button>
 
-        <AbilityTooltip
-          unit={selectedUnit ?? null}
-          isVisible={tooltipVisible && !!selectedUnit}
-          position={tooltipPosition}
-        />
+       
       </div>
 
       
