@@ -46,7 +46,7 @@ export const Controls: React.FC<ControlsProps> = ({
     if (rect) {
       setTooltipPosition({
         x: rect.right,
-        y: rect.top
+        y: rect.top + rect.height,
       })
       setTooltipVisible(true)
     }

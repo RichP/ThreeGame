@@ -77,7 +77,7 @@ export const AbilityTooltip: React.FC<AbilityTooltipProps> = ({ unit, isVisible,
       className={styles.tooltip}
       style={{
         left: position.x - tooltipWidth,
-        top: position.y - (tooltipHeight * 1.4),
+        top: position.y - (tooltipHeight),
         opacity: isVisible ? 1 : 0,
         pointerEvents: isVisible ? 'auto' : 'none'
       }}
