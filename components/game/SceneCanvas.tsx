@@ -9,10 +9,10 @@ import { UnitInfo } from '../UI/UnitInfo'
 import { Controls } from '../UI/Controls'
 import { ActionLog } from '../UI/ActionLog'
 import { MapPanel } from '../UI/MapPanel'
-import { SessionHud } from '../UI/SessionHud'
 import { CameraEffects } from './CameraController'
 import { DebugAnimations } from './DebugAnimations'
 import { MatchSummaryModal } from '../UI/MatchSummaryModal'
+import GameLayout from '../GameLayout'
 import {
     type AttackOutcome,
     calculateAttackableTilesInState,
@@ -601,14 +601,28 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({
   }
 
   return (
-    <div className="canvasWrap">
-      <Canvas
-        shadows
-        dpr={typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, CANVAS_DPR_MAX) : 1}
-        style={{ width: '100%', height: '100%' }}
-        camera={{ position: cameraPosition, fov: SCENE_CAMERA_FOV }}
-        {...canvasProps}
-      >
+    <GameLayout
+      isDebugMode={isDebugMode}
+      onDebugModeChange={(enabled) => {
+        // Handle debug mode change if needed
+      }}
+      isMapPanelOpen={isMapPanelOpen}
+      onMapPanelOpenChange={(open) => {
+        // Handle map panel change if needed
+      }}
+      bestOf={seriesState.bestOf}
+      wins={seriesState.wins}
+      saveState={saveState}
+      lastSavedAt={lastSavedAt}
+    >
+      <div className="canvasWrap">
+        <Canvas
+          shadows
+          dpr={typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, CANVAS_DPR_MAX) : 1}
+          style={{ width: '100%', height: '100%' }}
+          camera={{ position: cameraPosition, fov: SCENE_CAMERA_FOV }}
+          {...canvasProps}
+        >
         <ambientLight intensity={0.35} />
         <directionalLight
           castShadow
@@ -828,12 +842,6 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({
             </div>
           )}
 
-          <SessionHud
-            bestOf={seriesState.bestOf}
-            wins={seriesState.wins}
-            saveState={saveState}
-            lastSavedAt={lastSavedAt}
-          />
 
           {/* Debug Info */}
           {isDebugMode && <DebugAnimations gameState={gameState} />}
@@ -902,6 +910,7 @@ const SceneCanvas: React.FC<SceneCanvasProps> = ({
         />
       )}
     </div>
+    </GameLayout>
   )
 }
 

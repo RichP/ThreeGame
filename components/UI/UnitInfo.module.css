@@ -1,7 +1,7 @@
 /* UnitInfo.module.css */
 .infoContainer {
   position: fixed;
-  bottom: 20px; /* 20px + 120px footer height */
+  top: 80px; /* 20px margin from top */
   left: 20px;
   z-index: 100;
 }
@@ -21,7 +21,7 @@
 /* Responsive scaling for smaller viewports */
 @media (max-width: 1024px) {
   .infoContainer {
-    bottom: 116px; /* 16px + 100px footer height */
+    top: 20px; /* Adjusted for smaller screens */
     left: 16px;
   }
   
@@ -89,7 +89,7 @@
 
 @media (max-width: 768px) {
   .infoContainer {
-    bottom: 112px; /* 12px + 100px footer height */
+    top: 20px; /* Adjusted for mobile screens */
     left: 12px;
   }
   
@@ -157,7 +157,7 @@
 
 @media (max-width: 480px) {
   .infoContainer {
-    bottom: 108px; /* 8px + 100px footer height */
+    top: 20px; /* Adjusted for small mobile screens */
     left: 8px;
   }
   

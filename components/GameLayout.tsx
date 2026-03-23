@@ -25,15 +25,50 @@ const getSfxSettings = () => {
   return { muted: false, volume: 1.0 };
 }
 
+// Helper function to format time
+const formatTime = (timestamp: number | null): string => {
+  if (!timestamp) return '—'
+  return new Date(timestamp).toLocaleTimeString()
+}
+
+// Helper function to get save state label
+const getSaveStateLabel = (saveState: 'idle' | 'saving' | 'saved' | 'error'): { text: string; className: string } => {
+  if (saveState === 'saving') {
+    return { text: 'Saving…', className: styles.saving }
+  }
+  if (saveState === 'saved') {
+    return { text: 'Saved', className: styles.saved }
+  }
+  if (saveState === 'error') {
+    return { text: 'Save failed', className: styles.error }
+  }
+  return { text: 'Idle', className: '' }
+}
+
 interface GameLayoutProps {
   children: React.ReactNode
   isDebugMode?: boolean
   onDebugModeChange?: (isDebugMode: boolean) => void
   isMapPanelOpen?: boolean
   onMapPanelOpenChange?: (isMapPanelOpen: boolean) => void
+  // Session HUD props
+  bestOf?: 3 | 5
+  wins?: { p1: number; p2: number }
+  saveState?: 'idle' | 'saving' | 'saved' | 'error'
+  lastSavedAt?: number | null
 }
 
-const GameLayout: React.FC<GameLayoutProps> = ({ children, isDebugMode: externalDebugMode, onDebugModeChange, isMapPanelOpen: externalMapPanelOpen, onMapPanelOpenChange }) => {
+const GameLayout: React.FC<GameLayoutProps> = ({ 
+  children, 
+  isDebugMode: externalDebugMode, 
+  onDebugModeChange, 
+  isMapPanelOpen: externalMapPanelOpen, 
+  onMapPanelOpenChange,
+  bestOf = 3,
+  wins = { p1: 0, p2: 0 },
+  saveState = 'idle',
+  lastSavedAt = null
+}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [internalDebugMode, setInternalDebugMode] = useState(false)
   const [isAnimationSettingsOpen, setIsAnimationSettingsOpen] = useState(false)
@@ -135,6 +170,15 @@ const GameLayout: React.FC<GameLayoutProps> = ({ children, isDebugMode: external
                   </button>
                   <div className={styles.gameTitle}>ThreeGame</div>
                   
+                  {/* Session Information */}
+                  <div className={styles.sessionInfo}>
+                    <span className={styles.sessionMode}>BO{bestOf}</span>
+                    <span className={styles.sessionScore}>{wins.p1}–{wins.p2}</span>
+                    <span className={styles.sessionProgress}>({wins.p1 + wins.p2}/{bestOf})</span>
+                    <span className={`${styles.sessionSave} ${getSaveStateLabel(saveState).className}`}>
+                      💾 {formatTime(lastSavedAt)}
+                    </span>
+                  </div>
                 </div>
               </div>
 

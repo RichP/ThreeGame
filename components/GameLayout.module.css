@@ -61,6 +61,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-right: 24px;
 }
 
 .menuButton:hover {
@@ -86,6 +87,73 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  margin-left: 24px;
+}
+
+/* Session Information */
+.sessionInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  backdrop-filter: blur(5px);
+}
+
+.sessionMode {
+  font-size: 12px;
+  font-weight: 700;
+  color: #a0a0c0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 2px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sessionScore {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+}
+
+.sessionProgress {
+  font-size: 12px;
+  color: #8899a6;
+  font-weight: 600;
+}
+
+.sessionSave {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8899a6;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sessionSave.saving {
+  color: #f59e0b;
+  animation: pulse 1s infinite;
+}
+
+.sessionSave.saved {
+  color: #10b981;
+}
+
+.sessionSave.error {
+  color: #ef4444;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
 }
 
 /* Exit Button */

@@ -1,7 +1,7 @@
 /* GameStatus.module.css */
 .statusContainer {
   position: fixed;
-  bottom: 80px; /* 120px + 80px navbar height */
+  top: 80px; /* 20px margin from top */
   right: 20px;
   z-index: 100;
 }
@@ -14,19 +14,21 @@
   color: #e6eef8;
   font-family: 'Courier New', monospace;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  min-width: 200px;
+  width: 280px;
+  max-width: 320px;
 }
 
 /* Responsive scaling for smaller viewports */
 @media (max-width: 1024px) {
   .statusContainer {
-    top: 180px; /* 100px + 80px navbar height */
+    top: 20px; /* Adjusted for smaller screens */
     right: 16px;
   }
   
   .statusBox {
+    width: 240px;
+    max-width: 280px;
     padding: 14px;
-    min-width: 180px;
   }
   
   .title {
@@ -61,14 +63,14 @@
 
 @media (max-width: 768px) {
   .statusContainer {
-    top: 150px; /* 80px + 70px navbar height */
+    top: 20px; /* Adjusted for mobile screens */
     right: 12px;
   }
   
   .statusBox {
+    width: 200px;
+    max-width: 240px;
     padding: 12px;
-    min-width: 160px;
-    max-width: 200px;
   }
   
   .title {
@@ -107,14 +109,14 @@
 
 @media (max-width: 480px) {
   .statusContainer {
-    top: 130px; /* 60px + 70px navbar height */
+    top: 20px; /* Adjusted for small mobile screens */
     right: 8px;
   }
   
   .statusBox {
+    width: 160px;
+    max-width: 200px;
     padding: 10px;
-    min-width: 140px;
-    max-width: 160px;
   }
   
   .title {
