@@ -52,6 +52,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
       await register(username.trim(), email.trim(), password)
       onSuccess?.()
     } catch (err) {
+      console.error('Registration error details:', err)
       setError(err instanceof Error ? err.message : 'Registration failed. Please try again.')
     }
   }

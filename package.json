@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "npm run test:build && node --test .test-dist/game/gamestate.test.js",
+    "test": "npm run test:build && node --test .test-dist/**/*.test.js",
     "test:build": "rm -rf .test-dist && tsc -p tsconfig.test.json"
   },
   "dependencies": {
