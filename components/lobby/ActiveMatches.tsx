@@ -1,4 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
+import { matchApi } from '../../services/api'
 import styles from './ActiveMatches.module.css'
 
 interface ActiveMatch {
@@ -12,47 +14,47 @@ interface ActiveMatch {
   winner?: string
 }
 
-const mockActiveMatches: ActiveMatch[] = [
-  {
-    id: 'match1',
-    player1: 'StrategicMaster',
-    player2: 'TacticalGenius',
-    status: 'your-turn',
-    map: 'Crossroads',
-    turn: 12,
-    timeLeft: '18h 23m'
-  },
-  {
-    id: 'match2',
-    player1: 'ShadowWarrior',
-    player2: 'IronTactician',
-    status: 'waiting',
-    map: 'Forest Ambush',
-    turn: 8,
-    timeLeft: '2d 4h 12m'
-  },
-  {
-    id: 'match3',
-    player1: 'NinjaCommander',
-    player2: 'DragonSlayer',
-    status: 'ready',
-    map: 'Mountain Pass',
-    turn: 15,
-    timeLeft: 'Ready to start'
-  },
-  {
-    id: 'match4',
-    player1: 'CyberPunk',
-    player2: 'MedievalKnight',
-    status: 'completed',
-    map: 'Cyber City',
-    turn: 20,
-    winner: 'MedievalKnight'
-  }
-]
-
 export const ActiveMatches: React.FC = () => {
-  const [matches, setMatches] = useState<ActiveMatch[]>(mockActiveMatches)
+  const router = useRouter()
+  const [matches, setMatches] = useState<ActiveMatch[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    fetchActiveMatches()
+  }, [])
+
+  const fetchActiveMatches = async () => {
+    try {
+      setIsLoading(true)
+      // Note: This would need a getActiveMatches endpoint in the API
+      // For now, we'll use mock data
+      const mockActiveMatches: ActiveMatch[] = [
+        {
+          id: 'match1',
+          player1: 'StrategicMaster',
+          player2: 'TacticalGenius',
+          status: 'your-turn',
+          map: 'Crossroads',
+          turn: 12,
+          timeLeft: '18h 23m'
+        },
+        {
+          id: 'match2',
+          player1: 'ShadowWarrior',
+          player2: 'IronTactician',
+          status: 'waiting',
+          map: 'Forest Ambush',
+          turn: 8,
+          timeLeft: '2d 4h 12m'
+        }
+      ]
+      setMatches(mockActiveMatches)
+    } catch (error) {
+      console.error('Error fetching active matches:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -75,18 +77,21 @@ export const ActiveMatches: React.FC = () => {
   }
 
   const handleJoinMatch = (matchId: string) => {
-    console.log('Joining match:', matchId)
-    // Navigate to match page
+    router.push(`/match/${matchId}`)
   }
 
   const handleViewMatch = (matchId: string) => {
-    console.log('Viewing match:', matchId)
-    // Navigate to match page
+    router.push(`/match/${matchId}`)
   }
 
-  const handleCancelMatch = (matchId: string) => {
-    console.log('Cancelling match:', matchId)
-    setMatches(prev => prev.filter(match => match.id !== matchId))
+  const handleCancelMatch = async (matchId: string) => {
+    try {
+      // Note: This would need a cancelMatch endpoint in the API
+      // For now, we'll just remove from local state
+      setMatches(prev => prev.filter(match => match.id !== matchId))
+    } catch (error) {
+      console.error('Error cancelling match:', error)
+    }
   }
 
   return (

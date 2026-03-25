@@ -607,7 +607,41 @@ export const shopApi = {
 
 // Match API
 export const matchApi = {
-  async findMatch(mode: string = 'ranked'): Promise<ApiResponse<{ matchId: string; opponents: User[] }>> {
+  async createMatch(gameMode: string, settings?: any, matchCode?: string): Promise<ApiResponse<{ match: any; participants: any[] }>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) {
+        throw new ApiError(401, 'No authentication token found')
+      }
+
+      const response = await fetch(`${API_BASE_URL}/matches`, {
+        method: 'POST',
+        headers: {
+          ...DEFAULT_HEADERS,
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ gameMode, settings, matchCode }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new ApiError(response.status, data.error || 'Failed to create match', data)
+      }
+
+      return {
+        success: true,
+        data,
+      }
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error
+      }
+      throw new ApiError(500, 'Network error creating match', error)
+    }
+  },
+
+  async findMatch(gameMode: string, region?: string, skillRating?: number): Promise<ApiResponse<{ matchId: string; opponents: any[] }>> {
     try {
       const token = localStorage.getItem('authToken')
       if (!token) {
@@ -620,7 +654,7 @@ export const matchApi = {
           ...DEFAULT_HEADERS,
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ mode }),
+        body: JSON.stringify({ gameMode, region, skillRating }),
       })
 
       const data = await response.json()
@@ -641,14 +675,14 @@ export const matchApi = {
     }
   },
 
-  async getMatchStatus(matchId: string): Promise<ApiResponse<{ status: string; gameState: any }>> {
+  async getMatch(matchId: string): Promise<ApiResponse<{ match: any; gameState: any; participants: any[] }>> {
     try {
       const token = localStorage.getItem('authToken')
       if (!token) {
         throw new ApiError(401, 'No authentication token found')
       }
 
-      const response = await fetch(`${API_BASE_URL}/matches/${matchId}/status`, {
+      const response = await fetch(`${API_BASE_URL}/matches/${matchId}`, {
         method: 'GET',
         headers: {
           ...DEFAULT_HEADERS,
@@ -659,7 +693,7 @@ export const matchApi = {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new ApiError(response.status, data.error || 'Failed to get match status', data)
+        throw new ApiError(response.status, data.error || 'Failed to get match', data)
       }
 
       return {
@@ -670,30 +704,30 @@ export const matchApi = {
       if (error instanceof ApiError) {
         throw error
       }
-      throw new ApiError(500, 'Network error getting match status', error)
+      throw new ApiError(500, 'Network error getting match', error)
     }
   },
 
-  async makeMove(matchId: string, move: any): Promise<ApiResponse<{ success: boolean; gameState: any }>> {
+  async executeAction(matchId: string, actionType: string, actionData: any): Promise<ApiResponse<{ gameState: any; event: any }>> {
     try {
       const token = localStorage.getItem('authToken')
       if (!token) {
         throw new ApiError(401, 'No authentication token found')
       }
 
-      const response = await fetch(`${API_BASE_URL}/matches/${matchId}/move`, {
+      const response = await fetch(`${API_BASE_URL}/matches/${matchId}/action`, {
         method: 'POST',
         headers: {
           ...DEFAULT_HEADERS,
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ move }),
+        body: JSON.stringify({ matchId, actionType, actionData }),
       })
 
       const data = await response.json()
 
       if (!response.ok) {
-        throw new ApiError(response.status, data.error || 'Failed to make move', data)
+        throw new ApiError(response.status, data.error || 'Failed to execute action', data)
       }
 
       return {
@@ -704,40 +738,7 @@ export const matchApi = {
       if (error instanceof ApiError) {
         throw error
       }
-      throw new ApiError(500, 'Network error making move', error)
-    }
-  },
-
-  async surrenderMatch(matchId: string): Promise<ApiResponse<{ success: boolean }>> {
-    try {
-      const token = localStorage.getItem('authToken')
-      if (!token) {
-        throw new ApiError(401, 'No authentication token found')
-      }
-
-      const response = await fetch(`${API_BASE_URL}/matches/${matchId}/surrender`, {
-        method: 'POST',
-        headers: {
-          ...DEFAULT_HEADERS,
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new ApiError(response.status, data.error || 'Failed to surrender match', data)
-      }
-
-      return {
-        success: true,
-        data,
-      }
-    } catch (error) {
-      if (error instanceof ApiError) {
-        throw error
-      }
-      throw new ApiError(500, 'Network error surrendering match', error)
+      throw new ApiError(500, 'Network error executing action', error)
     }
   },
 }

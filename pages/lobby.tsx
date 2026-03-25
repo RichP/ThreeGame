@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { useAuth } from '../components/auth/AuthContext'
 import ProtectedRoute from '../components/auth/ProtectedRoute'
+import { matchApi } from '../services/api'
+import { QuickMatch } from '../components/lobby/QuickMatch'
+import { CustomMatch } from '../components/lobby/CustomMatch'
 import styles from './lobby.module.css'
 
 interface MatchQueueData {
@@ -16,35 +19,43 @@ export default function LobbyPage() {
   const [queueData, setQueueData] = useState<MatchQueueData>({ status: 'waiting' })
   const [isFindingMatch, setIsFindingMatch] = useState(false)
 
-  const handleFindMatch = async (mode: string = 'ranked') => {
+  const handleFindMatch = async (gameMode: string = 'classic') => {
     try {
       setIsFindingMatch(true)
       setQueueData({ status: 'finding', estimatedWaitTime: 30 })
 
-      // Simulate match finding process
-      const response = await fetch('/api/matches/find', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-        },
-        body: JSON.stringify({ mode }),
-      })
+      console.log('Finding match with game mode:', gameMode)
+      const response = await matchApi.findMatch(gameMode)
+      console.log('Find match response:', response)
 
-      const data = await response.json()
-
-      if (response.ok) {
+      if (response.success && response.data) {
+        console.log('Match data:', response.data)
+        console.log('Response data keys:', Object.keys(response.data))
+        
+        // The response structure is: { success: true, data: { matchId: string, opponents: [...] } }
+        // So we need to access response.data.data.matchId
+        const responseData = response.data as any
+        console.log('Response data.data:', responseData.data)
+        console.log('Response data.data.matchId:', responseData.data?.matchId)
+        
         setQueueData({ 
           status: 'found', 
-          opponents: data.opponents 
+          opponents: responseData.data?.opponents || []
         })
         
         // Redirect to match page after a short delay
         setTimeout(() => {
-          router.push(`/match/${data.matchId}`)
+          const matchId = responseData.data?.matchId
+          console.log('Redirecting to match:', matchId)
+          if (matchId) {
+            router.push(`/match/${matchId}`)
+          } else {
+            console.error('Match ID is undefined!')
+            setQueueData({ status: 'waiting' })
+          }
         }, 2000)
       } else {
-        throw new Error(data.error || 'Failed to find match')
+        throw new Error(response.error || 'Failed to find match')
       }
     } catch (error) {
       console.error('Match finding error:', error)
@@ -161,6 +172,15 @@ export default function LobbyPage() {
                 </div>
               )}
             </div>
+
+            {/* Quick Match Component */}
+            <QuickMatch onJoinMatch={() => handleFindMatch('ranked')} />
+
+            {/* Custom Match Component */}
+            <CustomMatch onCreateMatch={(settings) => {
+              console.log('Creating custom match with settings:', settings)
+              // Navigation is handled by the CustomMatch component itself
+            }} />
 
             <div className={styles.quickActions}>
               <h3>Quick Actions</h3>

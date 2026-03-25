@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { useRouter } from 'next/router'
+import { matchApi } from '../../services/api'
 import styles from './QuickMatch.module.css'
 
 interface QuickMatchProps {
@@ -6,17 +8,34 @@ interface QuickMatchProps {
 }
 
 export const QuickMatch: React.FC<QuickMatchProps> = ({ onJoinMatch }) => {
+  const router = useRouter()
   const [selectedMode, setSelectedMode] = useState<'ranked' | 'casual' | 'ai'>('ranked')
   const [selectedMap, setSelectedMap] = useState<'random' | 'crossroads' | 'forest' | 'mountain'>('random')
   const [selectedTimeControl, setSelectedTimeControl] = useState<'daily' | '3days' | 'realtime'>('daily')
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleJoinMatch = () => {
-    console.log('Joining match with:', {
-      mode: selectedMode,
-      map: selectedMap,
-      timeControl: selectedTimeControl
-    })
-    onJoinMatch?.()
+  const handleJoinMatch = async () => {
+    if (isLoading) return
+    
+    try {
+      setIsLoading(true)
+      
+      const gameMode = selectedMode === 'ai' ? 'ai' : selectedMode
+      const response = await matchApi.findMatch(gameMode, undefined, undefined)
+      
+      if (response.success && response.data) {
+        // Redirect to match page
+        router.push(`/match/${response.data.matchId}`)
+        onJoinMatch?.()
+      } else {
+        throw new Error(response.error || 'Failed to find match')
+      }
+    } catch (error) {
+      console.error('Match finding error:', error)
+      // You could add a toast notification here
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (

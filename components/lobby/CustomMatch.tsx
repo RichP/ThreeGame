@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { useRouter } from 'next/router'
+import { matchApi } from '../../services/api'
 import styles from './CustomMatch.module.css'
 
 interface CustomMatchProps {
@@ -15,6 +17,7 @@ interface CustomMatchSettings {
 }
 
 export const CustomMatch: React.FC<CustomMatchProps> = ({ onCreateMatch }) => {
+  const router = useRouter()
   const [settings, setSettings] = useState<CustomMatchSettings>({
     map: 'crossroads',
     timeControl: 'daily',
@@ -24,14 +27,52 @@ export const CustomMatch: React.FC<CustomMatchProps> = ({ onCreateMatch }) => {
   })
   const [isPrivate, setIsPrivate] = useState(false)
   const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleCreateMatch = () => {
-    const finalSettings = {
-      ...settings,
-      password: isPrivate ? password : undefined
+  const handleCreateMatch = async () => {
+    if (isLoading) return
+    
+    try {
+      setIsLoading(true)
+      
+      const gameMode = isPrivate ? 'private' : 'custom'
+      console.log('Creating match with game mode:', gameMode)
+      const response = await matchApi.createMatch(gameMode, settings, isPrivate ? password : undefined)
+      console.log('Create match response:', response)
+      
+      if (response.success && response.data) {
+        console.log('Response data:', response.data)
+        console.log('Response data type:', typeof response.data)
+        console.log('Response data keys:', Object.keys(response.data))
+        
+        // The response structure is: { success: true, data: { match: {...}, participants: [...] } }
+        // So we need to access response.data.data.match
+        const responseData = response.data as any
+        console.log('Response data.data:', responseData.data)
+        console.log('Response data.data.match:', responseData.data?.match)
+        
+        // Try different ways to access the match ID
+        const matchId = responseData.data?.match?.id || responseData.match?.id || responseData.matchId
+        console.log('Extracted match ID:', matchId)
+        
+        if (matchId) {
+          console.log('Redirecting to match:', matchId)
+          // Redirect to match page
+          router.push(`/match/${matchId}`)
+          onCreateMatch?.(settings)
+        } else {
+          console.error('Could not extract match ID from response:', response.data)
+          throw new Error('Match ID not found in response')
+        }
+      } else {
+        throw new Error(response.error || 'Failed to create match')
+      }
+    } catch (error) {
+      console.error('Match creation error:', error)
+      // You could add a toast notification here
+    } finally {
+      setIsLoading(false)
     }
-    console.log('Creating custom match with:', finalSettings)
-    onCreateMatch?.(finalSettings)
   }
 
   const updateSetting = (key: keyof CustomMatchSettings, value: any) => {
