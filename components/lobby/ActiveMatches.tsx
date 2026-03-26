@@ -26,29 +26,37 @@ export const ActiveMatches: React.FC = () => {
   const fetchActiveMatches = async () => {
     try {
       setIsLoading(true)
-      // Note: This would need a getActiveMatches endpoint in the API
-      // For now, we'll use mock data
-      const mockActiveMatches: ActiveMatch[] = [
-        {
-          id: 'match1',
-          player1: 'StrategicMaster',
-          player2: 'TacticalGenius',
-          status: 'your-turn',
-          map: 'Crossroads',
-          turn: 12,
-          timeLeft: '18h 23m'
-        },
-        {
-          id: 'match2',
-          player1: 'ShadowWarrior',
-          player2: 'IronTactician',
-          status: 'waiting',
-          map: 'Forest Ambush',
-          turn: 8,
-          timeLeft: '2d 4h 12m'
-        }
-      ]
-      setMatches(mockActiveMatches)
+      const response = await matchApi.getActiveMatches()
+      if (response.success && response.data) {
+        // Transform the API response to match our ActiveMatch interface
+        const transformedMatches: ActiveMatch[] = response.data.matches.map((match: any) => {
+          const currentUser = JSON.parse(localStorage.getItem('user') || '{}')
+          const isPlayer1 = match.participants?.[0]?.userId === currentUser.id
+          const opponent = isPlayer1 ? match.participants?.[1] : match.participants?.[0]
+          
+          // Determine status based on match state
+          let status: 'your-turn' | 'waiting' | 'ready' | 'completed' = 'waiting'
+          if (match.status === 'completed') {
+            status = 'completed'
+          } else if (match.currentPlayerId === (isPlayer1 ? 1 : 2)) {
+            status = 'your-turn'
+          } else if (match.status === 'waiting') {
+            status = 'ready'
+          }
+          
+          return {
+            id: match.id.toString(),
+            player1: isPlayer1 ? currentUser.username : (opponent?.user?.username || 'Opponent'),
+            player2: isPlayer1 ? (opponent?.user?.username || 'Opponent') : currentUser.username,
+            status,
+            map: match.settings?.map || 'Random',
+            turn: match.turnNumber || 0,
+            timeLeft: undefined, // Backend doesn't provide this yet
+            winner: match.winnerId ? (match.winnerId === currentUser.id ? 'You' : 'Opponent') : undefined
+          }
+        })
+        setMatches(transformedMatches)
+      }
     } catch (error) {
       console.error('Error fetching active matches:', error)
     } finally {

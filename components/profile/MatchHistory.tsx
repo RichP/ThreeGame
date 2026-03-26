@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { matchApi } from '../../services/api'
 import styles from './MatchHistory.module.css'
 
 interface MatchHistoryProps {
@@ -17,71 +18,73 @@ interface MatchHistoryProps {
 }
 
 export const MatchHistory: React.FC<MatchHistoryProps> = ({
-  matches = [
-    {
-      id: '1',
-      date: '2024-03-12 14:30',
-      opponent: 'TacticalGenius',
-      result: 'win',
-      score: '15-8',
-      map: 'Crossroads',
-      duration: '12:45',
-      mode: 'Ranked',
-      unitsUsed: ['Sniper', 'Bruiser', 'Medic'],
-      ratingChange: +25
-    },
-    {
-      id: '2',
-      date: '2024-03-12 13:15',
-      opponent: 'ShadowWarrior',
-      result: 'loss',
-      score: '6-15',
-      map: 'Forest Ambush',
-      duration: '18:22',
-      mode: 'Casual',
-      unitsUsed: ['Scout', 'Engineer'],
-      ratingChange: -15
-    },
-    {
-      id: '3',
-      date: '2024-03-11 20:45',
-      opponent: 'IronTactician',
-      result: 'win',
-      score: '15-12',
-      map: 'Mountain Pass',
-      duration: '22:15',
-      mode: 'Ranked',
-      unitsUsed: ['Sniper', 'Bruiser', 'Scout', 'Medic'],
-      ratingChange: +18
-    },
-    {
-      id: '4',
-      date: '2024-03-11 19:30',
-      opponent: 'NinjaCommander',
-      result: 'win',
-      score: '15-4',
-      map: 'Cyber City',
-      duration: '8:30',
-      mode: 'Casual',
-      unitsUsed: ['Sniper'],
-      ratingChange: +12
-    },
-    {
-      id: '5',
-      date: '2024-03-11 18:15',
-      opponent: 'StrategicMaster',
-      result: 'loss',
-      score: '9-15',
-      map: 'Desert Outpost',
-      duration: '15:40',
-      mode: 'Ranked',
-      unitsUsed: ['Bruiser', 'Medic', 'Engineer'],
-      ratingChange: -22
-    }
-  ]
+  matches: propMatches
 }) => {
+  const [matches, setMatches] = useState<Array<{
+    id: string
+    date: string
+    opponent: string
+    result: 'win' | 'loss' | 'draw'
+    score: string
+    map: string
+    duration: string
+    mode: string
+    unitsUsed: string[]
+    ratingChange: number
+  }>>(propMatches || [])
+  const [isLoading, setIsLoading] = useState(!propMatches)
+  const [error, setError] = useState<string | null>(null)
   const [filter, setFilter] = useState<'all' | 'win' | 'loss' | 'draw'>('all')
   const [sortBy, setSortBy] = useState<'date' | 'rating' | 'duration'>('date')
+  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(0)
+
+  useEffect(() => {
+    if (!propMatches) {
+      fetchMatchHistory()
+    }
+  }, [propMatches, page])
+
+  const fetchMatchHistory = async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      const response = await matchApi.getMatchHistory(page, 20)
+      if (response.success && response.data) {
+        // Transform the API response to match our MatchHistory interface
+        const transformedMatches = response.data.matches.map((match: any) => {
+          const currentUser = JSON.parse(localStorage.getItem('user') || '{}')
+          const isWinner = match.winnerId === currentUser.id
+          const opponent = match.participants?.find((p: any) => p.userId !== currentUser.id)
+          
+          let result: 'win' | 'loss' | 'draw' = 'draw'
+          if (match.status === 'completed') {
+            result = isWinner ? 'win' : 'loss'
+          }
+          
+          return {
+            id: match.id.toString(),
+            date: new Date(match.createdAt).toLocaleString(),
+            opponent: opponent?.user?.username || 'Unknown',
+            result,
+            score: match.settings?.score || 'N/A',
+            map: match.settings?.map || 'Random',
+            duration: match.settings?.duration || 'N/A',
+            mode: match.gameMode || 'Classic',
+            unitsUsed: match.settings?.unitsUsed || [],
+            ratingChange: match.settings?.ratingChange || 0
+          }
+        })
+        setMatches(transformedMatches)
+        setTotal(response.data.total)
+      }
+    } catch (error) {
+      console.error('Error fetching match history:', error)
+      setError('Failed to load match history')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const filteredMatches = matches
     .filter(match => filter === 'all' || match.result === filter)

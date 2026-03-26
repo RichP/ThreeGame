@@ -5,6 +5,7 @@ import ProtectedRoute from '../components/auth/ProtectedRoute'
 import { matchApi } from '../services/api'
 import { QuickMatch } from '../components/lobby/QuickMatch'
 import { CustomMatch } from '../components/lobby/CustomMatch'
+import { ActiveMatches } from '../components/lobby/ActiveMatches'
 import styles from './lobby.module.css'
 
 interface MatchQueueData {
@@ -181,6 +182,9 @@ export default function LobbyPage() {
               console.log('Creating custom match with settings:', settings)
               // Navigation is handled by the CustomMatch component itself
             }} />
+
+            {/* Active Matches Component */}
+            <ActiveMatches />
 
             <div className={styles.quickActions}>
               <h3>Quick Actions</h3>

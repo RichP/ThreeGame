@@ -741,6 +741,267 @@ export const matchApi = {
       throw new ApiError(500, 'Network error executing action', error)
     }
   },
+
+  async setMatchReady(matchId: string, isReady: boolean): Promise<ApiResponse<{ participant: any; allReady: boolean }>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) {
+        throw new ApiError(401, 'No authentication token found')
+      }
+
+      const response = await fetch(`${API_BASE_URL}/matches/${matchId}/ready`, {
+        method: 'PUT',
+        headers: {
+          ...DEFAULT_HEADERS,
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ isReady }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new ApiError(response.status, data.error || 'Failed to set match ready', data)
+      }
+
+      return {
+        success: true,
+        data,
+      }
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error
+      }
+      throw new ApiError(500, 'Network error setting match ready', error)
+    }
+  },
+
+  async cancelMatch(matchId: string): Promise<ApiResponse<void>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) {
+        throw new ApiError(401, 'No authentication token found')
+      }
+
+      const response = await fetch(`${API_BASE_URL}/matches/${matchId}`, {
+        method: 'DELETE',
+        headers: {
+          ...DEFAULT_HEADERS,
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new ApiError(response.status, data.error || 'Failed to cancel match', data)
+      }
+
+      return {
+        success: true,
+      }
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error
+      }
+      throw new ApiError(500, 'Network error canceling match', error)
+    }
+  },
+
+  async getMatchReplay(matchId: string): Promise<ApiResponse<{ match: any; events: any[]; states: any[] }>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) {
+        throw new ApiError(401, 'No authentication token found')
+      }
+
+      const response = await fetch(`${API_BASE_URL}/matches/${matchId}/replay`, {
+        method: 'GET',
+        headers: {
+          ...DEFAULT_HEADERS,
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new ApiError(response.status, data.error || 'Failed to get match replay', data)
+      }
+
+      return {
+        success: true,
+        data,
+      }
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error
+      }
+      throw new ApiError(500, 'Network error getting match replay', error)
+    }
+  },
+
+  async listMatches(filters?: { status?: string; gameMode?: string; page?: number; limit?: number }): Promise<ApiResponse<{ data: { matches: any[]; total: number; page: number; limit: number } }>> {
+    try {
+      const params = new URLSearchParams()
+      if (filters?.status) params.append('status', filters.status)
+      if (filters?.gameMode) params.append('gameMode', filters.gameMode)
+      if (filters?.page) params.append('page', filters.page.toString())
+      if (filters?.limit) params.append('limit', filters.limit.toString())
+
+      const response = await fetch(`${API_BASE_URL}/matches?${params.toString()}`, {
+        method: 'GET',
+        headers: DEFAULT_HEADERS,
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new ApiError(response.status, data.error || 'Failed to list matches', data)
+      }
+
+      return {
+        success: true,
+        data,
+      }
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error
+      }
+      throw new ApiError(500, 'Network error listing matches', error)
+    }
+  },
+
+  async getMatchHistory(page: number = 1, limit: number = 20): Promise<ApiResponse<{ matches: any[]; total: number; page: number; limit: number }>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) {
+        throw new ApiError(401, 'No authentication token found')
+      }
+
+      const response = await fetch(`${API_BASE_URL}/matches/history?page=${page}&limit=${limit}`, {
+        method: 'GET',
+        headers: {
+          ...DEFAULT_HEADERS,
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new ApiError(response.status, data.error || 'Failed to get match history', data)
+      }
+
+      return {
+        success: true,
+        data,
+      }
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error
+      }
+      throw new ApiError(500, 'Network error getting match history', error)
+    }
+  },
+
+  async getActiveMatches(): Promise<ApiResponse<{ matches: any[] }>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) {
+        throw new ApiError(401, 'No authentication token found')
+      }
+
+      const response = await fetch(`${API_BASE_URL}/matches/active`, {
+        method: 'GET',
+        headers: {
+          ...DEFAULT_HEADERS,
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new ApiError(response.status, data.error || 'Failed to get active matches', data)
+      }
+
+      return {
+        success: true,
+        data,
+      }
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error
+      }
+      throw new ApiError(500, 'Network error getting active matches', error)
+    }
+  },
+
+  async skipTurn(matchId: string): Promise<ApiResponse<{ gameState: any; event: any }>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) {
+        throw new ApiError(401, 'No authentication token found')
+      }
+
+      const response = await fetch(`${API_BASE_URL}/matches/${matchId}/skip-turn`, {
+        method: 'POST',
+        headers: {
+          ...DEFAULT_HEADERS,
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new ApiError(response.status, data.error || 'Failed to skip turn', data)
+      }
+
+      return {
+        success: true,
+        data,
+      }
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error
+      }
+      throw new ApiError(500, 'Network error skipping turn', error)
+    }
+  },
+
+  async undoAction(matchId: string): Promise<ApiResponse<{ gameState: any; event: any }>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) {
+        throw new ApiError(401, 'No authentication token found')
+      }
+
+      const response = await fetch(`${API_BASE_URL}/matches/${matchId}/undo`, {
+        method: 'POST',
+        headers: {
+          ...DEFAULT_HEADERS,
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new ApiError(response.status, data.error || 'Failed to undo action', data)
+      }
+
+      return {
+        success: true,
+        data,
+      }
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error
+      }
+      throw new ApiError(500, 'Network error undoing action', error)
+    }
+  },
 }
 
 // Utility function to handle common API errors

@@ -9,10 +9,51 @@
   height: var(--custom-height);
 }
 
+/* Disable pointer events on canvasWrap when in preview mode */
+/* Using attribute selector with contains to match CSS module classes */
+.heroPreview [class*="canvasWrap"],
+.heroPreview > div > div > main > div {
+  pointer-events: none !important;
+}
+
+/* Hide the game HUD when in preview mode */
+.heroPreview [class*="gameHud"],
+.heroPreview [class*="gameControls"] {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+/* Also hide any other game UI elements */
+.heroPreview [class*="animation-settings"],
+.heroPreview [class*="dropdown"],
+.heroPreview [class*="sessionInfo"],
+.heroPreview [class*="menuButton"],
+.heroPreview [class*="gameTitle"] {
+  display: none !important;
+  pointer-events: none !important;
+}
+
 .sceneCanvas {
   width: 100%;
   height: 100%;
   cursor: default;
+  pointer-events: none !important;
+}
+
+/* Target the actual canvas element inside the container */
+.sceneCanvas canvas {
+  pointer-events: none !important;
+}
+
+/* Disable pointer events on all children of heroPreview */
+.heroPreview * {
+  pointer-events: none !important;
+}
+
+/* Re-enable pointer events only for the overlay text */
+.heroPreview [class*="overlay"],
+.heroPreview [class*="overlay"] * {
+  pointer-events: none !important;
 }
 
 .overlay {

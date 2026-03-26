@@ -19,8 +19,10 @@ export const HeroPreview: React.FC<HeroPreviewProps> = ({ height = 400 }) => {
           style: {
             width: '100%',
             height: '100%',
-            cursor: 'default' // Disable cursor changes for preview mode
-          }
+            cursor: 'default', // Disable cursor changes for preview mode
+            pointerEvents: 'none' // Disable all pointer events on canvas
+          },
+          events: false // Disable Three.js event system entirely
         }}
       />
       

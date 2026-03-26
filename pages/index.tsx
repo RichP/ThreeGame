@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
-import MainLayout from '../components/MainLayout'
 import HomeHero from '../components/website/HomeHero'
 import FeaturesGrid from '../components/website/FeaturesGrid'
 import RecentMatches from '../components/website/RecentMatches'
@@ -29,23 +28,21 @@ export default function HomePage() {
   }
 
   return (
-    <MainLayout>
-      <div className={styles.home}>
-        {/* Hero Section */}
-        <HomeHero
-          onPlayNow={handlePlayNow}
-          onWatchTutorial={handleWatchTutorial}
-          onViewFeatures={handleViewFeatures}
-        />
+    <div className={styles.home}>
+      {/* Hero Section */}
+      <HomeHero
+        onPlayNow={handlePlayNow}
+        onWatchTutorial={handleWatchTutorial}
+        onViewFeatures={handleViewFeatures}
+      />
 
-        {/* Features Grid */}
-        <div id="features">
-          <FeaturesGrid />
-        </div>
-
-        {/* Recent Matches, Leaderboards & News */}
-        <RecentMatches />
+      {/* Features Grid */}
+      <div id="features">
+        <FeaturesGrid />
       </div>
-    </MainLayout>
+
+      {/* Recent Matches, Leaderboards & News */}
+      <RecentMatches />
+    </div>
   )
 }
