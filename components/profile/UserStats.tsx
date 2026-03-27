@@ -30,37 +30,32 @@ interface UserStatsProps {
     winRate: number
     gamesPlayed: number
   }>
+  showDetailedStats?: boolean
 }
 
 export const UserStats: React.FC<UserStatsProps> = ({
-  overallStats = {
+  overallStats,
+  timeStats,
+  unitStats,
+  mapStats,
+  showDetailedStats = false
+}) => {
+  // Use provided props or fall back to defaults
+  const stats = overallStats || {
     wins: 156,
     losses: 89,
     draws: 0,
     total: 245,
     winRate: 64
-  },
-  timeStats = {
+  }
+  const time = timeStats || {
     totalHours: 127,
     avgTurnTime: 45,
     fastestWin: 6,
     longestGame: 35
-  },
-  unitStats = [
-    { name: 'Sniper', wins: 45, losses: 25, winRate: 64, avgDamage: 18, usageCount: 70 },
-    { name: 'Scout', wins: 32, losses: 10, winRate: 76, avgDamage: 12, usageCount: 42 },
-    { name: 'Bruiser', wins: 68, losses: 45, winRate: 60, avgDamage: 25, usageCount: 113 },
-    { name: 'Medic', wins: 28, losses: 15, winRate: 65, avgDamage: 8, usageCount: 43 },
-    { name: 'Engineer', wins: 15, losses: 12, winRate: 56, avgDamage: 15, usageCount: 27 }
-  ],
-  mapStats = [
-    { name: 'Crossroads', wins: 67, losses: 34, winRate: 66, gamesPlayed: 101 },
-    { name: 'Forest Ambush', wins: 34, losses: 21, winRate: 62, gamesPlayed: 55 },
-    { name: 'Mountain Pass', wins: 28, losses: 18, winRate: 61, gamesPlayed: 46 },
-    { name: 'Cyber City', wins: 19, losses: 12, winRate: 61, gamesPlayed: 31 },
-    { name: 'Desert Outpost', wins: 8, losses: 4, winRate: 67, gamesPlayed: 12 }
-  ]
-}) => {
+  }
+  const units = unitStats
+  const maps = mapStats
   const getWinRateColor = (winRate: number) => {
     if (winRate >= 70) return '#10b981'
     if (winRate >= 60) return '#f59e0b'
@@ -83,27 +78,27 @@ export const UserStats: React.FC<UserStatsProps> = ({
           <div className={styles.overallStats}>
             <div className={styles.statRow}>
               <span className={styles.statLabel}>Total Matches</span>
-              <span className={styles.statValue}>{overallStats.total}</span>
+              <span className={styles.statValue}>{stats.total}</span>
             </div>
             <div className={styles.statRow}>
               <span className={styles.statLabel}>Wins</span>
-              <span className={`${styles.statValue} ${styles.winColor}`}>{overallStats.wins}</span>
+              <span className={`${styles.statValue} ${styles.winColor}`}>{stats.wins}</span>
             </div>
             <div className={styles.statRow}>
               <span className={styles.statLabel}>Losses</span>
-              <span className={`${styles.statValue} ${styles.lossColor}`}>{overallStats.losses}</span>
+              <span className={`${styles.statValue} ${styles.lossColor}`}>{stats.losses}</span>
             </div>
             <div className={styles.statRow}>
               <span className={styles.statLabel}>Draws</span>
-              <span className={styles.statValue}>{overallStats.draws}</span>
+              <span className={styles.statValue}>{stats.draws}</span>
             </div>
             <div className={styles.statRow}>
               <span className={styles.statLabel}>Win Rate</span>
               <span 
                 className={styles.statValue}
-                style={{ color: getWinRateColor(overallStats.winRate) }}
+                style={{ color: getWinRateColor(stats.winRate) }}
               >
-                {overallStats.winRate}%
+                {stats.winRate}%
               </span>
             </div>
           </div>
@@ -115,78 +110,82 @@ export const UserStats: React.FC<UserStatsProps> = ({
           <div className={styles.timeStats}>
             <div className={styles.statRow}>
               <span className={styles.statLabel}>Total Hours Played</span>
-              <span className={styles.statValue}>{timeStats.totalHours}h</span>
+              <span className={styles.statValue}>{time.totalHours}h</span>
             </div>
             <div className={styles.statRow}>
               <span className={styles.statLabel}>Average Turn Time</span>
-              <span className={styles.statValue}>{timeStats.avgTurnTime}s</span>
+              <span className={styles.statValue}>{time.avgTurnTime}s</span>
             </div>
             <div className={styles.statRow}>
               <span className={styles.statLabel}>Fastest Win</span>
-              <span className={styles.statValue}>{timeStats.fastestWin} turns</span>
+              <span className={styles.statValue}>{time.fastestWin} turns</span>
             </div>
             <div className={styles.statRow}>
               <span className={styles.statLabel}>Longest Game</span>
-              <span className={styles.statValue}>{timeStats.longestGame} turns</span>
+              <span className={styles.statValue}>{time.longestGame} turns</span>
             </div>
           </div>
         </div>
 
         {/* Unit Performance */}
-        <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>Unit Performance</h3>
-          <div className={styles.unitStatsList}>
-            {unitStats.map((unit, index) => (
-              <div key={index} className={styles.unitStatRow}>
-                <div className={styles.unitInfo}>
-                  <span className={styles.unitName}>{unit.name}</span>
-                  <span className={styles.unitUsage}>
-                    Used {unit.usageCount} times ({((unit.usageCount / overallStats.total) * 100).toFixed(1)}%)
-                  </span>
+        {units && units.length > 0 && (
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>Unit Performance</h3>
+            <div className={styles.unitStatsList}>
+              {units.map((unit, index) => (
+                <div key={index} className={styles.unitStatRow}>
+                  <div className={styles.unitInfo}>
+                    <span className={styles.unitName}>{unit.name}</span>
+                    <span className={styles.unitUsage}>
+                      Used {unit.usageCount} times ({((unit.usageCount / stats.total) * 100).toFixed(1)}%)
+                    </span>
+                  </div>
+                  <div className={styles.unitMetrics}>
+                    <span 
+                      className={styles.unitWinRate}
+                      style={{ color: getWinRateColor(unit.winRate) }}
+                    >
+                      {unit.winRate}% WR
+                    </span>
+                    <span className={styles.unitDamage}>
+                      {unit.avgDamage} avg dmg
+                    </span>
+                  </div>
                 </div>
-                <div className={styles.unitMetrics}>
-                  <span 
-                    className={styles.unitWinRate}
-                    style={{ color: getWinRateColor(unit.winRate) }}
-                  >
-                    {unit.winRate}% WR
-                  </span>
-                  <span className={styles.unitDamage}>
-                    {unit.avgDamage} avg dmg
-                  </span>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Map Performance */}
-        <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>Map Performance</h3>
-          <div className={styles.mapStatsList}>
-            {mapStats.map((map, index) => (
-              <div key={index} className={styles.mapStatRow}>
-                <div className={styles.mapInfo}>
-                  <span className={styles.mapName}>{map.name}</span>
-                  <span className={styles.mapGames}>
-                    {map.gamesPlayed} games
-                  </span>
+        {maps && maps.length > 0 && (
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>Map Performance</h3>
+            <div className={styles.mapStatsList}>
+              {maps.map((map, index) => (
+                <div key={index} className={styles.mapStatRow}>
+                  <div className={styles.mapInfo}>
+                    <span className={styles.mapName}>{map.name}</span>
+                    <span className={styles.mapGames}>
+                      {map.gamesPlayed} games
+                    </span>
+                  </div>
+                  <div className={styles.mapMetrics}>
+                    <span 
+                      className={styles.mapWinRate}
+                      style={{ color: getWinRateColor(map.winRate) }}
+                    >
+                      {map.winRate}% WR
+                    </span>
+                    <span className={styles.mapRecord}>
+                      {map.wins}-{map.losses}
+                    </span>
+                  </div>
                 </div>
-                <div className={styles.mapMetrics}>
-                  <span 
-                    className={styles.mapWinRate}
-                    style={{ color: getWinRateColor(map.winRate) }}
-                  >
-                    {map.winRate}% WR
-                  </span>
-                  <span className={styles.mapRecord}>
-                    {map.wins}-{map.losses}
-                  </span>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Performance Chart */}
         <div className={styles.section}>

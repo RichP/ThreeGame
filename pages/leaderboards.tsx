@@ -5,6 +5,7 @@ import LeaderboardTabs from '../components/leaderboards/LeaderboardTabs'
 import LeaderboardFilters from '../components/leaderboards/LeaderboardFilters'
 import LeaderboardTable from '../components/leaderboards/LeaderboardTable'
 import LeaderboardStats from '../components/leaderboards/LeaderboardStats'
+import { communityApi } from '../services/api'
 import styles from './leaderboards.module.css'
 
 interface LeaderboardEntry {
@@ -61,22 +62,59 @@ export default function LeaderboardsPage() {
     }))
   }
 
-  const generateStats = (): LeaderboardStats => ({
-    totalPlayers: 15420,
-    averageRating: 1450,
-    topPlayer: 'GrandMaster',
-    mostPlayedMap: 'Crossroads',
-    averageGameLength: '15 minutes'
-  })
-
   useEffect(() => {
-    // Simulate API call
-    setLoading(true)
-    setTimeout(() => {
-      setLeaderboardData(generateMockData())
-      setStats(generateStats())
-      setLoading(false)
-    }, 1000)
+    const fetchLeaderboard = async () => {
+      setLoading(true)
+      try {
+        const filter: any = {
+          limit: 100
+        }
+        
+        if (divisionFilter !== 'all') {
+          filter.tier = divisionFilter
+        }
+
+        const response = await communityApi.getLeaderboard(filter)
+        
+        if (response.success && response.data) {
+          const transformedData: LeaderboardEntry[] = response.data.entries.map((entry: any) => ({
+            rank: entry.rank,
+            username: entry.user.username,
+            wins: entry.wins,
+            losses: entry.losses,
+            winRate: entry.winRate,
+            rating: entry.mmr || entry.points,
+            gamesPlayed: entry.wins + entry.losses,
+            lastActive: 'Recently',
+            avatar: undefined,
+            country: 'US',
+            division: entry.tier || 'Unranked',
+            seasonPoints: entry.points
+          }))
+          setLeaderboardData(transformedData)
+
+          // Fetch stats
+          const statsResponse = await communityApi.getLeaderboardStats()
+          if (statsResponse.success && statsResponse.data) {
+            setStats({
+              totalPlayers: statsResponse.data.totalPlayers,
+              averageRating: Math.round(statsResponse.data.averagePoints),
+              topPlayer: statsResponse.data.topPlayer.username,
+              mostPlayedMap: 'Crossroads',
+              averageGameLength: '15 minutes'
+            })
+          }
+        }
+      } catch (err: any) {
+        console.error('Failed to fetch leaderboard:', err)
+        // Fallback to empty data
+        setLeaderboardData([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchLeaderboard()
   }, [activeTab, timeFilter, regionFilter, divisionFilter])
 
   const handleTabChange = (tab: 'global' | 'regional' | 'friends' | 'seasonal') => {

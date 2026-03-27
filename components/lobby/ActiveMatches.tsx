@@ -28,8 +28,10 @@ export const ActiveMatches: React.FC = () => {
       setIsLoading(true)
       const response = await matchApi.getActiveMatches()
       if (response.success && response.data) {
+        // Handle both array and object with matches property
+        const matchesArray = Array.isArray(response.data) ? response.data : (response.data.matches || [])
         // Transform the API response to match our ActiveMatch interface
-        const transformedMatches: ActiveMatch[] = response.data.matches.map((match: any) => {
+        const transformedMatches: ActiveMatch[] = matchesArray.map((match: any) => {
           const currentUser = JSON.parse(localStorage.getItem('user') || '{}')
           const isPlayer1 = match.participants?.[0]?.userId === currentUser.id
           const opponent = isPlayer1 ? match.participants?.[1] : match.participants?.[0]

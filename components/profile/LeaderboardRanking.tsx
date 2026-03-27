@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { communityApi } from '../../services/api'
 import styles from './LeaderboardRanking.module.css'
 
 interface LeaderboardEntry {
@@ -16,109 +17,43 @@ interface LeaderboardEntry {
 export const LeaderboardRanking: React.FC = () => {
   const [timeframe, setTimeframe] = useState<'daily' | 'weekly' | 'monthly' | 'alltime'>('weekly')
   const [gameMode, setGameMode] = useState<'ranked' | 'casual' | 'all'>('ranked')
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([])
+  const [playerPosition, setPlayerPosition] = useState<number | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  const leaderboardData: LeaderboardEntry[] = [
-    {
-      rank: 1,
-      username: 'GrandMaster',
-      elo: 2450,
-      wins: 342,
-      losses: 89,
-      winRate: 79,
-      country: 'US',
-      isCurrentUser: false
-    },
-    {
-      rank: 2,
-      username: 'TacticalGenius',
-      elo: 2380,
-      wins: 567,
-      losses: 156,
-      winRate: 79,
-      country: 'DE',
-      isCurrentUser: false
-    },
-    {
-      rank: 3,
-      username: 'ShadowWarrior',
-      elo: 2320,
-      wins: 423,
-      losses: 134,
-      winRate: 76,
-      country: 'JP',
-      isCurrentUser: false
-    },
-    {
-      rank: 4,
-      username: 'IronTactician',
-      elo: 2280,
-      wins: 678,
-      losses: 234,
-      winRate: 74,
-      country: 'FR',
-      isCurrentUser: false
-    },
-    {
-      rank: 5,
-      username: 'NinjaCommander',
-      elo: 2240,
-      wins: 345,
-      losses: 123,
-      winRate: 74,
-      country: 'BR',
-      isCurrentUser: false
-    },
-    {
-      rank: 6,
-      username: 'StrategicMaster',
-      elo: 1850,
-      wins: 156,
-      losses: 89,
-      winRate: 64,
-      country: 'GB',
-      isCurrentUser: true
-    },
-    {
-      rank: 7,
-      username: 'BattleLord',
-      elo: 2180,
-      wins: 456,
-      losses: 178,
-      winRate: 72,
-      country: 'RU',
-      isCurrentUser: false
-    },
-    {
-      rank: 8,
-      username: 'WarTactician',
-      elo: 2150,
-      wins: 234,
-      losses: 98,
-      winRate: 70,
-      country: 'AU',
-      isCurrentUser: false
-    },
-    {
-      rank: 9,
-      username: 'MasterStrategist',
-      elo: 2120,
-      wins: 789,
-      losses: 345,
-      winRate: 69,
-      country: 'CA',
-      isCurrentUser: false
-    },
-    {
-      rank: 10,
-      username: 'EliteCommander',
-      elo: 2090,
-      wins: 123,
-      losses: 56,
-      winRate: 69,
-      country: 'KR',
-      isCurrentUser: false
+  useEffect(() => {
+    const fetchLeaderboardData = async () => {
+      setLoading(true)
+      try {
+        const response = await communityApi.getLeaderboard({ limit: 10 })
+        if (response.success && response.data) {
+          const transformedData: LeaderboardEntry[] = response.data.entries.map((entry: any) => ({
+            rank: entry.rank,
+            username: entry.user.username,
+            elo: entry.mmr || entry.points,
+            wins: entry.wins,
+            losses: entry.losses,
+            winRate: entry.winRate,
+            country: 'US',
+            isCurrentUser: false
+          }))
+          setLeaderboardData(transformedData)
+        }
+
+        // Fetch player position
+        const positionResponse = await communityApi.getPlayerPosition(1)
+        if (positionResponse.success && positionResponse.data) {
+          setPlayerPosition(positionResponse.data.position)
+        }
+      } catch (err: any) {
+        console.error('Failed to fetch leaderboard:', err)
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
+
+    fetchLeaderboardData()
+  }, [gameMode, timeframe])
 
   const filteredData = leaderboardData.filter(entry => 
     gameMode === 'all' || (gameMode === 'ranked' && entry.elo >= 1500) || (gameMode === 'casual' && entry.elo < 1500)
@@ -204,7 +139,7 @@ export const LeaderboardRanking: React.FC = () => {
         <div className={styles.currentRank}>
           <div className={styles.rankInfo}>
             <span className={styles.rankLabel}>Global Rank</span>
-            <span className={styles.rankValue}>#6</span>
+            <span className={styles.rankValue}>#{playerPosition || '-'}</span>
           </div>
           <div className={styles.eloInfo}>
             <span className={styles.eloLabel}>ELO Rating</span>

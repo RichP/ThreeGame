@@ -2,6 +2,7 @@
 export interface User {
   id: string
   username: string
+  displayName?: string
   email: string
   avatar?: string
   rating: number
@@ -40,9 +41,10 @@ export interface UserSettings {
 export interface Friend {
   id: string
   username: string
+  displayName?: string
   status: 'online' | 'offline' | 'away'
   lastSeen: string
-  avatar?: string
+  avatarUrl?: string
   rating: number
   division: string
   isOnline: boolean
@@ -136,6 +138,7 @@ export interface LeaderboardEntry {
   rank: number
   userId: string
   username: string
+  displayName?: string
   avatar?: string
   rating: number
   division: string
@@ -397,6 +400,56 @@ export interface ApiError {
   status: number
   message: string
   details?: any
+}
+
+// Community API Types
+export interface PlayerStatsResponse {
+  userId: number
+  gamesPlayed: number
+  gamesWon: number
+  gamesLost: number
+  winRate: number
+  totalKills: number
+  totalDeaths: number
+  totalAssists: number
+  totalDamage: number
+  totalHealing: number
+  bestStreak: number
+  currentStreak: number
+  hoursPlayed: number
+  lastMatchAt: string | null
+  rank?: {
+    tier: string
+    division: number
+    mmr: number
+  }
+}
+
+export interface FriendsResponse {
+  friends: Array<{
+    id: number
+    username: string
+    displayName: string | null
+    avatarUrl: string | null
+    status: string
+    lastSeen: string
+  }>
+  pendingRequests: Array<{
+    id: number
+    username: string
+    displayName: string | null
+    avatarUrl: string | null
+    status: string
+    lastSeen: string
+  }>
+  sentRequests: Array<{
+    id: number
+    username: string
+    displayName: string | null
+    avatarUrl: string | null
+    status: string
+    lastSeen: string
+  }>
 }
 
 // WebSocket Types

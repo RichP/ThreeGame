@@ -163,7 +163,7 @@ export const userApi = {
         throw new ApiError(401, 'No authentication token found')
       }
 
-      const response = await fetch(`${API_BASE_URL}/users/profile`, {
+      const response = await fetch(`${API_BASE_URL}/auth/profile`, {
         method: 'GET',
         headers: {
           ...DEFAULT_HEADERS,
@@ -179,7 +179,7 @@ export const userApi = {
 
       return {
         success: true,
-        data,
+        data: data.data,
       }
     } catch (error) {
       if (error instanceof ApiError) {
@@ -292,214 +292,222 @@ export const userApi = {
 
 // Friends API
 export const friendsApi = {
-  async getFriends(): Promise<ApiResponse<{ friends: Friend[] }>> {
+  async getFriendsList(): Promise<ApiResponse<any>> {
     try {
       const token = localStorage.getItem('authToken')
-      if (!token) {
-        throw new ApiError(401, 'No authentication token found')
-      }
-
-      const response = await fetch(`${API_BASE_URL}/friends`, {
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/community/friends`, {
         method: 'GET',
-        headers: {
-          ...DEFAULT_HEADERS,
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
       })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new ApiError(response.status, data.error || 'Failed to fetch friends', data)
-      }
-
-      return {
-        success: true,
-        data,
-      }
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to fetch friends')
+      return { success: true, data: result.data }
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error
-      }
-      throw new ApiError(500, 'Network error fetching friends', error)
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
     }
   },
 
-  async addFriend(username: string): Promise<ApiResponse<Friend>> {
+  async sendFriendRequest(targetUserId: number, message?: string): Promise<ApiResponse<any>> {
     try {
       const token = localStorage.getItem('authToken')
-      if (!token) {
-        throw new ApiError(401, 'No authentication token found')
-      }
-
-      const response = await fetch(`${API_BASE_URL}/friends`, {
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/community/friends/request`, {
         method: 'POST',
-        headers: {
-          ...DEFAULT_HEADERS,
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ username }),
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ targetUserId, message }),
       })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new ApiError(response.status, data.error || 'Failed to add friend', data)
-      }
-
-      return {
-        success: true,
-        data,
-      }
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to send request')
+      return { success: true, data: result.data }
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error
-      }
-      throw new ApiError(500, 'Network error adding friend', error)
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
     }
   },
 
-  async removeFriend(friendId: string): Promise<ApiResponse<void>> {
+  async acceptFriendRequest(requestId: number): Promise<ApiResponse<void>> {
     try {
       const token = localStorage.getItem('authToken')
-      if (!token) {
-        throw new ApiError(401, 'No authentication token found')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/community/friends/${requestId}/accept`, {
+        method: 'POST',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+      })
+      if (!response.ok) {
+        const result = await response.json()
+        throw new ApiError(response.status, result.error || 'Failed to accept')
       }
+      return { success: true }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
 
-      const response = await fetch(`${API_BASE_URL}/friends/${friendId}`, {
+  async declineFriendRequest(requestId: number): Promise<ApiResponse<void>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/community/friends/${requestId}/decline`, {
+        method: 'POST',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+      })
+      if (!response.ok) {
+        const result = await response.json()
+        throw new ApiError(response.status, result.error || 'Failed to decline')
+      }
+      return { success: true }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async removeFriend(friendId: number): Promise<ApiResponse<void>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/community/friends/${friendId}`, {
         method: 'DELETE',
-        headers: {
-          ...DEFAULT_HEADERS,
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
       })
-
       if (!response.ok) {
-        const data = await response.json()
-        throw new ApiError(response.status, data.error || 'Failed to remove friend', data)
+        const result = await response.json()
+        throw new ApiError(response.status, result.error || 'Failed to remove friend')
       }
-
-      return {
-        success: true,
-      }
+      return { success: true }
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error
-      }
-      throw new ApiError(500, 'Network error removing friend', error)
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
     }
   },
 
-  async searchUsers(query: string): Promise<ApiResponse<{ users: User[] }>> {
+  async searchUsers(query: string, limit?: number): Promise<ApiResponse<any>> {
     try {
       const token = localStorage.getItem('authToken')
-      if (!token) {
-        throw new ApiError(401, 'No authentication token found')
-      }
-
-      const response = await fetch(`${API_BASE_URL}/users/search?q=${encodeURIComponent(query)}`, {
+      if (!token) throw new ApiError(401, 'No auth token')
+      const url = new URL(`${API_BASE_URL}/community/friends/search`)
+      url.searchParams.append('query', query)
+      if (limit) url.searchParams.append('limit', limit.toString())
+      const response = await fetch(url.toString(), {
         method: 'GET',
-        headers: {
-          ...DEFAULT_HEADERS,
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
       })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new ApiError(response.status, data.error || 'Failed to search users', data)
-      }
-
-      return {
-        success: true,
-        data,
-      }
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to search')
+      return { success: true, data: result.data }
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error
-      }
-      throw new ApiError(500, 'Network error searching users', error)
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
     }
   },
+
+  async getFriendshipStatus(targetUserId: number): Promise<ApiResponse<any>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/community/friends/status/${targetUserId}`, {
+        method: 'GET',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to get status')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  }
 }
 
-// Leaderboard API
-export const leaderboardApi = {
-  async getGlobalLeaderboard(page: number = 1, limit: number = 50): Promise<ApiResponse<{ entries: LeaderboardEntry[]; total: number }>> {
+// Community API
+export const communityApi = {
+  async getPlayerStats(userId: number): Promise<ApiResponse<any>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/leaderboards/global?page=${page}&limit=${limit}`, {
+      const token = localStorage.getItem('authToken')
+      const response = await fetch(`${API_BASE_URL}/community/stats/${userId}`, {
         method: 'GET',
-        headers: DEFAULT_HEADERS,
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
       })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new ApiError(response.status, data.error || 'Failed to fetch leaderboard', data)
-      }
-
-      return {
-        success: true,
-        data,
-      }
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to get stats')
+      return { success: true, data: result.data }
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error
-      }
-      throw new ApiError(500, 'Network error fetching leaderboard', error)
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error getting stats', error)
     }
   },
 
-  async getRegionalLeaderboard(region: string, page: number = 1, limit: number = 50): Promise<ApiResponse<{ entries: LeaderboardEntry[]; total: number }>> {
+  async getLeaderboard(filter: any): Promise<ApiResponse<any>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/leaderboards/region/${region}?page=${page}&limit=${limit}`, {
+      const query = new URLSearchParams(filter as any).toString()
+      const response = await fetch(`${API_BASE_URL}/community/leaderboard?${query}`, {
         method: 'GET',
         headers: DEFAULT_HEADERS,
       })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new ApiError(response.status, data.error || 'Failed to fetch regional leaderboard', data)
-      }
-
-      return {
-        success: true,
-        data,
-      }
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to get leaderboard')
+      return { success: true, data: result.data }
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error
-      }
-      throw new ApiError(500, 'Network error fetching regional leaderboard', error)
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error getting leaderboard', error)
     }
   },
 
-  async getUserRank(userId: string): Promise<ApiResponse<{ rank: number; totalUsers: number }>> {
+  async getPlayerPosition(userId: number, seasonId?: number): Promise<ApiResponse<any>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/leaderboards/user/${userId}/rank`, {
+      const token = localStorage.getItem('authToken')
+      const url = new URL(`${API_BASE_URL}/community/leaderboard/${userId}/position`)
+      if (seasonId) url.searchParams.append('seasonId', seasonId.toString())
+      const response = await fetch(url.toString(), {
+        method: 'GET',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` }
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to get position')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error getting position', error)
+    }
+  },
+
+  async recordMatchResult(userId: number, matchData: any): Promise<ApiResponse<any>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      const response = await fetch(`${API_BASE_URL}/community/stats/${userId}/record-match`, {
+        method: 'POST',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+        body: JSON.stringify(matchData)
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to record match')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error recording match', error)
+    }
+  },
+
+  async getLeaderboardStats(seasonId?: number): Promise<ApiResponse<any>> {
+    try {
+      const url = seasonId
+        ? `${API_BASE_URL}/community/leaderboard/stats?seasonId=${seasonId}`
+        : `${API_BASE_URL}/community/leaderboard/stats`
+      const response = await fetch(url, {
         method: 'GET',
         headers: DEFAULT_HEADERS,
       })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new ApiError(response.status, data.error || 'Failed to fetch user rank', data)
-      }
-
-      return {
-        success: true,
-        data,
-      }
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to get leaderboard stats')
+      return { success: true, data: result.data }
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error
-      }
-      throw new ApiError(500, 'Network error fetching user rank', error)
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error getting leaderboard stats', error)
     }
-  },
+  }
 }
 
 // Shop API
@@ -925,9 +933,12 @@ export const matchApi = {
         throw new ApiError(response.status, data.error || 'Failed to get active matches', data)
       }
 
+      // Return data with matches property for consistency
       return {
         success: true,
-        data,
+        data: {
+          matches: Array.isArray(data.data) ? data.data : (data.data?.matches || [])
+        },
       }
     } catch (error) {
       if (error instanceof ApiError) {

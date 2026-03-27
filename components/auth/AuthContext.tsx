@@ -195,6 +195,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.removeItem('authToken')
       localStorage.removeItem('user')
       cleanupRealTimeUpdates()
+      // Force redirect to auth page to clear any cached state
+      if (typeof window !== 'undefined') {
+        window.location.href = '/auth'
+      }
     }
   }
 

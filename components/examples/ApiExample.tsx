@@ -76,7 +76,7 @@ const ApiExample: React.FC = () => {
   )
 
   const friendsCall = useApiCall(
-    () => friendsApi.getFriends(),
+    () => friendsApi.getFriendsList(),
     {
       onSuccess: (data) => {
         if (data?.success && data.data) {

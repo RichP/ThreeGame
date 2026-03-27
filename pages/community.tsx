@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import MainLayout from '../components/MainLayout'
 import { ProtectedRoute } from '../components/auth/ProtectedRoute'
@@ -6,6 +6,7 @@ import CommunityTabs from '../components/community/CommunityTabs'
 import PlayerSearch from '../components/community/PlayerSearch'
 import FriendsList from '../components/community/FriendsList'
 import LeaderboardPreview from '../components/community/LeaderboardPreview'
+import { friendsApi, communityApi } from '../services/api'
 import styles from './community.module.css'
 
 interface Friend {
@@ -30,52 +31,62 @@ export default function CommunityPage() {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<'leaderboards' | 'friends' | 'search'>('leaderboards')
   const [searchQuery, setSearchQuery] = useState('')
-  const [friends, setFriends] = useState<Friend[]>([
-    {
-      id: '1',
-      username: 'StrategicMaster',
-      status: 'online',
-      lastSeen: 'Just now',
-      avatar: '/api/placeholder/32/32',
-      rating: 1850,
-      division: 'Platinum'
-    },
-    {
-      id: '2',
-      username: 'TacticalGenius',
-      status: 'away',
-      lastSeen: '5 minutes ago',
-      avatar: '/api/placeholder/32/32',
-      rating: 1720,
-      division: 'Gold'
-    },
-    {
-      id: '3',
-      username: 'ShadowWarrior',
-      status: 'offline',
-      lastSeen: '2 hours ago',
-      avatar: '/api/placeholder/32/32',
-      rating: 1680,
-      division: 'Gold'
-    },
-    {
-      id: '4',
-      username: 'BattleLord',
-      status: 'online',
-      lastSeen: 'Just now',
-      avatar: '/api/placeholder/32/32',
-      rating: 1950,
-      division: 'Diamond'
-    }
-  ])
+  const [friends, setFriends] = useState<Friend[]>([])
+  const [topPlayers, setTopPlayers] = useState<LeaderboardEntry[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const topPlayers: LeaderboardEntry[] = [
-    { rank: 1, username: 'GrandMaster', rating: 2150, division: 'Master', country: 'US' },
-    { rank: 2, username: 'TacticalPro', rating: 1980, division: 'Diamond', country: 'EU' },
-    { rank: 3, username: 'StrategicMind', rating: 1920, division: 'Diamond', country: 'APAC' },
-    { rank: 4, username: 'CombatGenius', rating: 1850, division: 'Platinum', country: 'US' },
-    { rank: 5, username: 'FieldMarshal', rating: 1820, division: 'Platinum', country: 'EU' }
-  ]
+  useEffect(() => {
+    const fetchData = async () => {
+      // Check if user is authenticated before making API calls
+      const token = localStorage.getItem('authToken')
+      if (!token) {
+        setLoading(false)
+        return
+      }
+
+      setLoading(true)
+      setError(null)
+      try {
+        // Fetch friends
+        const friendsResponse = await friendsApi.getFriendsList()
+        if (friendsResponse.success && friendsResponse.data) {
+          const transformedFriends = friendsResponse.data.friends.map((f: any) => ({
+            id: f.id.toString(),
+            username: f.username,
+            status: 'offline' as const,
+            lastSeen: f.lastSeen || 'Recently',
+            avatar: f.avatarUrl || '/api/placeholder/32/32',
+            rating: 1500,
+            division: 'Gold'
+          }))
+          setFriends(transformedFriends)
+        }
+
+        // Fetch leaderboard preview
+        const leaderboardResponse = await communityApi.getLeaderboard({ limit: 5 })
+        if (leaderboardResponse.success && leaderboardResponse.data) {
+          const transformedPlayers = leaderboardResponse.data.entries.map((entry: any) => ({
+            rank: entry.rank,
+            username: entry.user.username,
+            rating: entry.mmr || entry.points,
+            division: entry.tier || 'Unranked',
+            country: 'US'
+          }))
+          setTopPlayers(transformedPlayers)
+        }
+      } catch (err: any) {
+        // Only log errors if user is authenticated (token exists)
+        if (localStorage.getItem('authToken')) {
+          setError(err.message || 'Failed to load data')
+        }
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
 
   const handleTabChange = (tab: 'leaderboards' | 'friends' | 'search') => {
     setActiveTab(tab)
@@ -85,18 +96,36 @@ export default function CommunityPage() {
     setSearchQuery(query)
   }
 
-  const handleAddFriend = (username: string) => {
-    // Mock friend request functionality
-    console.log(`Friend request sent to ${username}`)
+  const handleAddFriend = async (username: string) => {
+    try {
+      // Search for user first to get their ID
+      const searchResponse = await friendsApi.searchUsers(username)
+      if (searchResponse.success && searchResponse.data && searchResponse.data.length > 0) {
+        const targetUserId = searchResponse.data[0].id
+        const response = await friendsApi.sendFriendRequest(targetUserId)
+        if (response.success) {
+          console.log('Friend request sent successfully')
+        }
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to send friend request')
+    }
   }
 
   const handleChallenge = (username: string) => {
-    // Mock challenge functionality
+    // Challenge functionality
     console.log(`Challenge sent to ${username}`)
   }
 
-  const handleRemoveFriend = (friendId: string) => {
-    setFriends(friends.filter(friend => friend.id !== friendId))
+  const handleRemoveFriend = async (friendId: string) => {
+    try {
+      const response = await friendsApi.removeFriend(parseInt(friendId))
+      if (response.success) {
+        setFriends(friends.filter(friend => friend.id !== friendId))
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to remove friend')
+    }
   }
 
   return (
