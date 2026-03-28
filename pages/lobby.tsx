@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { useAuth } from '../components/auth/AuthContext'
 import ProtectedRoute from '../components/auth/ProtectedRoute'
-import { matchApi } from '../services/api'
+import { matchApi, communityApi } from '../services/api'
 import { QuickMatch } from '../components/lobby/QuickMatch'
 import { CustomMatch } from '../components/lobby/CustomMatch'
 import { ActiveMatches } from '../components/lobby/ActiveMatches'
@@ -19,6 +19,48 @@ export default function LobbyPage() {
   const router = useRouter()
   const [queueData, setQueueData] = useState<MatchQueueData>({ status: 'waiting' })
   const [isFindingMatch, setIsFindingMatch] = useState(false)
+  const [playerStats, setPlayerStats] = useState<{
+    gamesPlayed: number
+    gamesWon: number
+    winRate: number
+    rank?: {
+      tier: string
+      division: number
+      mmr: number
+    }
+  } | null>(null)
+  const [statsLoading, setStatsLoading] = useState(true)
+
+  useEffect(() => {
+    if (user?.id) {
+      fetchPlayerStats()
+    }
+  }, [user?.id])
+
+  const fetchPlayerStats = async () => {
+    try {
+      setStatsLoading(true)
+      const response = await communityApi.getPlayerStats(user!.id)
+      if (response.success && response.data) {
+        setPlayerStats(response.data)
+      }
+    } catch (error) {
+      console.error('Error fetching player stats:', error)
+      // Set default values for new users
+      setPlayerStats({
+        gamesPlayed: 0,
+        gamesWon: 0,
+        winRate: 0,
+        rank: {
+          tier: 'Bronze',
+          division: 1,
+          mmr: 1000
+        }
+      })
+    } finally {
+      setStatsLoading(false)
+    }
+  }
 
   const handleFindMatch = async (gameMode: string = 'classic') => {
     try {
@@ -113,9 +155,18 @@ export default function LobbyPage() {
                 <h2>{user.username}</h2>
                 <p className={styles.email}>{user.email}</p>
                 <div className={styles.stats}>
-                  <span className={styles.stat}>Level: 1</span>
-                  <span className={styles.stat}>Rating: 1200</span>
-                  <span className={styles.stat}>Division: Bronze</span>
+                  <span className={styles.stat}>
+                    {statsLoading ? '...' : `Games: ${playerStats?.gamesPlayed || 0}`}
+                  </span>
+                  <span className={styles.stat}>
+                    {statsLoading ? '...' : `Rating: ${playerStats?.rank?.mmr || 1000}`}
+                  </span>
+                  <span className={styles.stat}>
+                    {statsLoading ? '...' : `Win Rate: ${playerStats?.winRate?.toFixed(1) || 0}%`}
+                  </span>
+                  <span className={styles.stat}>
+                    {statsLoading ? '...' : `${playerStats?.rank?.tier || 'Bronze'} ${playerStats?.rank?.division || 1}`}
+                  </span>
                 </div>
               </div>
               <button 
@@ -189,6 +240,18 @@ export default function LobbyPage() {
             <div className={styles.quickActions}>
               <h3>Quick Actions</h3>
               <div className={styles.actionButtons}>
+                <button 
+                  className={styles.actionButton}
+                  onClick={() => router.push('/chat')}
+                >
+                  💬 Chat
+                </button>
+                <button 
+                  className={styles.actionButton}
+                  onClick={() => router.push('/tournaments')}
+                >
+                  🏆 Tournaments
+                </button>
                 <button 
                   className={styles.actionButton}
                   onClick={() => router.push('/community')}

@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { matchApi } from '../../services/api'
+import { matchApi, matchmakingApi } from '../../services/api'
 import styles from './QuickMatch.module.css'
 
 interface QuickMatchProps {
@@ -13,6 +13,37 @@ export const QuickMatch: React.FC<QuickMatchProps> = ({ onJoinMatch }) => {
   const [selectedMap, setSelectedMap] = useState<'random' | 'crossroads' | 'forest' | 'mountain'>('random')
   const [selectedTimeControl, setSelectedTimeControl] = useState<'daily' | '3days' | 'realtime'>('daily')
   const [isLoading, setIsLoading] = useState(false)
+  const [statsLoading, setStatsLoading] = useState(true)
+  const [queueStats, setQueueStats] = useState<{
+    averageWaitTime: number
+    totalInQueue: number
+    averageSkillRating: number
+  } | null>(null)
+
+  useEffect(() => {
+    fetchQueueStats()
+  }, [selectedMode])
+
+  const fetchQueueStats = async () => {
+    try {
+      setStatsLoading(true)
+      const gameMode = selectedMode === 'ai' ? 'ranked' : selectedMode
+      const response = await matchmakingApi.getQueueStats(gameMode)
+      if (response.success && response.data) {
+        setQueueStats(response.data)
+      }
+    } catch (error) {
+      console.error('Error fetching queue stats:', error)
+      // Set default values on error
+      setQueueStats({
+        averageWaitTime: 0,
+        totalInQueue: 0,
+        averageSkillRating: 0
+      })
+    } finally {
+      setStatsLoading(false)
+    }
+  }
 
   const handleJoinMatch = async () => {
     if (isLoading) return
@@ -161,15 +192,21 @@ export const QuickMatch: React.FC<QuickMatchProps> = ({ onJoinMatch }) => {
       <div className={styles.stats}>
         <div className={styles.statItem}>
           <span className={styles.statLabel}>Average Wait Time</span>
-          <span className={styles.statValue}>2-5 minutes</span>
+          <span className={styles.statValue}>
+            {statsLoading ? '...' : queueStats ? `${Math.round(queueStats.averageWaitTime)} min` : 'N/A'}
+          </span>
         </div>
         <div className={styles.statItem}>
-          <span className={styles.statLabel}>Active Players</span>
-          <span className={styles.statValue}>1,234</span>
+          <span className={styles.statLabel}>Average Rating</span>
+          <span className={styles.statValue}>
+            {statsLoading ? '...' : queueStats ? queueStats.averageSkillRating.toLocaleString() : 'N/A'}
+          </span>
         </div>
         <div className={styles.statItem}>
           <span className={styles.statLabel}>Queue Size</span>
-          <span className={styles.statValue}>45</span>
+          <span className={styles.statValue}>
+            {statsLoading ? '...' : queueStats ? queueStats.totalInQueue.toLocaleString() : '0'}
+          </span>
         </div>
       </div>
     </div>

@@ -1015,6 +1015,538 @@ export const matchApi = {
   },
 }
 
+// Chat API
+export const chatApi = {
+  async sendDirectMessage(receiverId: number, content: string, messageType: string = 'text'): Promise<ApiResponse<any>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/chat/direct/${receiverId}`, {
+        method: 'POST',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ content, messageType }),
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to send message')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async getDirectMessages(otherUserId: number, limit: number = 50, offset: number = 0): Promise<ApiResponse<any>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/chat/direct/${otherUserId}?limit=${limit}&offset=${offset}`, {
+        method: 'GET',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to get messages')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async markMessagesAsRead(senderId: number): Promise<ApiResponse<void>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/chat/direct/${senderId}/read`, {
+        method: 'PUT',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+      })
+      if (!response.ok) {
+        const result = await response.json()
+        throw new ApiError(response.status, result.error || 'Failed to mark as read')
+      }
+      return { success: true }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async getUnreadCount(): Promise<ApiResponse<{ direct: number; groups: number }>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/chat/unread`, {
+        method: 'GET',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to get unread count')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async createGroup(name: string, description?: string, isPublic: boolean = true, maxMembers?: number): Promise<ApiResponse<any>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/chat/groups`, {
+        method: 'POST',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ name, description, isPublic, maxMembers }),
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to create group')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async getUserGroups(): Promise<ApiResponse<any>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/chat/groups`, {
+        method: 'GET',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to get groups')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async getPublicGroups(limit: number = 20, offset: number = 0): Promise<ApiResponse<any>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/chat/groups/public?limit=${limit}&offset=${offset}`, {
+        method: 'GET',
+        headers: DEFAULT_HEADERS,
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to get public groups')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async joinGroup(groupId: number): Promise<ApiResponse<void>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/chat/groups/${groupId}/join`, {
+        method: 'POST',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+      })
+      if (!response.ok) {
+        const result = await response.json()
+        throw new ApiError(response.status, result.error || 'Failed to join group')
+      }
+      return { success: true }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async leaveGroup(groupId: number): Promise<ApiResponse<void>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/chat/groups/${groupId}/leave`, {
+        method: 'POST',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+      })
+      if (!response.ok) {
+        const result = await response.json()
+        throw new ApiError(response.status, result.error || 'Failed to leave group')
+      }
+      return { success: true }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async sendGroupMessage(groupId: number, content: string, messageType: string = 'text'): Promise<ApiResponse<any>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/chat/groups/${groupId}/messages`, {
+        method: 'POST',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ content, messageType }),
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to send message')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async getGroupMessages(groupId: number, limit: number = 50, offset: number = 0): Promise<ApiResponse<any>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/chat/groups/${groupId}/messages?limit=${limit}&offset=${offset}`, {
+        method: 'GET',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to get messages')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async getGroupMembers(groupId: number): Promise<ApiResponse<any>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/chat/groups/${groupId}/members`, {
+        method: 'GET',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to get members')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async updateMemberRole(groupId: number, userId: number, role: string): Promise<ApiResponse<void>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/chat/groups/${groupId}/members/${userId}/role`, {
+        method: 'PUT',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ role }),
+      })
+      if (!response.ok) {
+        const result = await response.json()
+        throw new ApiError(response.status, result.error || 'Failed to update role')
+      }
+      return { success: true }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async deleteGroup(groupId: number): Promise<ApiResponse<void>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/chat/groups/${groupId}`, {
+        method: 'DELETE',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+      })
+      if (!response.ok) {
+        const result = await response.json()
+        throw new ApiError(response.status, result.error || 'Failed to delete group')
+      }
+      return { success: true }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+}
+
+// Matchmaking API
+export const matchmakingApi = {
+  async joinQueue(gameMode: string, searchRegion?: string): Promise<ApiResponse<any>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/matchmaking/queue`, {
+        method: 'POST',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ gameMode, searchRegion }),
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to join queue')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async leaveQueue(gameMode: string): Promise<ApiResponse<void>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/matchmaking/queue?gameMode=${gameMode}`, {
+        method: 'DELETE',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+      })
+      if (!response.ok) {
+        const result = await response.json()
+        throw new ApiError(response.status, result.error || 'Failed to leave queue')
+      }
+      return { success: true }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async getQueueStatus(gameMode?: string): Promise<ApiResponse<any>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const url = gameMode ? `${API_BASE_URL}/matchmaking/status?gameMode=${gameMode}` : `${API_BASE_URL}/matchmaking/status`
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to get status')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async getQueueStats(gameMode: string): Promise<ApiResponse<any>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/matchmaking/stats?gameMode=${gameMode}`, {
+        method: 'GET',
+        headers: DEFAULT_HEADERS,
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to get stats')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async findMatch(gameMode: string): Promise<ApiResponse<any>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/matchmaking/find`, {
+        method: 'POST',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ gameMode }),
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to find match')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async calculateElo(playerRating: number, opponentRating: number, playerWon: boolean, kFactor: number = 32): Promise<ApiResponse<any>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/matchmaking/elo`, {
+        method: 'POST',
+        headers: DEFAULT_HEADERS,
+        body: JSON.stringify({ playerRating, opponentRating, playerWon, kFactor }),
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to calculate ELO')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+}
+
+// Tournament API
+export const tournamentApi = {
+  async listTournaments(filter?: { status?: string; gameMode?: string; limit?: number; offset?: number }): Promise<ApiResponse<any>> {
+    try {
+      const params = new URLSearchParams()
+      if (filter?.status) params.append('status', filter.status)
+      if (filter?.gameMode) params.append('gameMode', filter.gameMode)
+      if (filter?.limit) params.append('limit', filter.limit.toString())
+      if (filter?.offset) params.append('offset', filter.offset.toString())
+      
+      const response = await fetch(`${API_BASE_URL}/tournaments?${params.toString()}`, {
+        method: 'GET',
+        headers: DEFAULT_HEADERS,
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to list tournaments')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async getTournament(tournamentId: number): Promise<ApiResponse<any>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/tournaments/${tournamentId}`, {
+        method: 'GET',
+        headers: DEFAULT_HEADERS,
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to get tournament')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async createTournament(data: { name: string; description?: string; gameMode: string; startTime: string; endTime: string; prizePool?: number; maxParticipants?: number }): Promise<ApiResponse<any>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/tournaments`, {
+        method: 'POST',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+        body: JSON.stringify(data),
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to create tournament')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async registerForTournament(tournamentId: number): Promise<ApiResponse<any>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/tournaments/${tournamentId}/register`, {
+        method: 'POST',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to register')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async unregisterFromTournament(tournamentId: number): Promise<ApiResponse<void>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/tournaments/${tournamentId}/register`, {
+        method: 'DELETE',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+      })
+      if (!response.ok) {
+        const result = await response.json()
+        throw new ApiError(response.status, result.error || 'Failed to unregister')
+      }
+      return { success: true }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async getParticipants(tournamentId: number): Promise<ApiResponse<any>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/tournaments/${tournamentId}/participants`, {
+        method: 'GET',
+        headers: DEFAULT_HEADERS,
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to get participants')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async getBracket(tournamentId: number): Promise<ApiResponse<any>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/tournaments/${tournamentId}/bracket`, {
+        method: 'GET',
+        headers: DEFAULT_HEADERS,
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to get bracket')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async getLeaderboard(tournamentId: number): Promise<ApiResponse<any>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/tournaments/${tournamentId}/leaderboard`, {
+        method: 'GET',
+        headers: DEFAULT_HEADERS,
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to get leaderboard')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async startTournament(tournamentId: number): Promise<ApiResponse<any>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/tournaments/${tournamentId}/start`, {
+        method: 'POST',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to start tournament')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+
+  async completeTournament(tournamentId: number): Promise<ApiResponse<any>> {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) throw new ApiError(401, 'No auth token')
+      const response = await fetch(`${API_BASE_URL}/tournaments/${tournamentId}/complete`, {
+        method: 'POST',
+        headers: { ...DEFAULT_HEADERS, Authorization: `Bearer ${token}` },
+      })
+      const result = await response.json()
+      if (!response.ok) throw new ApiError(response.status, result.error || 'Failed to complete tournament')
+      return { success: true, data: result.data }
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      throw new ApiError(500, 'Network error', error)
+    }
+  },
+}
+
 // Utility function to handle common API errors
 export const handleApiError = (error: ApiError): string => {
   switch (error.status) {
